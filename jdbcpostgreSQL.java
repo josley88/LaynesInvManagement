@@ -49,36 +49,37 @@ public class jdbcpostgreSQL {
         
         //creates array of elements in a line
         parseArr = sc.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-        if(parseArr[1].equals("")!=true) {
-          sqlStatement = "INSERT INTO " + tableName + "VALUES (" + parseArr[1] + "," + parseArr[2] + "," + "\'" + parseArr[3] + "\'" + ");";
-          stmt = conn.createStatement();
-          result = stmt.executeUpdate(sqlStatement);
-          System.out.println(result);
-          conn.close();
-          for (String string : parseArr) {
-            if (string.length() != 0) {
-              System.out.println(string);
-            }
-          }
-        }
-        else{ // handles when we enter into a new day
-          if(sc.hasNextLine()){ // checks if we are at end of file 
-            tableName = sc.nextLine();
-            parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-            
-            tableName = parseArr[0];
-            sqlStatement = "CREATE TABLE " + parseArr[0] + " ( ";
-            // populates in the following order Item, Quantity, Total
-            sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " INT, "+ parseArr[3] + " TEXT"+" );";
-            
-            // SQL side;
+        if(parseArr.length>0){
+          if(parseArr[1].equals("")!=true) {
+            sqlStatement = "INSERT INTO " + tableName + "VALUES (" + parseArr[1] + "," + parseArr[2] + "," + "\'" + parseArr[3] + "\'" + ");";
             stmt = conn.createStatement();
             result = stmt.executeUpdate(sqlStatement);
             System.out.println(result);
             conn.close();
+            for (String string : parseArr) {
+              if (string.length() != 0) {
+                System.out.println(string);
+              }
+            }
+          }
+          else{ // handles when we enter into a new day 
+            if(sc.hasNextLine()){ // checks if we are at end of file 
+              tableName = sc.nextLine();
+              parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+
+              tableName = parseArr[0];
+              sqlStatement = "CREATE TABLE " + parseArr[0] + " ( ";
+              // populates in the following order Item, Quantity, Total
+              sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " INT, "+ parseArr[3] + " TEXT"+" );";
+
+              // SQL side;
+              stmt = conn.createStatement();
+              result = stmt.executeUpdate(sqlStatement);
+              System.out.println(result);
+              conn.close();
+            }
           }
         }
-        
       }
 
 
