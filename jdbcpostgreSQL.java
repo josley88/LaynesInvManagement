@@ -127,6 +127,74 @@ public class jdbcpostgreSQL {
 
 
 
+  // function to input the elements into the inventory
+  public static void inputElementsIntoInventory(String fileName){
+    Scanner sc;
+    
+    try{
+      //drops sun - sat
+      dropTables(); 
+      //TODO conditional droptable
+      Statement stmt = conn.createStatement();
+
+
+      sc = new Scanner(new File(fileName));
+      String filler = sc.nextLine().replace("\'", "\'\'");
+      String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+    
+      String tableName = sc.nextLine().replace("\'", "\'\'");
+      parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      tableName = "INVENTORY";
+      //tableName = parseArr[0].strip() + fileName.substring(0, (fileName.length()-4));
+      String sqlStatement = "CREATE TABLE " + "INVENTORY" + " ( ";
+      // populates in the following order Item, Quantity, Total
+      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " TEXT PRIMARY KEY, "+ parseArr[3].strip() + " INT, "+ parseArr[4].strip() + " INT, "+ parseArr[5].strip() + " TEXT, "+ parseArr[6].strip() + " TEXT, "+ parseArr[7].strip() + " INT, "+ parseArr[8].strip() + " TEXT, "+ parseArr[9].strip() + " TEXT, "+ parseArr[10].strip() + " TEXT, "+ parseArr[11].strip() + " INT, "+ parseArr[12].strip() + " TEXT, "+" );";
+      
+      // SQL side;
+      //Statement stmt = conn.createStatement();
+      int result = stmt.executeUpdate(sqlStatement);
+      System.out.println(result);
+      //conn.close();
+      while(sc.hasNextLine()){
+        
+        //creates array of elements in a line
+        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        if(parseArr.length>0 && sc.hasNextLine()){
+          if(parseArr[1].equals("")!=true) {
+            sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + "," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + parseArr[4].strip() + "\'" + "," + "\'" + parseArr[5].strip() + "\'"+ "," + "\'" + parseArr[6].strip() + "\'" + "," + "\'" + parseArr[7].strip() + "\'" + "," + "\'" + parseArr[8].strip() + "\'" + "," + "\'" + parseArr[9].strip() + "\'" + "," + "\'" + parseArr[10].strip() + "\'" + "," + "\'" + parseArr[11].strip() + "\'" + "," + "\'" + parseArr[12].strip() + "\'" + ");";
+            //stmt = conn.createStatement();
+            System.out.println(sqlStatement);
+            result = stmt.executeUpdate(sqlStatement);
+            System.out.println(result);
+            //conn.close();
+            for (String string : parseArr) {
+              if (string.length() != 0) {
+                System.out.println(string);
+              }
+            }
+          }
+          else{ // handles when we enter into a new day 
+            if(sc.hasNextLine()){ // checks if we are at end of file 
+              tableName = sc.nextLine().replace("\'", "\'\'");
+              parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+            }
+          }
+        }
+      }
+
+
+
+
+    } 
+    catch (Exception e){
+      e.printStackTrace();
+      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.exit(0);
+  }
+  }
+
+
+
 
 
   
