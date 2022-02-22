@@ -42,7 +42,7 @@ public class jdbcpostgreSQL {
       // populates in the following order Item, name, Description, price 
       String tableFormatting = sc.nextLine();
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-      sqlStatement += parseArr[1] + " int, " + parseArr[2] + " "+ parseArr[3] + + parseArr[4] + " );"
+      sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " TEXT, "+ parseArr[3] + " TEXT, " + parseArr[4] + " TEXT, "+" );";
       
       
       while(sc.hasNextLine()){
@@ -89,7 +89,7 @@ public class jdbcpostgreSQL {
   public static void runSQLCommands() {
     try{
       // create a statement object
-      Statement stmt = conn.createStatement(); 
+      Statement stmt = conn.createStatement();
 
       // Running a query
       // String sqlStatement = "INSERT INTO teammembers VALUES ('John Smith', 904, 'Inception', '04/01/2022');";
