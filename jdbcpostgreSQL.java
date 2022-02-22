@@ -44,6 +44,10 @@ public class jdbcpostgreSQL {
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " TEXT, "+ parseArr[3] + " TEXT, " + parseArr[4] + " TEXT, "+" );";
       
+      // SQL side;
+      Statement stmt = conn.createStatement();
+      int result = stmt.executeUpdate(sqlStatement);
+      System.out.println(result);
       
       while(sc.hasNextLine()){
         
@@ -62,7 +66,11 @@ public class jdbcpostgreSQL {
 
 
     } 
-    catch (FileNotFoundException e) {e.printStackTrace();}
+    catch (Exception e){
+      e.printStackTrace();
+      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.exit(0);
+  }
   }
 
 
@@ -131,18 +139,19 @@ public class jdbcpostgreSQL {
 
 public static void main(String args[]) {
 
-  inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
+  
 
   // _________setup the database_______
-  //setupDatabase();
+  setupDatabase();
 
-
+  System.out.println("I got here 1 \n");
   // _________running commands_________
   //runSQLCommands();
-
+  inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
+  System.out.println("I got here 2 \n");
 
   // __________Close Connection________
-  //closeConnection();
+  closeConnection();
 
   }
 }
