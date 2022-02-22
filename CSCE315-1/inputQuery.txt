@@ -1,0 +1,10 @@
+SELECT * FROM menuItems ORDER BY price;
+SELECT * FROM menuItems ORDER BY itemName;
+SELECT itemName FROM menuItems WHERE price > 5;
+SELECT itemName, ingredients , itemPrice, MIN(itemCost) FROM menuItems;
+SELECT itemName , ingredients , MAX(itemPrice), itemCost FROM menuItems;
+SELECT * FROM dailyTotalOrders ORDER BY quantity;
+SELECT * FROM dailyTotalOrders ORDER BY profit;
+SELECT itemName FROM dailyTotalOrders WHERE profit < 1;
+SELECT itemName , quantity, MAX(profit), FROM dailyTotalOrders;
+SELECT * FROM storeInventory;
