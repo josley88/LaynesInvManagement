@@ -38,10 +38,12 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine();
       String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      String sqlStatement = "CREATE TABLE " + parseArr[0] + " ( ";
       // populates in the following order Item, name, Description, price 
       String tableFormatting = sc.nextLine();
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-      String sqlStatement = "SELECT * FROM teammembers LIMIT 10;";
+      sqlStatement += parseArr[1] + " int, " + parseArr[2] + " "+ parseArr[3] + + parseArr[4] + " );"
+      
       
       while(sc.hasNextLine()){
         
