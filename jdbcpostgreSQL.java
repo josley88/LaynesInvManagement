@@ -23,11 +23,42 @@ public class jdbcpostgreSQL {
   public static String userPassword = "315gang";
   //___________________________________________________
 
+
+  public static void dropTables(){
+    try{
+      String sqlStatement = "DROP TABLE monday;";
+      Statement stmt = conn.createStatement();
+      int result = stmt.executeUpdate(sqlStatement); 
+      sqlStatement = "DROP TABLE tuesday;";
+      result = stmt.executeUpdate(sqlStatement); 
+      sqlStatement = "DROP TABLE wednesday;";
+      result = stmt.executeUpdate(sqlStatement); 
+      sqlStatement = "DROP TABLE thursday;";
+      result = stmt.executeUpdate(sqlStatement); 
+      sqlStatement = "DROP TABLE friday;";
+      result = stmt.executeUpdate(sqlStatement); 
+      sqlStatement = "DROP TABLE saturday;";
+      result = stmt.executeUpdate(sqlStatement); 
+      sqlStatement = "DROP TABLE sunday;";
+      result = stmt.executeUpdate(sqlStatement); 
+      System.out.println(result);
+    }catch (Exception e){
+      e.printStackTrace();
+      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.exit(0);
+    }      
+  }
   // function to input weekly purchase into daily order tables it will take in the file name and it will update the database directly
   public static void inputElementsIntoDaysofTheWeekOrders(String fileName){
     Scanner sc;
     
     try{
+      //drops sun - sat
+      dropTables(); 
+      //TODO conditional droptable
+      Statement stmt = conn.createStatement();
+
+
       sc = new Scanner(new File(fileName));
       String filler = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -41,7 +72,7 @@ public class jdbcpostgreSQL {
       sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
       
       // SQL side;
-      Statement stmt = conn.createStatement();
+      //Statement stmt = conn.createStatement();
       int result = stmt.executeUpdate(sqlStatement);
       System.out.println(result);
       //conn.close();
@@ -229,7 +260,7 @@ public static void main(String args[]) {
   System.out.println("I got here 1 \n");
   // _________running commands_________
   //runSQLCommands();
-  inputElementsIntoDaysofTheWeekOrders("./CSCE315-1/FirstWeekSales.csv");
+  inputElementsIntoDaysofTheWeekOrders("./CSCE315-1/ThirdWeekSales.csv");
   System.out.println("I got here 2 \n");
 
   // __________Close Connection________
