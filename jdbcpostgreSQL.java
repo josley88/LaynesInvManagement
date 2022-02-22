@@ -29,33 +29,34 @@ public class jdbcpostgreSQL {
     
     try{
       sc = new Scanner(new File(fileName));
-      String filler = sc.nextLine();
+      String filler = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
     
-      String tableName = sc.nextLine();
+      String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       
-      tableName = parseArr[0];
-      String sqlStatement = "CREATE TABLE " + parseArr[0] + " ( ";
+      tableName = parseArr[0].strip();
+      String sqlStatement = "CREATE TABLE " + parseArr[0].strip() + " ( ";
       // populates in the following order Item, Quantity, Total
-      sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " INT, "+ parseArr[3] + " TEXT"+" );";
+      sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
       
       // SQL side;
       Statement stmt = conn.createStatement();
       int result = stmt.executeUpdate(sqlStatement);
       System.out.println(result);
-      conn.close();
+      //conn.close();
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
-        parseArr = sc.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(parseArr[1].equals("")!=true) {
-            sqlStatement = "INSERT INTO " + tableName + "VALUES (" + parseArr[1] + "," + parseArr[2] + "," + "\'" + parseArr[3] + "\'" + ");";
-            stmt = conn.createStatement();
+            sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + "," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\'" + ");";
+            //stmt = conn.createStatement();
+            System.out.println(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             System.out.println(result);
-            conn.close();
+            //conn.close();
             for (String string : parseArr) {
               if (string.length() != 0) {
                 System.out.println(string);
@@ -64,19 +65,19 @@ public class jdbcpostgreSQL {
           }
           else{ // handles when we enter into a new day 
             if(sc.hasNextLine()){ // checks if we are at end of file 
-              tableName = sc.nextLine();
+              tableName = sc.nextLine().replace("\'", "\'\'");
               parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 
-              tableName = parseArr[0];
-              sqlStatement = "CREATE TABLE " + parseArr[0] + " ( ";
+              tableName = parseArr[0].strip();
+              sqlStatement = "CREATE TABLE " + parseArr[0].strip() + " ( ";
               // populates in the following order Item, Quantity, Total
-              sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " INT, "+ parseArr[3] + " TEXT"+" );";
+              sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
 
               // SQL side;
               stmt = conn.createStatement();
               result = stmt.executeUpdate(sqlStatement);
               System.out.println(result);
-              conn.close();
+              //conn.close();
             }
           }
         }
@@ -228,7 +229,7 @@ public static void main(String args[]) {
   System.out.println("I got here 1 \n");
   // _________running commands_________
   //runSQLCommands();
-  inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
+  inputElementsIntoDaysofTheWeekOrders("./CSCE315-1/FirstWeekSales.csv");
   System.out.println("I got here 2 \n");
 
   // __________Close Connection________
