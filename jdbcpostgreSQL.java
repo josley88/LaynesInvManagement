@@ -107,8 +107,8 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine();
       String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-      tableName = parseArr[0];
-      String sqlStatement = "CREATE TABLE " + parseArr[0] + " ( ";
+      tableName = "Menu_Key";
+      String sqlStatement = "CREATE TABLE " + "Menu_Key" + " ( ";
       // populates in the following order Item, name, Description, price 
       String tableFormatting = sc.nextLine();
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -118,22 +118,22 @@ public class jdbcpostgreSQL {
           System.out.println(string);
         }
       }
-      sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " TEXT, "+ parseArr[3] + " TEXT, " + parseArr[4] + " TEXT, "+" );";
-      
+      sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " TEXT, "+ parseArr[3] + " TEXT, " + parseArr[4] + " TEXT"+" );";
+      System.out.println(sqlStatement);
       // SQL side;
       Statement stmt = conn.createStatement();
       int result = stmt.executeUpdate(sqlStatement);
       System.out.println(result);
-      conn.close();
+      //conn.close();
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
         parseArr = sc.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         sqlStatement = "INSERT INTO " + tableName + "VALUES (" + parseArr[1] + ",\'" + parseArr[2] + "\'," + "\'" + parseArr[3] + "\'" + "\'," + parseArr[4] + "\');";
-        stmt = conn.createStatement();
+        //stmt = conn.createStatement();
         result = stmt.executeUpdate(sqlStatement);
         System.out.println(result);
-        conn.close();
+        //conn.close();
         for (String string : parseArr) {
           if (string.length() != 0) {
             System.out.println(string);
