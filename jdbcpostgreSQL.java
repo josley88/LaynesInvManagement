@@ -105,12 +105,13 @@ public class jdbcpostgreSQL {
     
     try{
       sc = new Scanner(new File(fileName));
-      String tableName = sc.nextLine();
+      String tableName = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      
       tableName = "Menu_Key";
       String sqlStatement = "CREATE TABLE " + "Menu_Key" + " ( ";
       // populates in the following order Item, name, Description, price 
-      String tableFormatting = sc.nextLine();
+      String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       //sanitizes the parse Arr values for (" ")
       for (String string : parseArr) {
@@ -118,7 +119,7 @@ public class jdbcpostgreSQL {
           System.out.println(string);
         }
       }
-      sqlStatement += parseArr[1] + " INT PRIMARY KEY, " + parseArr[2] + " TEXT, "+ parseArr[3] + " TEXT, " + parseArr[4] + " TEXT"+" );";
+      sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " TEXT, "+ parseArr[3].strip() + " TEXT, " + parseArr[4].strip() + " TEXT"+" );";
       System.out.println(sqlStatement);
       // SQL side;
       Statement stmt = conn.createStatement();
@@ -128,8 +129,8 @@ public class jdbcpostgreSQL {
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
-        parseArr = sc.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-        sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1] + ",\'" + parseArr[2] + "\'," + "\'" + parseArr[3] + "\'" + ",\'" + parseArr[4] + "\');";
+        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + ",\'" + parseArr[4].strip() + "\');";
         //stmt = conn.createStatement();
         System.out.println(sqlStatement); 
         result = stmt.executeUpdate(sqlStatement);
