@@ -66,7 +66,7 @@ public class jdbcpostgreSQL {
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       
-      tableName = parseArr[0].strip();
+      tableName = parseArr[0].strip() + fileName.substring(0, (fileName.length()-4));
       String sqlStatement = "CREATE TABLE " + parseArr[0].strip() + " ( ";
       // populates in the following order Item, Quantity, Total
       sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
@@ -99,7 +99,7 @@ public class jdbcpostgreSQL {
               tableName = sc.nextLine().replace("\'", "\'\'");
               parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 
-              tableName = parseArr[0].strip();
+              tableName = parseArr[0].strip() + fileName.substring(0, (fileName.length()-4));
               sqlStatement = "CREATE TABLE " + parseArr[0].strip() + " ( ";
               // populates in the following order Item, Quantity, Total
               sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
