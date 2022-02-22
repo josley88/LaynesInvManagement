@@ -30,7 +30,8 @@ public class jdbcpostgreSQL {
 
 
   
-  //function to input elements into the Menu Table.  
+  //function to input elements into the Menu Table.
+    
   public static void inputElementsIntoMenuTable(String fileName){
     Scanner sc;
     
@@ -38,6 +39,7 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine();
       String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      tableName = parseArr[0];
       String sqlStatement = "CREATE TABLE " + parseArr[0] + " ( ";
       // populates in the following order Item, name, Description, price 
       String tableFormatting = sc.nextLine();
@@ -48,13 +50,16 @@ public class jdbcpostgreSQL {
       Statement stmt = conn.createStatement();
       int result = stmt.executeUpdate(sqlStatement);
       System.out.println(result);
-      
+      conn.close();
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
         parseArr = sc.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-        
-        
+        sqlStatement = "INSERT INTO " + tableName + "VALUES (" + parseArr[1] + ",\'" + parseArr[2] + "\'," + "\'" + parseArr[3] + "\'" + "\'," + parseArr[4] + "\');";
+        stmt = conn.createStatement();
+        result = stmt.executeUpdate(sqlStatement);
+        System.out.println(result);
+        conn.close();
         for (String string : parseArr) {
           if (string.length() != 0) {
             System.out.println(string);
