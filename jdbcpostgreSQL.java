@@ -129,8 +129,9 @@ public class jdbcpostgreSQL {
         
         //creates array of elements in a line
         parseArr = sc.nextLine().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-        sqlStatement = "INSERT INTO " + tableName + "VALUES (" + parseArr[1] + ",\'" + parseArr[2] + "\'," + "\'" + parseArr[3] + "\'" + "\'," + parseArr[4] + "\');";
+        sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1] + ",\'" + parseArr[2] + "\'," + "\'" + parseArr[3] + "\'" + ",\'" + parseArr[4] + "\');";
         //stmt = conn.createStatement();
+        System.out.println(sqlStatement); 
         result = stmt.executeUpdate(sqlStatement);
         System.out.println(result);
         //conn.close();
