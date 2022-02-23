@@ -54,7 +54,7 @@ public class jdbcpostgreSQL {
     
     try{
       //drops sun - sat
-      dropTables(); 
+      //dropTables(); 
       //TODO conditional droptable
       Statement stmt = conn.createStatement();
 
@@ -66,8 +66,8 @@ public class jdbcpostgreSQL {
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       
-      tableName = parseArr[0].strip() + fileName.substring(0, (fileName.length()-4));
-      String sqlStatement = "CREATE TABLE " + parseArr[0].strip() + " ( ";
+      tableName = parseArr[0].strip() + fileName.substring(12, (fileName.length()-4));
+      String sqlStatement = "CREATE TABLE " + tableName + " ( ";
       // populates in the following order Item, Quantity, Total
       sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
       
@@ -99,8 +99,8 @@ public class jdbcpostgreSQL {
               tableName = sc.nextLine().replace("\'", "\'\'");
               parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 
-              tableName = parseArr[0].strip() + fileName.substring(0, (fileName.length()-4));
-              sqlStatement = "CREATE TABLE " + parseArr[0].strip() + " ( ";
+              tableName = parseArr[0].strip() + fileName.substring(12, (fileName.length()-4));
+              sqlStatement = "CREATE TABLE " + tableName + " ( ";
               // populates in the following order Item, Quantity, Total
               sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
 
@@ -324,7 +324,9 @@ public static void main(String args[]) {
   System.out.println("I got here 1 \n");
   // _________running commands_________
   //runSQLCommands();
-  inputElementsIntoInventory("./CSCE315-1/First day order.csv");
+  
+  inputElementsIntoDaysofTheWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+  //inputElementsIntoInventory("./CSCE315-1/FourthWeekSales.csv");
   System.out.println("I got here 2 \n");
 
   // __________Close Connection________
