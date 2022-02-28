@@ -244,6 +244,60 @@ public class jdbcpostgreSQL {
   }
 
 
+  public static void inputItemConversions(String fileName){
+    Scanner sc;
+    
+    try{
+      sc = new Scanner(new File(fileName));
+      String tableName = sc.nextLine().replace("\'", "\'\'");
+      String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      
+      tableName = "itemConversion";
+      String sqlStatement = "CREATE TABLE " + tableName + " ( ";
+      // populates in the following order Item, Description 
+      String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
+      parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      //sanitizes the parse Arr values for (" ")
+      for (String string : parseArr) {
+        if (string.length() != 0) {
+          System.out.println(string);
+        }
+      }
+      sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " TEXT );";
+      System.out.println(sqlStatement);
+      // SQL side;
+      Statement stmt = conn.createStatement();
+      int result = stmt.executeUpdate(sqlStatement);
+      System.out.println(result);
+      //conn.close();
+      while(sc.hasNextLine()){
+        
+        //creates array of elements in a line
+        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\');";
+        //stmt = conn.createStatement();
+        System.out.println(sqlStatement); 
+        result = stmt.executeUpdate(sqlStatement);
+        System.out.println(result);
+        //conn.close();
+        for (String string : parseArr) {
+          if (string.length() != 0) {
+            System.out.println(string);
+          }
+        }
+      }
+
+
+
+
+    } 
+    catch (Exception e){
+      e.printStackTrace();
+      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.exit(0);
+  }
+}
+
 
 
 
@@ -318,8 +372,8 @@ public static void main(String args[]) {
   // _________running commands_________
   //runSQLCommands();
   
-  inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
-  //inputElementsIntoInventory("./CSCE315-1/FourthWeekSales.csv");
+  //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+  inputItemConversions("./CSCE315-1/menuItemConversion.csv");
   System.out.println("I got here 2 \n");
 
   // __________Close Connection________
