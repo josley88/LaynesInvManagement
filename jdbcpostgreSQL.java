@@ -49,7 +49,7 @@ public class jdbcpostgreSQL {
     }      
   }
   // function to input weekly purchase into daily order tables it will take in the file name and it will update the database directly
-  public static void inputElementsIntoDaysofTheWeekOrders(String fileName){
+  public static void inputElementsIntoWeekOrders(String fileName){
     Scanner sc;
     
     try{
@@ -65,24 +65,25 @@ public class jdbcpostgreSQL {
     
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-      
-      tableName = parseArr[0].strip() + fileName.substring(12, (fileName.length()-4));
+      String day = parseArr[0].strip();
+      tableName =  fileName.substring((fileName.length()-13), (fileName.length()-4));
       String sqlStatement = "CREATE TABLE " + tableName + " ( ";
       // populates in the following order Item, Quantity, Total
-      sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
-      
+      sqlStatement += parseArr[1].strip() + " TEXT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT );";
+      System.out.println(sqlStatement);
       // SQL side;
       //Statement stmt = conn.createStatement();
       int result = stmt.executeUpdate(sqlStatement);
       System.out.println(result);
       //conn.close();
+      
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(parseArr[1].equals("")!=true) {
-            sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + "," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\'" + ");";
+            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\');";
             //stmt = conn.createStatement();
             System.out.println(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
@@ -94,20 +95,12 @@ public class jdbcpostgreSQL {
               }
             }
           }
-          else{ // handles when we enter into a new day 
+          else{ // changes day if new day
             if(sc.hasNextLine()){ // checks if we are at end of file 
-              tableName = sc.nextLine().replace("\'", "\'\'");
-              parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
-              tableName = parseArr[0].strip() + fileName.substring(12, (fileName.length()-4));
-              sqlStatement = "CREATE TABLE " + tableName + " ( ";
-              // populates in the following order Item, Quantity, Total
-              sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT"+" );";
-
-              // SQL side;
-              stmt = conn.createStatement();
-              result = stmt.executeUpdate(sqlStatement);
-              System.out.println(result);
+              //skips a line
+              parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+              day = parseArr[0].strip();
+              System.out.println("NEW DAY IS " + day);
               //conn.close();
             }
           }
@@ -325,7 +318,7 @@ public static void main(String args[]) {
   // _________running commands_________
   //runSQLCommands();
   
-  inputElementsIntoDaysofTheWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+  inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
   //inputElementsIntoInventory("./CSCE315-1/FourthWeekSales.csv");
   System.out.println("I got here 2 \n");
 
