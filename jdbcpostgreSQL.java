@@ -11,6 +11,8 @@ public class jdbcpostgreSQL {
   //Windows: java -cp ".;postgresql-42.2.8.jar" jdbcpostgreSQL.java
   //Mac/Linux: java -cp ".:postgresql-42.2.8.jar" jdbcpostgreSQL.java
 
+  // Access Database: psql -h csce-315-db.engr.tamu.edu -U csce315904_21user csce315904_21db
+
   //MAKE SURE YOU ARE ON VPN or TAMU WIFI TO ACCESS DATABASE
 
   // _________________Global Variables_________________
@@ -24,7 +26,7 @@ public class jdbcpostgreSQL {
   //___________________________________________________
 
 
-  // function to input weekly purchase into daily order tables it will take in the file name and it will update the database directly
+  // function to input weekly purchase into daily order tables. It will take in the file name and it will update the database directly
   public static void inputElementsIntoWeekOrders(String fileName){
     Scanner sc;
     
@@ -145,7 +147,7 @@ public class jdbcpostgreSQL {
 
 
   
-  //function to input elements into the Menu Table.
+  // function to input elements into the Menu Table.
 
   public static void inputElementsIntoMenuTable(String fileName){
     Scanner sc;
@@ -207,34 +209,38 @@ public class jdbcpostgreSQL {
       String tableName = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       
-      tableName = "itemConversion";
-      String sqlStatement = "CREATE TABLE " + tableName + " ( ";
-      // populates in the following order Item, Description 
-      String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
-      parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-      //sanitizes the parse Arr values for (" ")
-      for (String string : parseArr) {
-        if (string.length() != 0) {
-          System.out.println(string);
-        }
-      }
-      sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " TEXT );";
-      System.out.println(sqlStatement);
-      // SQL side;
-      Statement stmt = conn.createStatement();
-      int result = stmt.executeUpdate(sqlStatement);
-      System.out.println(result);
-      while(sc.hasNextLine()){
-        
-        //creates array of elements in a line
-        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-        sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\');";
-        System.out.println(sqlStatement); 
-        result = stmt.executeUpdate(sqlStatement);
-        System.out.println(result);
+      // only create table if it doesn't already exist
+      if (!tableExist(conn, "itemconversion")) {
+        System.out.println("Table doesn't exist");
+        tableName = "itemConversion";
+        String sqlStatement = "CREATE TABLE " + tableName + " ( ";
+        // populates in the following order Item, Description 
+        String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
+        parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        //sanitizes the parse Arr values for (" ")
         for (String string : parseArr) {
           if (string.length() != 0) {
             System.out.println(string);
+          }
+        }
+        sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " TEXT );";
+        System.out.println(sqlStatement);
+        // SQL side;
+        Statement stmt = conn.createStatement();
+        int result = stmt.executeUpdate(sqlStatement);
+        System.out.println(result);
+        while(sc.hasNextLine()){
+          
+          //creates array of elements in a line
+          parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+          sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\');";
+          System.out.println(sqlStatement); 
+          result = stmt.executeUpdate(sqlStatement);
+          System.out.println(result);
+          for (String string : parseArr) {
+            if (string.length() != 0) {
+              System.out.println(string);
+            }
           }
         }
       }
@@ -250,7 +256,24 @@ public class jdbcpostgreSQL {
   }
 }
 
-
+public static boolean tableExist(Connection conn, String tableName) throws SQLException {
+  boolean tExists = false;
+  ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null);
+  
+  try {
+    while (rs.next()) { 
+      String tName = rs.getString("TABLE_NAME");
+      if (tName != null && tName.equals(tableName)) {
+        
+          tExists = true;
+          break;
+      }
+    }
+  } catch (Exception e) {
+     System.out.println(e);
+  }
+  return tExists;
+}
 
 
   public static void setupDatabase() {
