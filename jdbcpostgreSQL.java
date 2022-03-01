@@ -305,6 +305,32 @@ public class jdbcpostgreSQL {
     return null;
   }
 
+  public static ArrayList<ArrayList<String>> getDBDTO () {
+    try {
+      Statement statement = conn.createStatement();
+      ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
+      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      print("OPENED: " + rs.next());
+      while (rs.next()) {
+        ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("item"));
+        row.add(rs.getString("quantity"));
+        result.add(row);
+        print(row.toString());
+      }
+
+
+      rs.close();
+      return result;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+
+    return null;
+  }
+
   public static void setupDatabase() {
 
    try {
@@ -395,10 +421,14 @@ public class jdbcpostgreSQL {
 
   // fill data into manager GUI
   ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
+  ArrayList<ArrayList<String>> DTODB = getDBDTO();
+  for (ArrayList<String> row : inventoryDB) {
+    manager.addRowToInventoryTable(row.toArray());
+  }
 
-    for (ArrayList<String> row : inventoryDB) {
-      manager.addRowToInventoryTable(row.toArray());
-    }
+  for (ArrayList<String> row : DTODB) {
+    manager.addRowToDTOTable(row.toArray());
+  }
 
   // display manager GUI
   managerGUI.setVisible(true);
