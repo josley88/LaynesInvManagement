@@ -1,7 +1,8 @@
 import javax.swing.*;
 import java.sql.*;
-import java.io.*;  
-import java.util.Scanner;  
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 public class jdbcpostgreSQL {
 
@@ -204,11 +205,12 @@ public class jdbcpostgreSQL {
 
   public static void inputItemConversions(String fileName){
     Scanner sc;
+    String[] parseArr;
     
     try{
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine().replace("\'", "\'\'");
-      String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       
       // only create table if it doesn't already exist
       if (!tableExist(conn, "itemconversion")) {
@@ -216,7 +218,7 @@ public class jdbcpostgreSQL {
         tableName = "itemConversion";
         String sqlStatement = "CREATE TABLE " + tableName + " ( ";
         // populates in the following order Item, Description 
-        String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
+        String tableFormatting = sc.nextLine().replace("\'", "\'\'");
         parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         //sanitizes the parse Arr values for (" ")
         for (String string : parseArr) {
@@ -230,12 +232,12 @@ public class jdbcpostgreSQL {
         Statement stmt = conn.createStatement();
         int result = stmt.executeUpdate(sqlStatement);
         System.out.println(result);
-        while(sc.hasNextLine()){
-          
+        while (sc.hasNextLine()) {
+
           //creates array of elements in a line
           parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
           sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\');";
-          System.out.println(sqlStatement); 
+          System.out.println(sqlStatement);
           result = stmt.executeUpdate(sqlStatement);
           System.out.println(result);
           for (String string : parseArr) {
@@ -247,17 +249,15 @@ public class jdbcpostgreSQL {
       }
 
 
-
-
     } 
-    catch (Exception e){
+    catch (Exception e) {
       e.printStackTrace();
-      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.err.println(e.getClass().getName() + ": " + e.getMessage());
       System.exit(0);
+    }
   }
-}
 
-public static boolean tableExist(Connection conn, String tableName) throws SQLException {
+  public static boolean tableExist(Connection conn, String tableName) throws SQLException {
   boolean tExists = false;
   ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null);
   
@@ -276,6 +276,34 @@ public static boolean tableExist(Connection conn, String tableName) throws SQLEx
   return tExists;
 }
 
+  // gets menu items from the database
+  public static ArrayList<ArrayList<String>> getDBInventory () {
+    try {
+      Statement statement = conn.createStatement();
+      ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
+      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      while (rs.next()) {
+        ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("Description"));
+        row.add(rs.getString("Quantity"));
+        row.add(rs.getString("category"));
+        row.add(rs.getString("delivered"));
+        row.add(rs.getString("_price_"));
+        result.add(row);
+        print(row.toString());
+      }
+
+
+      rs.close();
+      return result;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+
+    return null;
+  }
 
   public static void setupDatabase() {
 
@@ -337,7 +365,7 @@ public static boolean tableExist(Connection conn, String tableName) throws SQLEx
   }
 
 
-public static void main(String args[]) {
+  public static void main(String args[]) {
 
   
 
@@ -349,8 +377,13 @@ public static void main(String args[]) {
   //runSQLCommands();
   
   //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+  String[] menuItems;
   inputItemConversions("./CSCE315-1/menuItemConversion.csv");
   System.out.println("---- Input Finished ----");
+
+//  for (String s : menuItems) {
+//    print(menuItems);
+//  }
 
 
   // setup manager GUI frame and attach Manager class
@@ -361,7 +394,11 @@ public static void main(String args[]) {
   managerGUI.setSize(1280, 720);
 
   // fill data into manager GUI
+  ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
 
+    for (ArrayList<String> row : inventoryDB) {
+      manager.addRowToInventoryTable(row.toArray());
+    }
 
   // display manager GUI
   managerGUI.setVisible(true);
@@ -373,7 +410,13 @@ public static void main(String args[]) {
   closeConnection();
 
   }
+
+
+  public static void print(Object out) {
+    System.out.println(out);
+  }
 }
+
 
 
 /*
