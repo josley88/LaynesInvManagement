@@ -1,0 +1,18 @@
+SELECT * FROM menu_key ORDER BY price;
+SELECT * FROM menu_key ORDER BY name;
+SELECT name FROM menu_key 
+	WHERE Item > 5;
+SELECT name , description , price FROM menu_key;
+SELECT name , description , Item FROM menu_key;
+SELECT * FROM sundayfourthweeksales ORDER BY quantity;
+SELECT * FROM mondayfourthweeksales ORDER BY profit;
+SELECT Item FROM sundayfourthweeksales 
+	WHERE quantity < 5;
+SELECT Item , quantity FROM tuesdayfourthweeksales;
+SELECT Item , quantity FROM saturdayfourthweeksales;
+SELECT * FROM inventory;
+SELECT * FROM inventory ORDER BY SKU;
+SELECT * FROM inventory ORDER BY price;
+SELECT * FROM inventory ORDER BY delivered;
+SELECT Description FROM inventory 
+	WHERE delivered = 1;

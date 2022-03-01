@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.sql.*;
 import java.io.*;  
 import java.util.Scanner;  
@@ -350,6 +351,16 @@ public static void main(String args[]) {
   //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
   inputItemConversions("./CSCE315-1/menuItemConversion.csv");
   System.out.println("---- Input Finished ----");
+
+  JFrame managerGUI = new JFrame();
+  Manager manager = new Manager();
+
+  managerGUI.setContentPane(manager.getRootPanel());
+  managerGUI.setSize(1280, 720);
+  managerGUI.setVisible(true);
+
+
+
 
   // __________Close Connection________
   closeConnection();
