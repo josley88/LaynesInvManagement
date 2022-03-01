@@ -416,6 +416,12 @@ public class jdbcpostgreSQL {
   JFrame managerGUI = new JFrame();
   Manager manager = new Manager();
 
+  JFrame serverGUI = new JFrame();
+  Server server = new Server();
+
+  serverGUI.setContentPane(server.getRootPanel());
+  serverGUI.setSize(1280, 720);
+
   managerGUI.setContentPane(manager.getRootPanel());
   managerGUI.setSize(1280, 720);
 
@@ -432,7 +438,7 @@ public class jdbcpostgreSQL {
 
   // display manager GUI
   managerGUI.setVisible(true);
-
+  serverGUI.setVisible(true);
 
 
 
