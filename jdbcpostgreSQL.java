@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -47,10 +49,10 @@ public class jdbcpostgreSQL {
       String sqlStatement = "CREATE TABLE " + tableName + " ( ";
       // populates in the following order Item, Quantity, Total
       sqlStatement += parseArr[1].strip() + " TEXT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT );";
-      System.out.println(sqlStatement);
+      print(sqlStatement);
       // SQL side;
       int result = stmt.executeUpdate(sqlStatement);
-      System.out.println(result);
+      print(result);
 
       while(sc.hasNextLine()){
         
@@ -59,12 +61,12 @@ public class jdbcpostgreSQL {
         if(parseArr.length>0){
           if(parseArr[1].equals("")!=true) {
             sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\');";
-           System.out.println(sqlStatement);
+           print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
-            System.out.println(result);
+            print(result);
             for (String string : parseArr) {
               if (string.length() != 0) {
-                System.out.println(string);
+                print(string);
               }
             }
           }
@@ -73,7 +75,7 @@ public class jdbcpostgreSQL {
               //skips a line
               parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
               day = parseArr[0].strip();
-              System.out.println("NEW DAY IS " + day);
+              print("NEW DAY IS " + day);
             }
           }
         }
@@ -110,10 +112,10 @@ public class jdbcpostgreSQL {
       String sqlStatement = "CREATE TABLE " + "INVENTORY" + " ( ";
       // populates in the following order Item, Quantity, Total
       sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " TEXT PRIMARY KEY, "+ parseArr[3].strip() + " INT, "+ parseArr[4].strip() + " INT, "+ parseArr[5].strip() + " TEXT, "+ parseArr[6].strip() + " TEXT, "+ parseArr[7].strip() + " INT, "+ parseArr[8].strip() + " TEXT, "+ parseArr[9].strip() + " TEXT, "+ parseArr[10].strip() + " TEXT, "+ parseArr[11].strip() + " INT, "+ parseArr[12].strip() + " TEXT"+" );";
-      System.out.println(sqlStatement);
+      print(sqlStatement);
       // SQL side;
       int result = stmt.executeUpdate(sqlStatement);
-      System.out.println(result);
+      print(result);
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
@@ -121,12 +123,12 @@ public class jdbcpostgreSQL {
         if(parseArr.length>0 && sc.hasNextLine()){
           if(parseArr[1].equals("")!=true) {
             sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + parseArr[1].strip() + "\',\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + parseArr[4].strip() + "\'" + "," + "\'" + parseArr[5].strip() + "\'"+ "," + "\'" + parseArr[6].strip() + "\'" + "," + "\'" + parseArr[7].strip() + "\'" + "," + "\'" + parseArr[8].strip() + "\'" + "," + "\'" + parseArr[9].strip() + "\'" + "," + "\'" + parseArr[10].strip() + "\'" + "," + "\'" + parseArr[11].strip() + "\'" + "," + "\'" + parseArr[12].strip() + "\'" + ");";
-            System.out.println(sqlStatement);
+            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
-            System.out.println(result);
+            print(result);
             for (String string : parseArr) {
               if (string.length() != 0) {
-                System.out.println(string);
+                print(string);
               }
             }
           }
@@ -167,26 +169,26 @@ public class jdbcpostgreSQL {
       //sanitizes the parse Arr values for (" ")
       for (String string : parseArr) {
         if (string.length() != 0) {
-          System.out.println(string);
+          print(string);
         }
       }
       sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " TEXT, "+ parseArr[3].strip() + " TEXT, " + parseArr[4].strip() + " TEXT"+" );";
-      System.out.println(sqlStatement);
+      print(sqlStatement);
       // SQL side;
       Statement stmt = conn.createStatement();
       int result = stmt.executeUpdate(sqlStatement);
-      System.out.println(result);
+      print(result);
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + ",\'" + parseArr[4].strip() + "\');";
-        System.out.println(sqlStatement); 
+        print(sqlStatement);
         result = stmt.executeUpdate(sqlStatement);
-        System.out.println(result);
+        print(result);
         for (String string : parseArr) {
           if (string.length() != 0) {
-            System.out.println(string);
+            print(string);
           }
         }
       }
@@ -214,7 +216,7 @@ public class jdbcpostgreSQL {
       
       // only create table if it doesn't already exist
       if (!tableExist(conn, "itemconversion")) {
-        System.out.println("Table doesn't exist");
+        print("Table doesn't exist");
         tableName = "itemConversion";
         String sqlStatement = "CREATE TABLE " + tableName + " ( ";
         // populates in the following order Item, Description 
@@ -223,26 +225,26 @@ public class jdbcpostgreSQL {
         //sanitizes the parse Arr values for (" ")
         for (String string : parseArr) {
           if (string.length() != 0) {
-            System.out.println(string);
+            print(string);
           }
         }
         sqlStatement += parseArr[1].strip() + " INT PRIMARY KEY, " + parseArr[2].strip() + " TEXT );";
-        System.out.println(sqlStatement);
+        print(sqlStatement);
         // SQL side;
         Statement stmt = conn.createStatement();
         int result = stmt.executeUpdate(sqlStatement);
-        System.out.println(result);
+        print(result);
         while (sc.hasNextLine()) {
 
           //creates array of elements in a line
           parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
           sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\');";
-          System.out.println(sqlStatement);
+          print(sqlStatement);
           result = stmt.executeUpdate(sqlStatement);
-          System.out.println(result);
+          print(result);
           for (String string : parseArr) {
             if (string.length() != 0) {
-              System.out.println(string);
+              print(string);
             }
           }
         }
@@ -271,7 +273,7 @@ public class jdbcpostgreSQL {
       }
     }
   } catch (Exception e) {
-     System.out.println(e);
+     print(e);
   }
   return tExists;
 }
@@ -341,7 +343,7 @@ public class jdbcpostgreSQL {
       System.exit(0);
     }
 
-    System.out.println("Opened database successfully");
+    print("Opened database successfully");
   }
 
 
@@ -367,12 +369,12 @@ public class jdbcpostgreSQL {
 
       // OUTPUT
       // You will need to output the results differently depeninding on which function you use
-      System.out.println("--------------------Query Results--------------------");
+      print("--------------------Query Results--------------------");
       while (result.next()) {
-        System.out.println(result.getString("student_name"));
+        print(result.getString("student_name"));
       }
       // OR
-      // System.out.println(result);
+      // print(result);
     } catch (Exception e){
         e.printStackTrace();
         System.err.println(e.getClass().getName()+": "+e.getMessage());
@@ -384,9 +386,9 @@ public class jdbcpostgreSQL {
   public static void closeConnection() {
     try {
       conn.close();
-      System.out.println("Connection Closed.");
+      print("Connection Closed.");
     } catch(Exception e) {
-      System.out.println("Connection NOT Closed.");
+      print("Connection NOT Closed.");
     }
   }
 
@@ -395,63 +397,108 @@ public class jdbcpostgreSQL {
 
   
 
-  // _________setup the database_______
-  setupDatabase();
+    // _________setup the database_______
+    setupDatabase();
 
-  System.out.println("---- Input Beginning ----");
-  // _________running commands_________
-  //runSQLCommands();
-  
-  //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
-  String[] menuItems;
-  inputItemConversions("./CSCE315-1/menuItemConversion.csv");
-  System.out.println("---- Input Finished ----");
+    print("---- Input Beginning ----");
 
-//  for (String s : menuItems) {
-//    print(menuItems);
-//  }
+    //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+    String[] menuItems;
+    inputItemConversions("./CSCE315-1/menuItemConversion.csv");
+    print("---- Input Finished ----");
+
+  //  for (String s : menuItems) {
+  //    print(menuItems);
+  //  }
 
 
-  // setup manager GUI frame and attach Manager class
-  JFrame managerGUI = new JFrame();
-  Manager manager = new Manager();
+    // setup manager GUI frame and attach Manager class
+    JFrame managerGUI = new JFrame();
+    Manager manager = new Manager();
 
-  JFrame serverGUI = new JFrame();
-  Server server = new Server();
+    JFrame serverGUI = new JFrame();
+    Server server = new Server();
 
-  serverGUI.setContentPane(server.getRootPanel());
-  serverGUI.setSize(1280, 720);
+    serverGUI.setContentPane(server.getRootPanel());
+    serverGUI.setSize(1280, 720);
 
-  managerGUI.setContentPane(manager.getRootPanel());
-  managerGUI.setSize(1280, 720);
+    managerGUI.setContentPane(manager.getRootPanel());
+    managerGUI.setSize(1280, 720);
 
-  // fill data into manager GUI
-  ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
-  ArrayList<ArrayList<String>> DTODB = getDBDTO();
-  for (ArrayList<String> row : inventoryDB) {
-    manager.addRowToInventoryTable(row.toArray());
-  }
-
-  for (ArrayList<String> row : DTODB) {
-    manager.addRowToDTOTable(row.toArray());
-  }
+    // fill data into manager GUI
+    ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
+    ArrayList<ArrayList<String>> DTODB = getDBDTO();
+    for (ArrayList<String> row : inventoryDB) {
+      manager.addRowToInventoryTable(row.toArray());
+    }
+    for (ArrayList<String> row : DTODB) {
+      manager.addRowToDTOTable(row.toArray());
+    }
 
   // display manager GUI
-  managerGUI.setVisible(true);
-  serverGUI.setVisible(true);
+    managerGUI.setVisible(true);
+    serverGUI.setVisible(true);
 
 
 
-  // __________Close Connection________
-  closeConnection();
+
+    // ____________ button and table listeners _____________
+    manager.deleteRowButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        String submitValue=manager.inventoryTextField.getText();
+        Statement statement=null;
+        try{
+          statement=conn.createStatement();
+          int result=statement.executeUpdate(submitValue);
+          refreshTablesFromDB(manager);
+        }catch(SQLException e){
+          e.printStackTrace();
+        }
+      }
+    });
+
+      manager.addRowButton.addActionListener(new ActionListener(){
+          public void actionPerformed(ActionEvent ae){
+              ArrayList<String> row = new ArrayList<String>(manager.getInventoryTable().getColumnCount());
+              manager.addRowToInventoryTable(row.toArray());
+          }
+      });
+
 
   }
 
+  public static void refreshTablesFromDB(Manager manager) {
+    //INSERT INTO inventory VALUES ('Ice Cream', 9, 'Cold', 3, '12.55');
 
+    ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
+    ArrayList<ArrayList<String>> DTODB = getDBDTO();
+    manager.clearTables();
+    for (ArrayList<String> row : inventoryDB) {
+      manager.addRowToInventoryTable(row.toArray());
+    }
+    for (ArrayList<String> row : DTODB) {
+      manager.addRowToDTOTable(row.toArray());
+    }
+  }
+
+  public static void uploadTablesToDB(Manager manager) {
+
+  }
+
+  // print helper function
   public static void print(Object out) {
     System.out.println(out);
   }
 }
+
+
+
+
+
+
+
+
+
 
 
 
