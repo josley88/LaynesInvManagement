@@ -352,11 +352,18 @@ public static void main(String args[]) {
   inputItemConversions("./CSCE315-1/menuItemConversion.csv");
   System.out.println("---- Input Finished ----");
 
+
+  // setup manager GUI frame and attach Manager class
   JFrame managerGUI = new JFrame();
   Manager manager = new Manager();
 
   managerGUI.setContentPane(manager.getRootPanel());
   managerGUI.setSize(1280, 720);
+
+  // fill data into manager GUI
+
+
+  // display manager GUI
   managerGUI.setVisible(true);
 
 
