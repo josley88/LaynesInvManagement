@@ -42,6 +42,7 @@ public class Server implements ActionListener{
     final private String serverTicket[] = {"Item", "Amount", "Price", "ID"};
     private String insertion[] = {"Blank", "0"};
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
+    private double totalPrice = 0;
     private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
     LocalDate dt = LocalDate.now();
     String currDay = dt.getDayOfWeek().toString().substring(0,1) + dt.getDayOfWeek().toString().substring(1,dt.getDayOfWeek().toString().length()).toLowerCase();
@@ -53,6 +54,8 @@ public class Server implements ActionListener{
         ticketScroll.setColumnHeaderView(ticket.getTableHeader());
         ticket.setModel(serverTableModel);
         buttonSetup();
+        textPane1.setEditable(false);
+        textPane1.setText("Total: $0.00");
         System.out.println(currDay);
         for(JButton b : buttonList){
             b.addActionListener(this);
@@ -115,10 +118,34 @@ public class Server implements ActionListener{
         }
         return -1; //return -1 if not in ticket
     }
+
+    public void updatePrice(String itemPrice)
+    {
+        if(plusMode) {
+            String priceNoSign = itemPrice.substring(1);
+            double doublePrice = Double.parseDouble(priceNoSign);
+            totalPrice += doublePrice;
+        }
+        else {
+            String priceNoSign = itemPrice.substring(1);
+            double doublePrice = Double.parseDouble(priceNoSign);
+            totalPrice -= doublePrice;
+        }
+
+        if(totalPrice < 0.00)
+            totalPrice = 0.0;
+        String tempPrice = String.valueOf(String.format("%.2f",totalPrice));
+        textPane1.setText("Total: $" + tempPrice);
+
+    }
     public void clearServerTable() {
         while(serverTableModel.getRowCount() != 0) {
             serverTableModel.removeRow(0);
         }
+    }
+    public void clearPrice() {
+        totalPrice = 0.0;
+        textPane1.setText("Total: $0.00");
     }
     public void updateDataBase() {
         while(serverTableModel.getRowCount() != 0) {
@@ -131,7 +158,6 @@ public class Server implements ActionListener{
         if(((JButton)e.getSource()).getName() == "-")
             plusMode = false;
         String currButton = ((JButton)e.getSource()).getName();
-        //System.out.print(currButton);
         String price = "";
         if(currButton != "+" || currButton != "-" || currButton != "finalize"){
             try {
@@ -167,6 +193,7 @@ public class Server implements ActionListener{
                 ex.printStackTrace();
             }
             clearServerTable();
+            clearPrice();
         }
 
 
@@ -183,10 +210,12 @@ public class Server implements ActionListener{
             else if(index != -1) { //updates current amount
                 String stringAmountBefore = serverTableModel.getValueAt(index,1).toString();
                 int intAmountBefore = Integer.parseInt(stringAmountBefore);
-                if(plusMode)
+                if(plusMode) {
                     intAmountBefore++;
-                else
+                }
+                else {
                     intAmountBefore--;
+                }
 
                 if(intAmountBefore <= 0) //if now has 0 items
                     serverTableModel.removeRow(index);
@@ -195,6 +224,8 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
+
         }else
 
         if(((JButton)e.getSource()).getName() == "502") {
@@ -220,6 +251,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "503") {
@@ -245,6 +277,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "504") {
@@ -270,6 +303,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "505") {
@@ -295,6 +329,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "506") {
@@ -320,6 +355,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "507") {
@@ -345,6 +381,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "508") {
@@ -370,6 +407,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "509") {
@@ -395,6 +433,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "510") {
@@ -420,6 +459,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "511") {
@@ -445,6 +485,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "512") {
@@ -470,6 +511,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "513") {
@@ -495,6 +537,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "514") {
@@ -520,6 +563,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "515") {
@@ -545,6 +589,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "516") {
@@ -570,6 +615,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "517") {
@@ -595,6 +641,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "518") {
@@ -620,6 +667,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }else
 
         if(((JButton)e.getSource()).getName() == "519") {
@@ -645,6 +693,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
+            updatePrice(price);
         }
 
 
