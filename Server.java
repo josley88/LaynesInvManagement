@@ -37,6 +37,7 @@ public class Server implements ActionListener{
     final private String serverTicket[] = {"Item", "Amount"};
     private String insertion[] = {"Blank", "0"};
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
+    private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
 
     public Server(){
         serverTableModel = new DefaultTableModel(serverTicket, 0);
@@ -97,9 +98,75 @@ public class Server implements ActionListener{
         finalizeOrderButton.setName("finalize");
     }
 
+    public int alreadyInTicket(String item)
+    {
+        for(int i = 0; i < serverTableModel.getRowCount(); i++)
+        {
+            if((String)serverTableModel.getDataVector().get(i).get(0) == item)
+                return i; //if in ticket return index where
+        }
+        return -1; //return -1 if not in ticket
+    }
+
     public void actionPerformed(ActionEvent e) {
         if(insertion[0] == "Blank"){
             System.out.println(((JButton)e.getSource()).getName());
+        }
+        if(((JButton)e.getSource()).getName() == "+")
+            plusMode = true;
+        if(((JButton)e.getSource()).getName() == "-")
+            plusMode = false;
+
+
+        if(((JButton)e.getSource()).getName() == "501") {
+            int index = alreadyInTicket("5 Finger Original");
+
+            if(index == -1 && plusMode) {
+                String fiveFingerOriginal[] = {"5 Finger Original", "1"};
+                serverTableModel.addRow(fiveFingerOriginal);
+            }
+
+            else if(index != -1) { //updates current amount
+                String stringAmountBefore = serverTableModel.getValueAt(index,1).toString();
+                int intAmountBefore = Integer.parseInt(stringAmountBefore);
+                if(plusMode)
+                    intAmountBefore++;
+                else
+                    intAmountBefore--;
+
+                if(intAmountBefore <= 0) //if now has 0 items
+                    serverTableModel.removeRow(index);
+                else {
+                    String newAmount = String.valueOf(intAmountBefore);
+                    serverTableModel.setValueAt(newAmount, index, 1);
+                }
+            }
+        }
+
+
+        if(((JButton)e.getSource()).getName() == "502") {
+            int index = alreadyInTicket("4 Finger Meal");
+
+            if(index == -1 && plusMode) {
+                String fourFingerMeal[] = {"4 Finger Meal", "1"};
+                serverTableModel.addRow(fourFingerMeal);
+            }
+
+            else if(index != -1) { //updates current amount
+                String stringAmountBefore = serverTableModel.getValueAt(index,1).toString();
+                int intAmountBefore = Integer.parseInt(stringAmountBefore);
+                if(plusMode)
+                    intAmountBefore++;
+                else
+                    intAmountBefore--;
+
+                if(intAmountBefore <= 0) //if now has 0 items
+                    serverTableModel.removeRow(index);
+                else {
+                    String newAmount = String.valueOf(intAmountBefore);
+                    serverTableModel.setValueAt(newAmount, index, 1);
+                }
+            }
         }
     }
 
