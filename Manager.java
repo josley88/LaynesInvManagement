@@ -18,6 +18,7 @@ public class Manager {
     public JTable editTable;
     public JButton editRowButton;
     private JPanel inventoryPanel;
+    private JScrollPane editScroll;
     final private String inventoryCol[] = {"SKU", "Description", "Quantity", "Category", "Delivered?", "Price"};
     final private String dailyTotalOrdersCol[] = {"Item", "Quantity"};
 
@@ -26,18 +27,27 @@ public class Manager {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
+        editTableModel = new DefaultTableModel(inventoryCol, 1){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 0) {return false;}
+                else {return true;}
+            }
+        };
 
 
         dailyTotalOrdersTableModel = new DefaultTableModel(dailyTotalOrdersCol, 0);
-        editTableModel = new DefaultTableModel(inventoryCol, 1);
+
 
         inventoryTableModel.setColumnIdentifiers(inventoryCol);
         dailyTotalOrdersTableModel.setColumnIdentifiers(dailyTotalOrdersCol);
+        editTableModel.setColumnIdentifiers(inventoryCol);
 
 
         // setup headers
         inventoryScroll.setColumnHeaderView(inventoryTable.getTableHeader());
         dailyTotalOrdersScroll.setColumnHeaderView(dailyTotalOrdersTable.getTableHeader());
+        editScroll.setColumnHeaderView(editTable.getTableHeader());
 
         // set models for tables
         inventoryTable.setModel(inventoryTableModel);
