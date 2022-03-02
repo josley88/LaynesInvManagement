@@ -182,12 +182,14 @@ public class Server implements ActionListener{
                     //grabs the current amount
                     int currQuant = 0;
                     ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+
+
                     while(rs.next()){
                         currQuant = Integer.parseInt(rs.getString("quantity"));
                         currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
                     }
                     int result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
-                    System.out.println(result);
+                    print("SERVER RESULTS: " + result);
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -706,4 +708,10 @@ public class Server implements ActionListener{
     public JPanel getRootPanel() {
         return main;
     }
+
+    // helper print function
+    public static void print(Object out) {
+        System.out.println(out);
+    }
 }
+

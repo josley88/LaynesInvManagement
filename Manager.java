@@ -4,70 +4,125 @@ import javax.swing.table.DefaultTableModel;
 public class Manager {
 
     private JTabbedPane tabbedPane;
-    public JTable inventoryTable;
-    public DefaultTableModel inventoryTableModel;
+
+    public JTable invTable;
+    public JTable invEditTable;
+    public JTable DTOTable;
+    public JTable DTOEditTable;
+    public JTable menuItemsTable;
+    public JTable menuItemsEditTable;
+
+    public DefaultTableModel invTableModel;
     public DefaultTableModel invEditTableModel;
 
-    public DefaultTableModel dailyTotalOrdersTableModel;
-    public DefaultTableModel DOTEditTableModel;
+    public DefaultTableModel DTOTableModel;
+    public DefaultTableModel DTOEditTableModel;
 
-    private JPanel rootPanel;
-    private JTable dailyTotalOrdersTable;
-    private JScrollPane inventoryScroll;
-    private JScrollPane DTOScroll;
-    public JTextField inventoryTextField;
-    public JButton invDeleteRowButton;
-    public JButton invAddRowButton;
-    public JTable invEditTable;
-    public JButton invEditRowButton;
+    public DefaultTableModel menuItemsTableModel;
+    public DefaultTableModel menuItemsEditTableModel;
+
+    public JPanel rootPanel;
     public JPanel inventoryPanel;
+    public JPanel DTOPanel;
+    public JPanel menuItemsPanel;
+
+    private JScrollPane invScroll;
     private JScrollPane invEditScroll;
+    private JScrollPane DTOScroll;
+    private JScrollPane DTOEditScroll;
+    public JScrollPane menuItemsScroll;
+    public JScrollPane menuItemsEditScroll;
+
+    public JButton invAddRowButton;
+    public JButton invEditRowButton;
+    public JButton invDeleteRowButton;
     public JButton invRefreshButton;
-    private JPanel DTOPanel;
-    private JButton DTOAddRowButton;
-    private JButton DTOEditRowButton;
-    private JButton DTODeleteRowButton;
-    private JButton DTORefreshButton;
-    private JTable table1;
-    final private String inventoryCol[] = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
-    final private String dailyTotalOrdersCol[] = {"Item", "Quantity"};
+
+    public JButton DTOAddRowButton;
+    public JButton DTOEditRowButton;
+    public JButton DTODeleteRowButton;
+    public JButton DTORefreshButton;
+
+    public JButton menuItemsAddRowButton;
+    public JButton menuItemsDeleteRowButton;
+    public JButton menuItemsEditRowButton;
+    public JButton menuItemsRefreshButton;
+
+    final private String[] invCol = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
+    final private String[] DTOCol = {"Item", "Quantity"};
+    final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
 
     public Manager() {
-        inventoryTableModel = new DefaultTableModel(inventoryCol, 0) {
+
+        // setup table models -----------------------------------------------
+        invTableModel = new DefaultTableModel(invCol, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
-        invEditTableModel = new DefaultTableModel(inventoryCol, 1);
+        invEditTableModel = new DefaultTableModel(invCol, 1);
 
-
-        dailyTotalOrdersTableModel = new DefaultTableModel(dailyTotalOrdersCol, 0) {
+        DTOTableModel = new DefaultTableModel(DTOCol, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
-        DOTEditTableModel = new DefaultTableModel(dailyTotalOrdersCol, 1);
+        DTOEditTableModel = new DefaultTableModel(DTOCol, 1);
 
-        // setup column identifiers
-        inventoryTableModel.setColumnIdentifiers(inventoryCol);
-        invEditTableModel.setColumnIdentifiers(inventoryCol);
+        menuItemsTableModel = new DefaultTableModel(menuItemsCol, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {return false;}
+        };
+        menuItemsEditTableModel = new DefaultTableModel(menuItemsCol, 1);
+        // ------------------------------------------------------------------
 
-        dailyTotalOrdersTableModel.setColumnIdentifiers(dailyTotalOrdersCol);
-        DOTEditTableModel.setColumnIdentifiers(dailyTotalOrdersCol);
+
+        // setup column identifiers ------------------------------------------
+        invTableModel.setColumnIdentifiers(invCol);
+        invEditTableModel.setColumnIdentifiers(invCol);
+
+        DTOTableModel.setColumnIdentifiers(DTOCol);
+        DTOEditTableModel.setColumnIdentifiers(DTOCol);
+
+        menuItemsTableModel.setColumnIdentifiers(menuItemsCol);
+        menuItemsEditTableModel.setColumnIdentifiers(menuItemsCol);
+        // --------------------------------------------------------------------
 
 
-        // setup headers
-        inventoryScroll.setColumnHeaderView(inventoryTable.getTableHeader());
-        DTOScroll.setColumnHeaderView(dailyTotalOrdersTable.getTableHeader());
+        // setup headers ------------------------------------------------------
+        invScroll.setColumnHeaderView(invTable.getTableHeader());
         invEditScroll.setColumnHeaderView(invEditTable.getTableHeader());
 
-        // set models for tables
-        inventoryTable.setModel(inventoryTableModel);
-        dailyTotalOrdersTable.setModel(dailyTotalOrdersTableModel);
+        DTOScroll.setColumnHeaderView(DTOTable.getTableHeader());
+        DTOEditScroll.setColumnHeaderView(DTOEditTable.getTableHeader());
+
+        menuItemsScroll.setColumnHeaderView(menuItemsTable.getTableHeader());
+        menuItemsEditScroll.setColumnHeaderView(menuItemsEditTable.getTableHeader());
+        // --------------------------------------------------------------------
+
+
+        // set models for tables ----------------------------------------------
+        invTable.setModel(invTableModel);
         invEditTable.setModel(invEditTableModel);
 
-        // set table not editable so users dont mess up table
-        inventoryTable.setRowSelectionAllowed(true);
-        inventoryTable.setFocusable(false);
-        inventoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        DTOTable.setModel(DTOTableModel);
+        DTOEditTable.setModel(DTOEditTableModel);
+
+        menuItemsTable.setModel(menuItemsTableModel);
+        menuItemsEditTable.setModel(menuItemsEditTableModel);
+        // --------------------------------------------------------------------
+
+        // set table not editable so users dont mess up table -----------------
+        invTable.setRowSelectionAllowed(true);
+        invTable.setFocusable(false);
+        invTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        DTOTable.setRowSelectionAllowed(true);
+        DTOTable.setFocusable(false);
+        DTOTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        menuItemsTable.setRowSelectionAllowed(true);
+        menuItemsTable.setFocusable(false);
+        menuItemsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        // ---------------------------------------------------------------------
 
 
     }
@@ -77,16 +132,20 @@ public class Manager {
     }
 
     public void addRowToInventoryTable(Object[] row) {
-        inventoryTableModel.addRow(row);
+        invTableModel.addRow(row);
     }
 
     public void addRowToDTOTable(Object[] row) {
-        dailyTotalOrdersTableModel.addRow(row);
+        DTOTableModel.addRow(row);
+    }
+
+    public void addRowTomMenuItemsTable(Object[] row) {
+        menuItemsTableModel.addRow(row);
     }
 
     public void clearTables() {
-        inventoryTableModel.setRowCount(0);
-        dailyTotalOrdersTableModel.setRowCount(0);
-
+        invTableModel.setRowCount(0);
+        DTOTableModel.setRowCount(0);
+        menuItemsTableModel.setRowCount(0);
     }
 }

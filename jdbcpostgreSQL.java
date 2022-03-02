@@ -95,8 +95,6 @@ public class jdbcpostgreSQL {
   }
   }
 
-
-
   // function to input the elements into the inventory
   public static void inputElementsIntoInventory(String fileName) throws SQLException {
     // skip if table already exists
@@ -154,14 +152,13 @@ public class jdbcpostgreSQL {
     }
   }
 
-
-
-
-
-  
   // function to input elements into the Menu Table.
+  public static void inputElementsIntoMenuTable(String fileName) throws SQLException {
+    // skip if table already exists
+    if (tableExist(conn, "menu_key")) {
+      return;
+    }
 
-  public static void inputElementsIntoMenuTable(String fileName){
     Scanner sc;
     
     try{
@@ -212,7 +209,7 @@ public class jdbcpostgreSQL {
   }
   }
 
-
+  // function to input item conversions
   public static void inputItemConversions(String fileName){
     Scanner sc;
     String[] parseArr;
@@ -267,6 +264,7 @@ public class jdbcpostgreSQL {
     }
   }
 
+  // helper function to determine if a table already exists in the database
   public static boolean tableExist(Connection conn, String tableName) throws SQLException {
   boolean tExists = false;
   ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null);
@@ -286,7 +284,7 @@ public class jdbcpostgreSQL {
   return tExists;
 }
 
-  // gets menu items from the database
+  // gets Inventory from the database
   public static ArrayList<ArrayList<String>> getDBInventory () {
     try {
         Statement statement = conn.createStatement();
@@ -322,6 +320,7 @@ public class jdbcpostgreSQL {
     return null;
   }
 
+  // gets Daily Total Orders from the database
   public static ArrayList<ArrayList<String>> getDBDTO () {
     try {
       Statement statement = conn.createStatement();
@@ -334,6 +333,35 @@ public class jdbcpostgreSQL {
         row.add(rs.getString("quantity"));
         result.add(row);
         //print(row.toString());
+      }
+
+
+      rs.close();
+      return result;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+
+    return null;
+  }
+
+  // gets Menu Items from the database
+  public static ArrayList<ArrayList<String>> getDBMenuItems () {
+    try {
+      Statement statement = conn.createStatement();
+      ResultSet rs = statement.executeQuery("SELECT * FROM menu_key;");
+      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      print("OPENED: " + rs.next());
+      while (rs.next()) {
+        ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("item"));
+        row.add(rs.getString("name"));
+        row.add(rs.getString("description"));
+        row.add(rs.getString("price"));
+        result.add(row);
+        // print(row.toString());
       }
 
 
@@ -362,42 +390,6 @@ public class jdbcpostgreSQL {
   }
 
 
-
-
-
-  public static void runSQLCommands() {
-    try{
-      // create a statement object
-      Statement stmt = conn.createStatement();
-
-      // Running a query
-      // String sqlStatement = "INSERT INTO teammembers VALUES ('John Smith', 904, 'Inception', '04/01/2022');";
-
-      String sqlStatement = "SELECT * FROM teammembers LIMIT 10;";
-
-      // send statement to DBMS
-      // This executeQuery command is useful for data retrieval
-      ResultSet result = stmt.executeQuery(sqlStatement);
-      // OR
-      // This executeUpdate command is useful for updating data
-      // int result = stmt.executeUpdate(sqlStatement);
-
-      // OUTPUT
-      // You will need to output the results differently depeninding on which function you use
-      print("--------------------Query Results--------------------");
-      while (result.next()) {
-        print(result.getString("student_name"));
-      }
-      // OR
-      // print(result);
-    } catch (Exception e){
-        e.printStackTrace();
-        System.err.println(e.getClass().getName()+": "+e.getMessage());
-        System.exit(0);
-    }
-  }
-
-
   public static void closeConnection() {
     try {
       conn.close();
@@ -410,25 +402,22 @@ public class jdbcpostgreSQL {
 
   public static void main(String args[]) throws SQLException {
 
-  
-
-    // _________setup the database_______
+    // create connection -----------------------------------------------------
     setupDatabase();
+    // -----------------------------------------------------------------------
 
-    print("---- Input Beginning ----");
 
+
+    // populate database if empty --------------------------------------------
     //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
-    String[] menuItems;
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
-    print("---- Input Finished ----");
-
-  //  for (String s : menuItems) {
-  //    print(menuItems);
-  //  }
+    inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
+    // -----------------------------------------------------------------------
 
 
-    // setup manager GUI frame and attach Manager class
+
+    // setup manager and server GUI frame and attach Manager class -----------
     JFrame managerGUI = new JFrame();
     Manager manager = new Manager();
 
@@ -437,28 +426,49 @@ public class jdbcpostgreSQL {
 
     serverGUI.setContentPane(server.getRootPanel());
     serverGUI.setSize(1280, 720);
-
     managerGUI.setContentPane(manager.getRootPanel());
     managerGUI.setSize(1280, 720);
+    // -----------------------------------------------------------------------
 
-    // fill data into manager GUI
+
+
+    // fill tables and set up event listeners --------------------------------
+    refreshTablesFromDB(manager);
+    setupManagerEventListeners(manager);
+    // -----------------------------------------------------------------------
+
+
+
+
+    // display server and manager GUI ----------------------------------------
+    managerGUI.setVisible(true);
+    serverGUI.setVisible(true);
+    // -----------------------------------------------------------------------
+
+  }
+
+  public static void refreshTablesFromDB(Manager manager) {
+    //INSERT INTO inventory VALUES ('Ice Cream', 9, 'Cold', 3, '12.55');
+
     ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
     ArrayList<ArrayList<String>> DTODB = getDBDTO();
+    ArrayList<ArrayList<String>> menuItemsDB = getDBMenuItems();
+    manager.clearTables();
+
     for (ArrayList<String> row : inventoryDB) {
       manager.addRowToInventoryTable(row.toArray());
     }
     for (ArrayList<String> row : DTODB) {
       manager.addRowToDTOTable(row.toArray());
     }
+    for (ArrayList<String> row : menuItemsDB) {
+      manager.addRowTomMenuItemsTable(row.toArray());
+    }
+  }
 
-  // display manager GUI
-    managerGUI.setVisible(true);
-    serverGUI.setVisible(true);
+  public static void setupManagerEventListeners(Manager manager) {
 
-
-
-
-    // ____________ button and table listeners _____________
+    // INVENTORY --------------------------------------------------------------------------------------------
     // DELETE currently selected row
     manager.invDeleteRowButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
@@ -468,7 +478,7 @@ public class jdbcpostgreSQL {
           print(currentSKU);
           String sqlStatement = "DELETE FROM inventory WHERE sku='" + currentSKU + "';";
           print(sqlStatement);
-          int rs = statement.executeUpdate("DELETE FROM inventory WHERE sku='" + currentSKU + "';");
+          int rs = statement.executeUpdate(sqlStatement);
           print("Delete result: " + rs);
           refreshTablesFromDB(manager);
         }catch(SQLException e){
@@ -478,13 +488,13 @@ public class jdbcpostgreSQL {
     });
 
     // UPDATE currently selected row view
-    manager.inventoryTable.addMouseListener(new MouseAdapter() {
+    manager.invTable.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
         JTable target = (JTable)e.getSource();
         int row = target.getSelectedRow();
 
         for (int i = 0; i < manager.invEditTableModel.getColumnCount(); i++) {
-          manager.invEditTable.setValueAt(manager.inventoryTable.getValueAt(row, i), 0, i);
+          manager.invEditTable.setValueAt(manager.invTable.getValueAt(row, i), 0, i);
         }
 
       }
@@ -492,28 +502,28 @@ public class jdbcpostgreSQL {
 
     // ADD new row from editTable button
     manager.invAddRowButton.addActionListener(new ActionListener(){
-        public void actionPerformed(ActionEvent ae){
-          ArrayList<String> row = new ArrayList<String>(manager.invEditTableModel.getColumnCount());
-          for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
-            row.add((String) manager.invEditTableModel.getValueAt(0, j));
-          }
-
-          String sqlStatement =
-                    "INSERT INTO inventory (description, sku, quantity, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
-                    "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", '" + row.get(4) + "', '" + row.get(5) + "', " + row.get(6) + ", '" + row.get(7) + "', '" + row.get(8) + "', '" + row.get(9) + "', " + row.get(10) + ", '" + row.get(11) + "');";
-
-          print(sqlStatement);
-
-          try {
-            Statement stmt = conn.createStatement();
-            int rs = stmt.executeUpdate(sqlStatement);
-            print("Result Add Row: " + rs);
-            refreshTablesFromDB(manager);
-          } catch (SQLException e) {
-            e.printStackTrace();
-          }
-
+      public void actionPerformed(ActionEvent ae){
+        ArrayList<String> row = new ArrayList<String>(manager.invEditTableModel.getColumnCount());
+        for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
+          row.add((String) manager.invEditTableModel.getValueAt(0, j));
         }
+
+        String sqlStatement =
+                "INSERT INTO inventory (description, sku, quantity, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
+                        "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", '" + row.get(4) + "', '" + row.get(5) + "', " + row.get(6) + ", '" + row.get(7) + "', '" + row.get(8) + "', '" + row.get(9) + "', " + row.get(10) + ", '" + row.get(11) + "');";
+
+        print(sqlStatement);
+
+        try {
+          Statement stmt = conn.createStatement();
+          int rs = stmt.executeUpdate(sqlStatement);
+          print("Result Add Row: " + rs);
+          refreshTablesFromDB(manager);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+
+      }
     });
 
     // EDIT currently selected row button
@@ -533,20 +543,20 @@ public class jdbcpostgreSQL {
           // build sql updateQuery
           String sqlStatement =
                   "UPDATE inventory " +
-                  "SET " +
-                    "description = '" + row.get(0) +
-                    "', sku = '" + row.get(1) +
-                    "', quantity = " + row.get(2) +
-                    ", delivered = " + row.get(3) +
-                    ", sold_by = '" + row.get(4) +
-                    "', delivered_by = '" + row.get(5) +
-                    "', quantity_multiplyer = " + row.get(6) +
-                    ", _price_ = '" + row.get(7) +
-                    "', _extended_ = '" + row.get(8) +
-                    "', category = '" + row.get(9) +
-                    "', invoice_line = " + row.get(10) +
-                    ", detailed_description = '" + row.get(11) + "' " +
-                  "WHERE sku = '" + row.get(1) + "';";
+                          "SET " +
+                          "description = '" + row.get(0) +
+                          "', sku = '" + row.get(1) +
+                          "', quantity = " + row.get(2) +
+                          ", delivered = " + row.get(3) +
+                          ", sold_by = '" + row.get(4) +
+                          "', delivered_by = '" + row.get(5) +
+                          "', quantity_multiplyer = " + row.get(6) +
+                          ", _price_ = '" + row.get(7) +
+                          "', _extended_ = '" + row.get(8) +
+                          "', category = '" + row.get(9) +
+                          "', invoice_line = " + row.get(10) +
+                          ", detailed_description = '" + row.get(11) + "' " +
+                          "WHERE sku = '" + row.get(1) + "';";
 
           print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
@@ -564,27 +574,193 @@ public class jdbcpostgreSQL {
         refreshTablesFromDB(manager);
       }
     });
+    // END INVENTORY --------------------------------------------------------------------------------------------
 
 
 
-  }
 
-  public static void refreshTablesFromDB(Manager manager) {
-    //INSERT INTO inventory VALUES ('Ice Cream', 9, 'Cold', 3, '12.55');
+    // DAILY TOTAL ORDERS ---------------------------------------------------------------------------------------
+    // DELETE currently selected row
+    manager.DTODeleteRowButton.addActionListener(ae -> {
+      try {
+        Statement statement = conn.createStatement();
+        String currentItem = (String) manager.DTOEditTableModel.getValueAt(0, 0);
+        print(currentItem);
+        String sqlStatement = "DELETE FROM weeksales WHERE item='" + currentItem + "';";
+        print(sqlStatement);
+        int rs = statement.executeUpdate(sqlStatement);
+        print("Delete result: " + rs);
+        refreshTablesFromDB(manager);
+      }catch(SQLException e){
+        e.printStackTrace();
+      }
+    });
 
-    ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
-    ArrayList<ArrayList<String>> DTODB = getDBDTO();
-    manager.clearTables();
-    for (ArrayList<String> row : inventoryDB) {
-      manager.addRowToInventoryTable(row.toArray());
-    }
-    for (ArrayList<String> row : DTODB) {
-      manager.addRowToDTOTable(row.toArray());
-    }
-  }
+    // UPDATE currently selected row view
+    manager.DTOTable.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        JTable target = (JTable)e.getSource();
+        int row = target.getSelectedRow();
 
-  public static void uploadTablesToDB(Manager manager) {
+        for (int i = 0; i < manager.DTOEditTableModel.getColumnCount(); i++) {
+          manager.DTOEditTable.setValueAt(manager.DTOTable.getValueAt(row, i), 0, i);
+        }
 
+      }
+    });
+
+    // ADD new row from editTable button
+    manager.DTOAddRowButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        ArrayList<String> row = new ArrayList<String>(manager.DTOEditTableModel.getColumnCount());
+        for (int j = 0; j < manager.DTOEditTableModel.getColumnCount(); j++) {
+          row.add((String) manager.DTOEditTableModel.getValueAt(0, j));
+        }
+
+        String sqlStatement =
+                "INSERT INTO weeksales (item, quantity, total) " +
+                "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0);";
+
+        print(sqlStatement);
+
+        try {
+          Statement stmt = conn.createStatement();
+          int rs = stmt.executeUpdate(sqlStatement);
+          print("Result Add Row: " + rs);
+          refreshTablesFromDB(manager);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+
+    // EDIT currently selected row button
+    manager.DTOEditRowButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        ArrayList<String> row = new ArrayList<String>(manager.DTOEditTableModel.getColumnCount());
+        for (int j = 0; j < manager.DTOEditTableModel.getColumnCount(); j++) {
+          row.add((String) manager.DTOEditTableModel.getValueAt(0, j));
+        }
+
+        // update database, then refresh page
+        Statement statement = null;
+        try {
+          statement = conn.createStatement();
+          String currentItem = row.get(0);
+
+          // build sql updateQuery
+          String sqlStatement =
+                  "UPDATE weeksales " +
+                  "SET " +
+                  "item = '" + row.get(0) +
+                  "', quantity = " + row.get(1) + ", total = 0 " +
+                  "WHERE item = '" + row.get(0) + "';";
+
+          print(sqlStatement);
+          int rs = statement.executeUpdate(sqlStatement);
+          print("Update result: " + rs);
+          refreshTablesFromDB(manager);
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+      }
+    });
+
+    // REFRESH button
+    manager.DTORefreshButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        refreshTablesFromDB(manager);
+      }
+    });
+    // -----------------------------------------------------------------------------------------------------------
+
+
+
+    // MENU ITEMS -------- ---------------------------------------------------------------------------------------
+    // DELETE currently selected row
+    manager.menuItemsDeleteRowButton.addActionListener(ae -> {
+      try {
+        Statement statement = conn.createStatement();
+        String currentItem = (String) manager.menuItemsEditTableModel.getValueAt(0, 0);
+        print(currentItem);
+        String sqlStatement = "DELETE FROM menu_key WHERE item = " + currentItem + ";";
+        print(sqlStatement);
+        int rs = statement.executeUpdate(sqlStatement);
+        print("Delete result: " + rs);
+        refreshTablesFromDB(manager);
+      }catch(SQLException e){
+        e.printStackTrace();
+      }
+    });
+
+    // UPDATE currently selected row view
+    manager.menuItemsTable.addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        JTable target = (JTable)e.getSource();
+        int row = target.getSelectedRow();
+
+        for (int i = 0; i < manager.menuItemsEditTableModel.getColumnCount(); i++) {
+          manager.menuItemsEditTable.setValueAt(manager.menuItemsTable.getValueAt(row, i), 0, i);
+        }
+
+      }
+    });
+
+    // ADD new row from editTable button
+    manager.menuItemsAddRowButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        ArrayList<String> row = new ArrayList<String>(manager.menuItemsEditTableModel.getColumnCount());
+        for (int j = 0; j < manager.menuItemsEditTableModel.getColumnCount(); j++) {
+          row.add((String) manager.menuItemsEditTableModel.getValueAt(0, j));
+        }
+
+        String sqlStatement =
+                "INSERT INTO menu_key (item, name, description, price) " +
+                        "VALUES (" + row.get(0) + ", '" + row.get(1) + "', '" + row.get(2) + "', '" + row.get(3) + "');";
+
+        print(sqlStatement);
+
+        try {
+          Statement stmt = conn.createStatement();
+          int rs = stmt.executeUpdate(sqlStatement);
+          print("Result Add Row: " + rs);
+          refreshTablesFromDB(manager);
+        } catch (SQLException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+
+    // EDIT currently selected row button
+    manager.menuItemsEditRowButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        ArrayList<String> row = new ArrayList<String>(manager.menuItemsEditTableModel.getColumnCount());
+        for (int j = 0; j < manager.menuItemsEditTableModel.getColumnCount(); j++) {
+          row.add((String) manager.menuItemsEditTableModel.getValueAt(0, j));
+        }
+
+        Statement statement;
+        try {
+          statement = conn.createStatement();
+          String currentItem = row.get(0);
+          String sqlStatement =
+                  "UPDATE menu_key " +
+                          "SET " +
+                          "item = " + row.get(0) +
+                          ", name = '" + row.get(1) +
+                          "', description = '" + row.get(2) +
+                          "', price = '" + row.get(2) + "' " +
+                          "WHERE item = " + row.get(0) + ";";
+
+          print(sqlStatement);
+          int rs = statement.executeUpdate(sqlStatement);
+          print("Update result: " + rs);
+          refreshTablesFromDB(manager);
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+      }
+    });
   }
 
   // print helper function
