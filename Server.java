@@ -168,6 +168,31 @@ public class Server implements ActionListener{
                 }
             }
         }
+
+        if(((JButton)e.getSource()).getName() == "503") {
+            int index = alreadyInTicket("3 Finger Meal");
+
+            if(index == -1 && plusMode) {
+                String threeFingerMeal[] = {"3 Finger Meal", "1"};
+                serverTableModel.addRow(threeFingerMeal);
+            }
+
+            else if(index != -1) { //updates current amount
+                String stringAmountBefore = serverTableModel.getValueAt(index,1).toString();
+                int intAmountBefore = Integer.parseInt(stringAmountBefore);
+                if(plusMode)
+                    intAmountBefore++;
+                else
+                    intAmountBefore--;
+
+                if(intAmountBefore <= 0) //if now has 0 items
+                    serverTableModel.removeRow(index);
+                else {
+                    String newAmount = String.valueOf(intAmountBefore);
+                    serverTableModel.setValueAt(newAmount, index, 1);
+                }
+            }
+        }
     }
 
 
