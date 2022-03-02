@@ -754,7 +754,7 @@ public class jdbcpostgreSQL {
                           "item = " + row.get(0) +
                           ", name = '" + row.get(1) +
                           "', description = '" + row.get(2) +
-                          "', price = '" + row.get(2) + "' " +
+                          "', price = '" + row.get(3) + "' " +
                           "WHERE item = " + row.get(0) + ";";
 
           print(sqlStatement);
