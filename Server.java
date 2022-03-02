@@ -2,6 +2,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 public class Server implements ActionListener{
@@ -34,7 +37,7 @@ public class Server implements ActionListener{
     private JButton finalizeOrderButton;
     private JScrollPane ticketScroll;
     private DefaultTableModel serverTableModel;
-    final private String serverTicket[] = {"Item", "Amount"};
+    final private String serverTicket[] = {"Item", "Amount", "Price"};
     private String insertion[] = {"Blank", "0"};
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
     private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
@@ -116,13 +119,30 @@ public class Server implements ActionListener{
             plusMode = true;
         if(((JButton)e.getSource()).getName() == "-")
             plusMode = false;
+        String currButton = ((JButton)e.getSource()).getName();
+        String price = "";
+        if(currButton != "+" || currButton != "-" || currButton != "finalize"){
+            try {
+                Statement statement = jdbcpostgreSQL.conn.createStatement();
+                ResultSet rs = statement.executeQuery("SELECT item, price FROM menu_key;");
+                while (rs.next()) {
+                    if(currButton.equals(rs.getString("item"))){
+                        price = rs.getString("price");
+                        System.out.println(price);
+                        break;
+                    }
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+
 
 
         if(((JButton)e.getSource()).getName() == "501") {
             int index = alreadyInTicket("5 Finger Original");
-
             if(index == -1 && plusMode) {
-                String fiveFingerOriginal[] = {"5 Finger Original", "1"};
+                String fiveFingerOriginal[] = {"5 Finger Original", "1", price};
                 serverTableModel.addRow(fiveFingerOriginal);
             }
 
@@ -147,7 +167,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("4 Finger Meal");
 
             if(index == -1 && plusMode) {
-                String fourFingerMeal[] = {"4 Finger Meal", "1"};
+                String fourFingerMeal[] = {"4 Finger Meal", "1", price};
                 serverTableModel.addRow(fourFingerMeal);
             }
 
@@ -172,7 +192,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("3 Finger Meal");
 
             if(index == -1 && plusMode) {
-                String threeFingerMeal[] = {"3 Finger Meal", "1"};
+                String threeFingerMeal[] = {"3 Finger Meal", "1", price};
                 serverTableModel.addRow(threeFingerMeal);
             }
 
@@ -197,7 +217,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Kids Meal");
 
             if(index == -1 && plusMode) {
-                String kidsMeal[] = {"Kids Meal", "1"};
+                String kidsMeal[] = {"Kids Meal", "1", price};
                 serverTableModel.addRow(kidsMeal);
             }
 
@@ -222,7 +242,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Gallon Of Tea");
 
             if(index == -1 && plusMode) {
-                String gallonTea[] = {"Gallon Of Tea", "1"};
+                String gallonTea[] = {"Gallon Of Tea", "1", price};
                 serverTableModel.addRow(gallonTea);
             }
 
@@ -247,7 +267,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Family Pack");
 
             if(index == -1 && plusMode) {
-                String familyPack[] = {"Family Pack", "1"};
+                String familyPack[] = {"Family Pack", "1", price};
                 serverTableModel.addRow(familyPack);
             }
 
@@ -272,7 +292,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Club Sandwich Meal");
 
             if(index == -1 && plusMode) {
-                String clubSandwichMeal[] = {"Club Sandwich Meal", "1"};
+                String clubSandwichMeal[] = {"Club Sandwich Meal", "1", price};
                 serverTableModel.addRow(clubSandwichMeal);
             }
 
@@ -297,7 +317,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Club Sandwich Only");
 
             if(index == -1 && plusMode) {
-                String clubSandwichOnly[] = {"Club Sandwich Only", "1"};
+                String clubSandwichOnly[] = {"Club Sandwich Only", "1", price};
                 serverTableModel.addRow(clubSandwichOnly);
             }
 
@@ -322,7 +342,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Sandwich Meal Combo");
 
             if(index == -1 && plusMode) {
-                String sandwichMealCombo[] = {"Sandwich Meal Combo", "1"};
+                String sandwichMealCombo[] = {"Sandwich Meal Combo", "1", price};
                 serverTableModel.addRow(sandwichMealCombo);
             }
 
@@ -347,7 +367,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Sandwich Only");
 
             if(index == -1 && plusMode) {
-                String sandwichOnly[] = {"Sandwich Only", "1"};
+                String sandwichOnly[] = {"Sandwich Only", "1", price};
                 serverTableModel.addRow(sandwichOnly);
             }
 
@@ -372,7 +392,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Grill Cheese Meal Combo");
 
             if(index == -1 && plusMode) {
-                String grillCheeseMealCombo[] = {"Grill Cheese Meal Combo", "1"};
+                String grillCheeseMealCombo[] = {"Grill Cheese Meal Combo", "1", price};
                 serverTableModel.addRow(grillCheeseMealCombo);
             }
 
@@ -397,7 +417,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Grill Cheese Sandwich Only");
 
             if(index == -1 && plusMode) {
-                String grillCheeseSandwichOnly[] = {"Grill Cheese Sandwich Only", "1"};
+                String grillCheeseSandwichOnly[] = {"Grill Cheese Sandwich Only", "1", price};
                 serverTableModel.addRow(grillCheeseSandwichOnly);
             }
 
@@ -422,7 +442,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Layne's Sauce");
 
             if(index == -1 && plusMode) {
-                String laynesSauce[] = {"Layne's Sauce", "1"};
+                String laynesSauce[] = {"Layne's Sauce", "1", price};
                 serverTableModel.addRow(laynesSauce);
             }
 
@@ -447,7 +467,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Chicken Finger");
 
             if(index == -1 && plusMode) {
-                String chickenFinger[] = {"Chicken Finger", "1"};
+                String chickenFinger[] = {"Chicken Finger", "1", price};
                 serverTableModel.addRow(chickenFinger);
             }
 
@@ -472,7 +492,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Texas Toast");
 
             if(index == -1 && plusMode) {
-                String texasToast[] = {"Texas Toast", "1"};
+                String texasToast[] = {"Texas Toast", "1", price};
                 serverTableModel.addRow(texasToast);
             }
 
@@ -497,7 +517,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Potato Salad");
 
             if(index == -1 && plusMode) {
-                String potatoSalad[] = {"Potato Salad", "1"};
+                String potatoSalad[] = {"Potato Salad", "1", price};
                 serverTableModel.addRow(potatoSalad);
             }
 
@@ -522,7 +542,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Crinkle Cut Fries");
 
             if(index == -1 && plusMode) {
-                String crinkleCutFries[] = {"Crinkle Cut Fries", "1"};
+                String crinkleCutFries[] = {"Crinkle Cut Fries", "1", price};
                 serverTableModel.addRow(crinkleCutFries);
             }
 
@@ -547,7 +567,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Fountain Drink");
 
             if(index == -1 && plusMode) {
-                String fountainDrink[] = {"Fountain Drink", "1"};
+                String fountainDrink[] = {"Fountain Drink", "1", price};
                 serverTableModel.addRow(fountainDrink);
             }
 
@@ -572,7 +592,7 @@ public class Server implements ActionListener{
             int index = alreadyInTicket("Bottle Drink");
 
             if(index == -1 && plusMode) {
-                String bottleDrink[] = {"Bottle Drink", "1"};
+                String bottleDrink[] = {"Bottle Drink", "1", price};
                 serverTableModel.addRow(bottleDrink);
             }
 

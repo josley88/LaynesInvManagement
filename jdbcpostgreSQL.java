@@ -281,8 +281,8 @@ public class jdbcpostgreSQL {
   // gets menu items from the database
   public static ArrayList<ArrayList<String>> getDBInventory () {
     try {
-      Statement statement = conn.createStatement();
-      ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
       ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<String>();
