@@ -450,11 +450,14 @@ public class jdbcpostgreSQL {
     // DELETE currently selected row
     manager.deleteRowButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
-        String submitValue=manager.inventoryTextField.getText();
-        Statement statement=null;
-        try{
-          statement=conn.createStatement();
-          int result=statement.executeUpdate(submitValue);
+        try {
+          Statement statement = conn.createStatement();
+          String currentSKU = (String) manager.editTableModel.getValueAt(0, 0);
+          print(currentSKU);
+          String sqlStatement = "DELETE FROM inventory WHERE sku='" + currentSKU + "';";
+          print(sqlStatement);
+          int rs = statement.executeUpdate("DELETE FROM inventory WHERE sku='" + currentSKU + "';");
+          print("Delete result: " + rs);
           refreshTablesFromDB(manager);
         }catch(SQLException e){
           e.printStackTrace();
@@ -496,7 +499,10 @@ public class jdbcpostgreSQL {
         Statement statement = null;
         try {
           statement = conn.createStatement();
-          //ResultSet rs = statement.executeQuery("DELETE FROM inventory WHERE ;");
+          String currentSKU = row.get(0);
+          print(currentSKU);
+          ResultSet rs = statement.executeQuery("DELETE FROM inventory WHERE sku='" + currentSKU + "';");
+          refreshTablesFromDB(manager);
         } catch (SQLException ex) {
           ex.printStackTrace();
         }
