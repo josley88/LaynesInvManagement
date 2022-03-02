@@ -16,13 +16,18 @@ public class Manager {
     public JButton deleteRowButton;
     public JButton addRowButton;
     public JTable editTable;
-    private JButton changeRowButton;
+    public JButton editRowButton;
     private JPanel inventoryPanel;
-    final private String inventoryCol[] = {"Description", "Quantity", "Category", "Delivered?", "Price"};
+    final private String inventoryCol[] = {"SKU", "Description", "Quantity", "Category", "Delivered?", "Price"};
     final private String dailyTotalOrdersCol[] = {"Item", "Quantity"};
 
     public Manager() {
-        inventoryTableModel = new DefaultTableModel(inventoryCol, 0);
+        inventoryTableModel = new DefaultTableModel(inventoryCol, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {return false;}
+        };
+
+
         dailyTotalOrdersTableModel = new DefaultTableModel(dailyTotalOrdersCol, 0);
         editTableModel = new DefaultTableModel(inventoryCol, 1);
 
@@ -34,10 +39,15 @@ public class Manager {
         inventoryScroll.setColumnHeaderView(inventoryTable.getTableHeader());
         dailyTotalOrdersScroll.setColumnHeaderView(dailyTotalOrdersTable.getTableHeader());
 
-
+        // set models for tables
         inventoryTable.setModel(inventoryTableModel);
         dailyTotalOrdersTable.setModel(dailyTotalOrdersTableModel);
         editTable.setModel(editTableModel);
+
+        // set table not editable so users dont mess up table
+        inventoryTable.setRowSelectionAllowed(true);
+        inventoryTable.setFocusable(false);
+        inventoryTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 
     }

@@ -1,6 +1,9 @@
 import javax.swing.*;
+import javax.swing.plaf.nimbus.State;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -286,13 +289,14 @@ public class jdbcpostgreSQL {
       ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("sku"));
         row.add(rs.getString("Description"));
         row.add(rs.getString("Quantity"));
         row.add(rs.getString("category"));
         row.add(rs.getString("delivered"));
         row.add(rs.getString("_price_"));
         result.add(row);
-        print(row.toString());
+        // print(row.toString());
       }
 
 
@@ -318,7 +322,7 @@ public class jdbcpostgreSQL {
         row.add(rs.getString("item"));
         row.add(rs.getString("quantity"));
         result.add(row);
-        print(row.toString());
+        //print(row.toString());
       }
 
 
@@ -443,6 +447,7 @@ public class jdbcpostgreSQL {
 
 
     // ____________ button and table listeners _____________
+    // DELETE currently selected row
     manager.deleteRowButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
         String submitValue=manager.inventoryTextField.getText();
@@ -457,12 +462,47 @@ public class jdbcpostgreSQL {
       }
     });
 
-      manager.addRowButton.addActionListener(new ActionListener(){
-          public void actionPerformed(ActionEvent ae){
-              ArrayList<String> row = new ArrayList<String>(manager.getInventoryTable().getColumnCount());
-              manager.addRowToInventoryTable(row.toArray());
-          }
-      });
+    // UPDATE currently selected row view
+    manager.getInventoryTable().addMouseListener(new MouseAdapter() {
+      public void mousePressed(MouseEvent e) {
+        JTable target = (JTable)e.getSource();
+        int row = target.getSelectedRow();
+        int column = target.getSelectedColumn();
+        print("Clicked Row:" + row);
+        for (int i = 0; i < manager.editTableModel.getColumnCount(); i++) {
+          manager.editTableModel.setValueAt(manager.inventoryTableModel.getValueAt(row, i), 0, i);
+        }
+
+      }
+    });
+
+    // ADD new row button
+    manager.addRowButton.addActionListener(new ActionListener(){
+        public void actionPerformed(ActionEvent ae){
+            ArrayList<String> row = new ArrayList<String>(manager.getInventoryTable().getColumnCount());
+            manager.addRowToInventoryTable(row.toArray());
+        }
+    });
+
+    // EDIT currently selected row button
+    manager.editRowButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        ArrayList<String> row = new ArrayList<String>(5);
+        for (int j = 0; j < 5; j++) {
+          row.add((String) manager.editTableModel.getValueAt(0, j));
+        }
+
+        // update database, then refresh page
+        Statement statement = null;
+        try {
+          statement = conn.createStatement();
+          //ResultSet rs = statement.executeQuery("DELETE FROM inventory WHERE ;");
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+      }
+    });
+
 
 
   }
