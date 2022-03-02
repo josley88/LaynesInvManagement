@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.plaf.nimbus.State;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -19,6 +18,7 @@ public class jdbcpostgreSQL {
   //Mac/Linux: java -cp ".:postgresql-42.2.8.jar" jdbcpostgreSQL.java
 
   // Access Database: psql -h csce-315-db.engr.tamu.edu -U csce315904_21user csce315904_21db
+  // run this program from CMD: java -classpath ".\out\production\CSCE315Project2Team21;postgresql-42.2.8.jar" jdbcpostgreSQL
 
   //MAKE SURE YOU ARE ON VPN or TAMU WIFI TO ACCESS DATABASE
 
@@ -98,7 +98,12 @@ public class jdbcpostgreSQL {
 
 
   // function to input the elements into the inventory
-  public static void inputElementsIntoInventory(String fileName){
+  public static void inputElementsIntoInventory(String fileName) throws SQLException {
+    // skip if table already exists
+    if (tableExist(conn, "inventory")) {
+      return;
+    }
+
     Scanner sc;
     
     try{
@@ -146,7 +151,7 @@ public class jdbcpostgreSQL {
       e.printStackTrace();
       System.err.println(e.getClass().getName()+": "+e.getMessage());
       System.exit(0);
-  }
+    }
   }
 
 
@@ -289,12 +294,18 @@ public class jdbcpostgreSQL {
       ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("description"));
         row.add(rs.getString("sku"));
-        row.add(rs.getString("Description"));
         row.add(rs.getString("Quantity"));
-        row.add(rs.getString("category"));
         row.add(rs.getString("delivered"));
+        row.add(rs.getString("sold_by"));
+        row.add(rs.getString("delivered_by"));
+        row.add(rs.getString("quantity_multiplyer"));
         row.add(rs.getString("_price_"));
+        row.add(rs.getString("_extended_"));
+        row.add(rs.getString("category"));
+        row.add(rs.getString("invoice_line"));
+        row.add(rs.getString("detailed_description"));
         result.add(row);
         // print(row.toString());
       }
@@ -397,7 +408,7 @@ public class jdbcpostgreSQL {
   }
 
 
-  public static void main(String args[]) {
+  public static void main(String args[]) throws SQLException {
 
   
 
@@ -407,6 +418,7 @@ public class jdbcpostgreSQL {
     print("---- Input Beginning ----");
 
     //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+    inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     String[] menuItems;
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     print("---- Input Finished ----");
@@ -448,11 +460,11 @@ public class jdbcpostgreSQL {
 
     // ____________ button and table listeners _____________
     // DELETE currently selected row
-    manager.deleteRowButton.addActionListener(new ActionListener(){
+    manager.invDeleteRowButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
         try {
           Statement statement = conn.createStatement();
-          String currentSKU = (String) manager.editTableModel.getValueAt(0, 0);
+          String currentSKU = (String) manager.invEditTableModel.getValueAt(0, 1);
           print(currentSKU);
           String sqlStatement = "DELETE FROM inventory WHERE sku='" + currentSKU + "';";
           print(sqlStatement);
@@ -466,33 +478,50 @@ public class jdbcpostgreSQL {
     });
 
     // UPDATE currently selected row view
-    manager.getInventoryTable().addMouseListener(new MouseAdapter() {
+    manager.inventoryTable.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
         JTable target = (JTable)e.getSource();
         int row = target.getSelectedRow();
-        int column = target.getSelectedColumn();
-        print("Clicked Row:" + row);
-        for (int i = 0; i < manager.editTableModel.getColumnCount(); i++) {
-          manager.editTableModel.setValueAt(manager.inventoryTableModel.getValueAt(row, i), 0, i);
+
+        for (int i = 0; i < manager.invEditTableModel.getColumnCount(); i++) {
+          manager.invEditTable.setValueAt(manager.inventoryTable.getValueAt(row, i), 0, i);
         }
 
       }
     });
 
-    // ADD new row button
-    manager.addRowButton.addActionListener(new ActionListener(){
+    // ADD new row from editTable button
+    manager.invAddRowButton.addActionListener(new ActionListener(){
         public void actionPerformed(ActionEvent ae){
-            ArrayList<String> row = new ArrayList<String>(manager.getInventoryTable().getColumnCount());
-            manager.addRowToInventoryTable(row.toArray());
+          ArrayList<String> row = new ArrayList<String>(manager.invEditTableModel.getColumnCount());
+          for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
+            row.add((String) manager.invEditTableModel.getValueAt(0, j));
+          }
+
+          String sqlStatement =
+                    "INSERT INTO inventory (description, sku, quantity, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
+                    "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", '" + row.get(4) + "', '" + row.get(5) + "', " + row.get(6) + ", '" + row.get(7) + "', '" + row.get(8) + "', '" + row.get(9) + "', " + row.get(10) + ", '" + row.get(11) + "');";
+
+          print(sqlStatement);
+
+          try {
+            Statement stmt = conn.createStatement();
+            int rs = stmt.executeUpdate(sqlStatement);
+            print("Result Add Row: " + rs);
+            refreshTablesFromDB(manager);
+          } catch (SQLException e) {
+            e.printStackTrace();
+          }
+
         }
     });
 
     // EDIT currently selected row button
-    manager.editRowButton.addActionListener(new ActionListener(){
+    manager.invEditRowButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
-        ArrayList<String> row = new ArrayList<String>(5);
-        for (int j = 0; j < 5; j++) {
-          row.add((String) manager.editTableModel.getValueAt(0, j));
+        ArrayList<String> row = new ArrayList<String>(manager.invEditTableModel.getColumnCount());
+        for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
+          row.add((String) manager.invEditTableModel.getValueAt(0, j));
         }
 
         // update database, then refresh page
@@ -500,12 +529,39 @@ public class jdbcpostgreSQL {
         try {
           statement = conn.createStatement();
           String currentSKU = row.get(0);
-          print(currentSKU);
-          ResultSet rs = statement.executeQuery("DELETE FROM inventory WHERE sku='" + currentSKU + "';");
+
+          // build sql updateQuery
+          String sqlStatement =
+                  "UPDATE inventory " +
+                  "SET " +
+                    "description = '" + row.get(0) +
+                    "', sku = '" + row.get(1) +
+                    "', quantity = " + row.get(2) +
+                    ", delivered = " + row.get(3) +
+                    ", sold_by = '" + row.get(4) +
+                    "', delivered_by = '" + row.get(5) +
+                    "', quantity_multiplyer = " + row.get(6) +
+                    ", _price_ = '" + row.get(7) +
+                    "', _extended_ = '" + row.get(8) +
+                    "', category = '" + row.get(9) +
+                    "', invoice_line = " + row.get(10) +
+                    ", detailed_description = '" + row.get(11) + "' " +
+                  "WHERE sku = '" + row.get(1) + "';";
+
+          print(sqlStatement);
+          int rs = statement.executeUpdate(sqlStatement);
+          print("Update result: " + rs);
           refreshTablesFromDB(manager);
         } catch (SQLException ex) {
           ex.printStackTrace();
         }
+      }
+    });
+
+    // REFRESH button
+    manager.invRefreshButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        refreshTablesFromDB(manager);
       }
     });
 
