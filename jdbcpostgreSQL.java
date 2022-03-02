@@ -20,7 +20,7 @@ public class jdbcpostgreSQL {
   // Access Database: psql -h csce-315-db.engr.tamu.edu -U csce315904_21user csce315904_21db
   // run this program from CMD: java -classpath ".\out\production\CSCE315Project2Team21;postgresql-42.2.8.jar" jdbcpostgreSQL
 
-  //MAKE SURE YOU ARE ON VPN or TAMU WIFI TO ACCESS DATABASE
+  //MAKE SURE YOU ARE ON VPN or TAMU WI-FI TO ACCESS DATABASE
 
   // _________________Global Variables_________________
   public static Connection conn = null;
@@ -33,8 +33,13 @@ public class jdbcpostgreSQL {
   //___________________________________________________
 
 
-  // function to input weekly purchase into daily order tables. It will take in the file name and it will update the database directly
-  public static void inputElementsIntoWeekOrders(String fileName){
+  // function to input weekly purchase into daily order tables. It will take in the file name, and it will update the database directly
+  public static void inputElementsIntoWeekOrders(String fileName) throws SQLException {
+    // skip if table already exists
+    if (tableExist(conn, "weeksales")) {
+      return;
+    }
+
     Scanner sc;
     
     try{
@@ -326,7 +331,7 @@ public class jdbcpostgreSQL {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
       ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
-      print("OPENED: " + rs.next());
+      //print("OPENED: " + rs.next());
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<String>();
         row.add(rs.getString("item"));
@@ -353,7 +358,7 @@ public class jdbcpostgreSQL {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery("SELECT * FROM menu_key;");
       ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
-      print("OPENED: " + rs.next());
+      //print("OPENED: " + rs.next());
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<String>();
         row.add(rs.getString("item"));
@@ -361,7 +366,7 @@ public class jdbcpostgreSQL {
         row.add(rs.getString("description"));
         row.add(rs.getString("price"));
         result.add(row);
-        // print(row.toString());
+        print(row.toString());
       }
 
 
