@@ -21,6 +21,8 @@
               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2100869"/>
+              <foreground color="-16777216"/>
               <text value="5 Finger Original"/>
             </properties>
           </component>
@@ -29,6 +31,8 @@
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2100869"/>
+              <foreground color="-16777216"/>
               <text value="4 Finger Meal"/>
             </properties>
           </component>
@@ -37,6 +41,8 @@
               <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2100869"/>
+              <foreground color="-16777216"/>
               <text value="Three Finger Meal"/>
             </properties>
           </component>
@@ -45,6 +51,8 @@
               <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2100869"/>
+              <foreground color="-16777216"/>
               <text value="Club Sandwich Meal"/>
             </properties>
           </component>
@@ -53,6 +61,8 @@
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2100869"/>
+              <foreground color="-16777216"/>
               <text value="Kids Meal"/>
             </properties>
           </component>
@@ -61,6 +71,8 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2100869"/>
+              <foreground color="-16777216"/>
               <text value="Sandwich Meal Combo"/>
             </properties>
           </component>
@@ -69,6 +81,8 @@
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-9643"/>
+              <foreground color="-16777216"/>
               <text value="Chicken Finger"/>
             </properties>
           </component>
@@ -77,6 +91,8 @@
               <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-8165167"/>
+              <foreground color="-16777216"/>
               <text value="Fountain Drink"/>
             </properties>
           </component>
@@ -85,6 +101,8 @@
               <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2126469"/>
+              <foreground color="-16777216"/>
               <text value="-"/>
             </properties>
           </component>
@@ -93,6 +111,8 @@
               <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-3604634"/>
+              <foreground color="-16777216"/>
               <text value="+"/>
             </properties>
           </component>
@@ -101,6 +121,8 @@
               <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-8165167"/>
+              <foreground color="-16777216"/>
               <text value="Bottle Drink"/>
             </properties>
           </component>
@@ -109,6 +131,8 @@
               <grid row="4" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-8165167"/>
+              <foreground color="-16777216"/>
               <text value="Gallon of Tea"/>
             </properties>
           </component>
@@ -117,6 +141,8 @@
               <grid row="3" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-9591082"/>
+              <foreground color="-16777216"/>
               <text value="Layne's Sauce"/>
             </properties>
           </component>
@@ -125,6 +151,8 @@
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-9643"/>
+              <foreground color="-16777216"/>
               <text value="Texas Toast"/>
             </properties>
           </component>
@@ -133,6 +161,8 @@
               <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-9643"/>
+              <foreground color="-16777216"/>
               <text value="Potato Salad"/>
             </properties>
           </component>
@@ -141,6 +171,8 @@
               <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-9643"/>
+              <foreground color="-16777216"/>
               <text value="Crinkle Cut Fries"/>
             </properties>
           </component>
@@ -149,6 +181,8 @@
               <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-9384735"/>
+              <foreground color="-16777216"/>
               <text value="Family Pack"/>
             </properties>
           </component>
@@ -157,6 +191,8 @@
               <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-894"/>
+              <foreground color="-16777216"/>
               <text value="Grill Cheese Sandwich Only"/>
             </properties>
           </component>
@@ -165,6 +201,8 @@
               <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-894"/>
+              <foreground color="-16777216"/>
               <text value="Sandwich Only"/>
             </properties>
           </component>
@@ -173,6 +211,8 @@
               <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-894"/>
+              <foreground color="-16777216"/>
               <text value="Club Sandwich Only"/>
             </properties>
           </component>
@@ -181,6 +221,8 @@
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <background color="-2100869"/>
+              <foreground color="-16777216"/>
               <text value="Grill Cheese Meal Combo"/>
             </properties>
           </component>
