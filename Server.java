@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.time.*;
+import java.util.Locale;
 
 public class Server implements ActionListener{
 
@@ -37,10 +39,13 @@ public class Server implements ActionListener{
     private JButton finalizeOrderButton;
     private JScrollPane ticketScroll;
     private DefaultTableModel serverTableModel;
-    final private String serverTicket[] = {"Item", "Amount", "Price"};
+    final private String serverTicket[] = {"Item", "Amount", "Price", "ID"};
     private String insertion[] = {"Blank", "0"};
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
     private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
+    LocalDate dt = LocalDate.now();
+    String currDay = dt.getDayOfWeek().toString().substring(0,1) + dt.getDayOfWeek().toString().substring(1,dt.getDayOfWeek().toString().length()).toLowerCase();
+
 
     public Server(){
         serverTableModel = new DefaultTableModel(serverTicket, 0);
@@ -48,6 +53,7 @@ public class Server implements ActionListener{
         ticketScroll.setColumnHeaderView(ticket.getTableHeader());
         ticket.setModel(serverTableModel);
         buttonSetup();
+        System.out.println(currDay);
         for(JButton b : buttonList){
             b.addActionListener(this);
         }
@@ -103,23 +109,29 @@ public class Server implements ActionListener{
 
     public int alreadyInTicket(String item)
     {
-        for(int i = 0; i < serverTableModel.getRowCount(); i++)
-        {
+        for(int i = 0; i < serverTableModel.getRowCount(); i++){
             if((String)serverTableModel.getDataVector().get(i).get(0) == item)
                 return i; //if in ticket return index where
         }
         return -1; //return -1 if not in ticket
     }
-
-    public void actionPerformed(ActionEvent e) {
-        if(insertion[0] == "Blank"){
-            System.out.println(((JButton)e.getSource()).getName());
+    public void clearServerTable() {
+        while(serverTableModel.getRowCount() != 0) {
+            serverTableModel.removeRow(0);
         }
+    }
+    public void updateDataBase() {
+        while(serverTableModel.getRowCount() != 0) {
+            serverTableModel.removeRow(0);
+        }
+    }
+    public void actionPerformed(ActionEvent e) {
         if(((JButton)e.getSource()).getName() == "+")
             plusMode = true;
         if(((JButton)e.getSource()).getName() == "-")
             plusMode = false;
         String currButton = ((JButton)e.getSource()).getName();
+        //System.out.print(currButton);
         String price = "";
         if(currButton != "+" || currButton != "-" || currButton != "finalize"){
             try {
@@ -136,14 +148,36 @@ public class Server implements ActionListener{
                 ex.printStackTrace();
             }
         }
+        if(currButton.equals("finalize")) {
+            //System.out.println("enter finalize");
+            try {
+                Statement stmt = jdbcpostgreSQL.conn.createStatement();
+                for(int i = 0; i < serverTableModel.getRowCount(); i++){
+                    //grabs the current amount
+                    int currQuant = 0;
+                    ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+                    while(rs.next()){
+                        currQuant = Integer.parseInt(rs.getString("quantity"));
+                        currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
+                    }
+                    int result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+                    System.out.println(result);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            clearServerTable();
+        }
 
 
 
         if(((JButton)e.getSource()).getName() == "501") {
             int index = alreadyInTicket("5 Finger Original");
             if(index == -1 && plusMode) {
-                String fiveFingerOriginal[] = {"5 Finger Original", "1", price};
+                String fiveFingerOriginal[] = {"5 Finger Original", "1", price, ((JButton)e.getSource()).getName()};
+                System.out.println(fiveFingerOriginal.length);
                 serverTableModel.addRow(fiveFingerOriginal);
+                System.out.println(serverTableModel.getDataVector().get(0).size());
             }
 
             else if(index != -1) { //updates current amount
@@ -161,7 +195,7 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "502") {
             int index = alreadyInTicket("4 Finger Meal");
@@ -186,13 +220,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "503") {
             int index = alreadyInTicket("3 Finger Meal");
 
             if(index == -1 && plusMode) {
-                String threeFingerMeal[] = {"3 Finger Meal", "1", price};
+                String threeFingerMeal[] = {"3 Finger Meal", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(threeFingerMeal);
             }
 
@@ -211,13 +245,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "504") {
             int index = alreadyInTicket("Kids Meal");
 
             if(index == -1 && plusMode) {
-                String kidsMeal[] = {"Kids Meal", "1", price};
+                String kidsMeal[] = {"Kids Meal", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(kidsMeal);
             }
 
@@ -236,13 +270,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "505") {
             int index = alreadyInTicket("Gallon Of Tea");
 
             if(index == -1 && plusMode) {
-                String gallonTea[] = {"Gallon Of Tea", "1", price};
+                String gallonTea[] = {"Gallon Of Tea", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(gallonTea);
             }
 
@@ -261,13 +295,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "506") {
             int index = alreadyInTicket("Family Pack");
 
             if(index == -1 && plusMode) {
-                String familyPack[] = {"Family Pack", "1", price};
+                String familyPack[] = {"Family Pack", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(familyPack);
             }
 
@@ -286,13 +320,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "507") {
             int index = alreadyInTicket("Club Sandwich Meal");
 
             if(index == -1 && plusMode) {
-                String clubSandwichMeal[] = {"Club Sandwich Meal", "1", price};
+                String clubSandwichMeal[] = {"Club Sandwich Meal", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(clubSandwichMeal);
             }
 
@@ -311,13 +345,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "508") {
             int index = alreadyInTicket("Club Sandwich Only");
 
             if(index == -1 && plusMode) {
-                String clubSandwichOnly[] = {"Club Sandwich Only", "1", price};
+                String clubSandwichOnly[] = {"Club Sandwich Only", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(clubSandwichOnly);
             }
 
@@ -336,13 +370,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "509") {
             int index = alreadyInTicket("Sandwich Meal Combo");
 
             if(index == -1 && plusMode) {
-                String sandwichMealCombo[] = {"Sandwich Meal Combo", "1", price};
+                String sandwichMealCombo[] = {"Sandwich Meal Combo", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(sandwichMealCombo);
             }
 
@@ -361,13 +395,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "510") {
             int index = alreadyInTicket("Sandwich Only");
 
             if(index == -1 && plusMode) {
-                String sandwichOnly[] = {"Sandwich Only", "1", price};
+                String sandwichOnly[] = {"Sandwich Only", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(sandwichOnly);
             }
 
@@ -386,13 +420,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "511") {
             int index = alreadyInTicket("Grill Cheese Meal Combo");
 
             if(index == -1 && plusMode) {
-                String grillCheeseMealCombo[] = {"Grill Cheese Meal Combo", "1", price};
+                String grillCheeseMealCombo[] = {"Grill Cheese Meal Combo", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(grillCheeseMealCombo);
             }
 
@@ -411,13 +445,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "512") {
             int index = alreadyInTicket("Grill Cheese Sandwich Only");
 
             if(index == -1 && plusMode) {
-                String grillCheeseSandwichOnly[] = {"Grill Cheese Sandwich Only", "1", price};
+                String grillCheeseSandwichOnly[] = {"Grill Cheese Sandwich Only", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(grillCheeseSandwichOnly);
             }
 
@@ -436,13 +470,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "513") {
             int index = alreadyInTicket("Layne's Sauce");
 
             if(index == -1 && plusMode) {
-                String laynesSauce[] = {"Layne's Sauce", "1", price};
+                String laynesSauce[] = {"Layne's Sauce", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(laynesSauce);
             }
 
@@ -461,13 +495,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "514") {
             int index = alreadyInTicket("Chicken Finger");
 
             if(index == -1 && plusMode) {
-                String chickenFinger[] = {"Chicken Finger", "1", price};
+                String chickenFinger[] = {"Chicken Finger", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(chickenFinger);
             }
 
@@ -486,13 +520,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "515") {
             int index = alreadyInTicket("Texas Toast");
 
             if(index == -1 && plusMode) {
-                String texasToast[] = {"Texas Toast", "1", price};
+                String texasToast[] = {"Texas Toast", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(texasToast);
             }
 
@@ -511,13 +545,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "516") {
             int index = alreadyInTicket("Potato Salad");
 
             if(index == -1 && plusMode) {
-                String potatoSalad[] = {"Potato Salad", "1", price};
+                String potatoSalad[] = {"Potato Salad", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(potatoSalad);
             }
 
@@ -536,13 +570,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "517") {
             int index = alreadyInTicket("Crinkle Cut Fries");
 
             if(index == -1 && plusMode) {
-                String crinkleCutFries[] = {"Crinkle Cut Fries", "1", price};
+                String crinkleCutFries[] = {"Crinkle Cut Fries", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(crinkleCutFries);
             }
 
@@ -561,13 +595,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "518") {
             int index = alreadyInTicket("Fountain Drink");
 
             if(index == -1 && plusMode) {
-                String fountainDrink[] = {"Fountain Drink", "1", price};
+                String fountainDrink[] = {"Fountain Drink", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(fountainDrink);
             }
 
@@ -586,13 +620,13 @@ public class Server implements ActionListener{
                     serverTableModel.setValueAt(newAmount, index, 1);
                 }
             }
-        }
+        }else
 
         if(((JButton)e.getSource()).getName() == "519") {
             int index = alreadyInTicket("Bottle Drink");
 
             if(index == -1 && plusMode) {
-                String bottleDrink[] = {"Bottle Drink", "1", price};
+                String bottleDrink[] = {"Bottle Drink", "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(bottleDrink);
             }
 
@@ -612,6 +646,8 @@ public class Server implements ActionListener{
                 }
             }
         }
+
+
 
 
     }
