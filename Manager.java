@@ -47,6 +47,15 @@ public class Manager {
     public JButton menuItemsDeleteRowButton;
     public JButton menuItemsEditRowButton;
     public JButton menuItemsRefreshButton;
+    private JComboBox comboBox1;
+    private JComboBox comboBox2;
+    private JComboBox comboBox3;
+    private JComboBox comboBox4;
+    private JComboBox comboBox5;
+    private JComboBox comboBox6;
+    private JButton toggleTrendsButton;
+    private JCheckBox range1CheckBox;
+    private JCheckBox range2CheckBox;
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
     final private String[] DTOCol = {"Item", "Quantity"};
