@@ -36,6 +36,10 @@ public class Server implements ActionListener{
     private JTextPane textPane1;
     private JButton finalizeOrderButton;
     private JScrollPane ticketScroll;
+    private JButton extraButton1;
+    private JButton extraButton2;
+    private JButton extraButton3;
+    private JButton extraButton4;
     private DefaultTableModel serverTableModel;
     final private String serverTicket[] = {"Item", "Amount", "Price", "ID"};
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
@@ -57,8 +61,6 @@ public class Server implements ActionListener{
         for(JButton b : buttonList){
             b.addActionListener(this);
         }
-
-
     }
     public void buttonSetup(){
         buttonList.add(fiveFinger);
@@ -105,6 +107,33 @@ public class Server implements ActionListener{
         plus.setName("+");
         buttonList.add(finalizeOrderButton);
         finalizeOrderButton.setName("finalize");
+        extraButton1.setName("520");
+        extraButton2.setName("521");
+        extraButton3.setName("522");
+        extraButton4.setName("523");
+        extraButton1.setVisible(false);
+        extraButton2.setVisible(false);
+        extraButton3.setVisible(false);
+        extraButton4.setVisible(false);
+
+        int numRows = 19;
+        buttonList.add(extraButton1);
+        buttonList.add(extraButton2);
+        buttonList.add(extraButton3);
+        buttonList.add(extraButton4);
+
+        try{
+            Statement stmt = jdbcpostgreSQL.conn.createStatement();
+            // SQL side;
+            numRows = stmt.executeUpdate("SELECT COUNT(*) FROM menu_key");
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        for(int i = 19; i < numRows; i++){
+            buttonList.get(i).setVisible(true);
+        }
+
     }
 
     public int alreadyInTicket(String item)
@@ -143,11 +172,6 @@ public class Server implements ActionListener{
     public void clearPrice() {
         totalPrice = 0.0;
         textPane1.setText("Total: $0.00");
-    }
-    public void updateDataBase() {
-        while(serverTableModel.getRowCount() != 0) {
-            serverTableModel.removeRow(0);
-        }
     }
     public void actionPerformed(ActionEvent e) {
         if((((JButton)e.getSource()).getName()).equals("+"))

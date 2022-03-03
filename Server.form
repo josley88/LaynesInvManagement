@@ -234,6 +234,46 @@
               <text value="Finalize Order"/>
             </properties>
           </component>
+          <component id="c497f" class="javax.swing.JButton" binding="extraButton1">
+            <constraints>
+              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-9384735"/>
+              <foreground color="-16777216"/>
+              <text value="placehold"/>
+            </properties>
+          </component>
+          <component id="2d305" class="javax.swing.JButton" binding="extraButton2">
+            <constraints>
+              <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-9384735"/>
+              <foreground color="-16777216"/>
+              <text value="Button"/>
+            </properties>
+          </component>
+          <component id="5bffd" class="javax.swing.JButton" binding="extraButton3">
+            <constraints>
+              <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-9384735"/>
+              <foreground color="-16777216"/>
+              <text value="Button"/>
+            </properties>
+          </component>
+          <component id="601c3" class="javax.swing.JButton" binding="extraButton4">
+            <constraints>
+              <grid row="3" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <background color="-9384735"/>
+              <foreground color="-16777216"/>
+              <text value="Button"/>
+            </properties>
+          </component>
         </children>
       </grid>
       <scrollpane id="3197" binding="ticketScroll">
