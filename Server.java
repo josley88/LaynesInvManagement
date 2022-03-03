@@ -138,11 +138,9 @@ public class Server implements ActionListener{
         for(int i = 19; i < numRows; i++){
             buttonList.get(i).setVisible(true);
         }
-
     }
 
-    public int alreadyInTicket(String item)
-    {
+    public int alreadyInTicket(String item) {
         for(int i = 0; i < serverTableModel.getRowCount(); i++){
             if(((String)serverTableModel.getDataVector().get(i).get(0)).equals(item))
                 return i; //if in ticket return index where
@@ -150,14 +148,12 @@ public class Server implements ActionListener{
         return -1; //return -1 if not in ticket
     }
 
-    public void updatePrice(String itemPrice)
-    {
+    public void updatePrice(String itemPrice) {
         if(plusMode) {
             String priceNoSign = itemPrice.substring(1);
             double doublePrice = Double.parseDouble(priceNoSign);
             totalPrice += doublePrice;
-        }
-        else {
+        }else {
             String priceNoSign = itemPrice.substring(1);
             double doublePrice = Double.parseDouble(priceNoSign);
             totalPrice -= doublePrice;
@@ -233,12 +229,9 @@ public class Server implements ActionListener{
         if(currButton.equals(itemID)) {
             int index = alreadyInTicket(itemName);
             if(index == -1 && plusMode) {
-
                 String inputArray[] = {itemName, "1", price, ((JButton)e.getSource()).getName()};
                 serverTableModel.addRow(inputArray);
-            }
-
-            else if(index != -1) { //updates current amount
+            }else if(index != -1) { //updates current amount
                 String stringAmountBefore = serverTableModel.getValueAt(index,1).toString();
                 int intAmountBefore = Integer.parseInt(stringAmountBefore);
                 if(plusMode) {
