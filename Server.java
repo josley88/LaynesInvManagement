@@ -125,7 +125,12 @@ public class Server implements ActionListener{
         try{
             Statement stmt = jdbcpostgreSQL.conn.createStatement();
             // SQL side;
-            numRows = stmt.executeUpdate("SELECT COUNT(*) FROM menu_key");
+            ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM menu_key");
+
+            if(result.next()){
+                numRows = result.getInt("count");
+                System.out.print(numRows);
+            }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
