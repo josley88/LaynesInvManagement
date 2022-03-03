@@ -1,9 +1,9 @@
-## Changelog
-### 2/28 
-##### Changed weekly order updates in as described:
-* Changed function name
-* Changed table name to be weeksales (cohesive)
-* Changed p_key to day_item to satisfy uniqueness
-##### Changed itemconversion data, added item conversion data into database and as function 
-##### Removed deprecated functions and comments
-##### Added psuedocode for backend interaction at bottom of main file
+## How GUI interacts with database
+### SERVER 
+* We always grab an **entire list** and then parse the list inside the .java
+* Gets 'item', 'price', 'name' via item number in menu_key
+  * E.g., passing '501' to get '501' (for checking), '5 finger original', '$6.00'
+* Gets 'quantity' via item number in weeksales
+  * weeksales unique IDs are in `date_itemNum` format, so there's a clientside (server gui side) date variable
+* Updates 'quantity' in the same way
+### MANAGER

@@ -161,7 +161,7 @@ public class Server implements ActionListener{
         String price = "";
         String itemName = "";
         String itemID = "";
-        if(!currButton.equals("+") || !currButton.equals("-") || !currButton.equals("finalize")){
+        if(!currButton.equals("+") && !currButton.equals("-") && !currButton.equals("finalize")){
             try {
                 Statement statement = jdbcpostgreSQL.conn.createStatement();
                 ResultSet rs = statement.executeQuery("SELECT item, price, name FROM menu_key;");
