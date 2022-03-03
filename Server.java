@@ -1,13 +1,11 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.awt.event.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.time.*;
-import java.util.Locale;
 
 public class Server implements ActionListener{
 
@@ -40,12 +38,11 @@ public class Server implements ActionListener{
     private JScrollPane ticketScroll;
     private DefaultTableModel serverTableModel;
     final private String serverTicket[] = {"Item", "Amount", "Price", "ID"};
-    private String insertion[] = {"Blank", "0"};
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
     private double totalPrice = 0;
     private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
     LocalDate dt = LocalDate.now();
-    String currDay = dt.getDayOfWeek().toString().substring(0,1) + dt.getDayOfWeek().toString().substring(1,dt.getDayOfWeek().toString().length()).toLowerCase();
+    String currDay = dt.getDayOfWeek().toString().charAt(0) + dt.getDayOfWeek().toString().substring(1).toLowerCase();
 
 
     public Server(){
