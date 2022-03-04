@@ -47,7 +47,7 @@ public class Server implements ActionListener{
     private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
     LocalDate dt = LocalDate.now();
     String currDay = dt.getDayOfWeek().toString().charAt(0) + dt.getDayOfWeek().toString().substring(1).toLowerCase();
-
+    int numRows = 19;
 
     public Server(){
         serverTableModel = new DefaultTableModel(serverTicket, 0);
@@ -117,7 +117,7 @@ public class Server implements ActionListener{
         extraButton4.setVisible(false);
        // System.out.println("20th index: " + buttonList.get(20).getName());
 
-        int numRows = 19;
+
         buttonList.add(extraButton1);
         buttonList.add(extraButton2);
         buttonList.add(extraButton3);
@@ -221,15 +221,30 @@ public class Server implements ActionListener{
                 for(int i = 0; i < serverTableModel.getRowCount(); i++){
                     //grabs the current amount
                     int currQuant = 0;
-                    ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
-
-
-                    while(rs.next()){
-                        currQuant = Integer.parseInt(rs.getString("quantity"));
-                        currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
+                    int hasIt = 0;
+                    ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+                    if(result.next()){
+                        hasIt = result.getInt("count");
                     }
-                    int result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
-                    print("SERVER RESULTS: " + result);
+                    if(hasIt == 0){
+                        //no update, need to populate
+                        int result3 = stmt.executeUpdate("INSERT INTO weeksales VALUES ('"
+                                + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "','"
+                                    + Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1)) + "');");
+                        print(result3);
+                    }else{
+                        ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+
+
+                        if(rs.next()){
+                            currQuant = Integer.parseInt(rs.getString("quantity"));
+                            currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
+                        }
+                        //updates
+                        int result2 = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+                        print("SERVER RESULTS: " + result2);
+                    }
+
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
