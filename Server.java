@@ -158,12 +158,15 @@ public class Server implements ActionListener{
     }
 
     public void updatePrice(String itemPrice) {
+        String priceNoSign = itemPrice;
         if(plusMode) {
-            String priceNoSign = itemPrice.substring(1);
+            if(itemPrice.charAt(0) == '$')
+                priceNoSign = itemPrice.substring(1);
             double doublePrice = Double.parseDouble(priceNoSign);
             totalPrice += doublePrice;
         }else {
-            String priceNoSign = itemPrice.substring(1);
+            if(itemPrice.charAt(0) == '$')
+                priceNoSign = itemPrice.substring(1);
             double doublePrice = Double.parseDouble(priceNoSign);
             totalPrice -= doublePrice;
         }
