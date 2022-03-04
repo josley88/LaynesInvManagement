@@ -40,6 +40,7 @@ public class Server implements ActionListener{
     private JButton extraButton2;
     private JButton extraButton3;
     private JButton extraButton4;
+    private JButton refreshMenuButton;
     private DefaultTableModel serverTableModel;
     final private String serverTicket[] = {"Item", "Amount", "Price", "ID"};
     private ArrayList<JButton> buttonList = new ArrayList<JButton>();
@@ -47,7 +48,7 @@ public class Server implements ActionListener{
     private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
     LocalDate dt = LocalDate.now();
     String currDay = dt.getDayOfWeek().toString().charAt(0) + dt.getDayOfWeek().toString().substring(1).toLowerCase();
-    int numRows = 19;
+
 
     public Server(){
         serverTableModel = new DefaultTableModel(serverTicket, 0);
@@ -107,6 +108,8 @@ public class Server implements ActionListener{
         plus.setName("+");
         buttonList.add(finalizeOrderButton);
         finalizeOrderButton.setName("finalize");
+        buttonList.add(refreshMenuButton);
+        refreshMenuButton.setName("refresh");
         extraButton1.setName("520");
         extraButton2.setName("521");
         extraButton3.setName("522");
@@ -116,37 +119,12 @@ public class Server implements ActionListener{
         extraButton3.setVisible(false);
         extraButton4.setVisible(false);
        // System.out.println("20th index: " + buttonList.get(20).getName());
-
-
         buttonList.add(extraButton1);
         buttonList.add(extraButton2);
         buttonList.add(extraButton3);
         buttonList.add(extraButton4);
+        refreshMenu();
 
-        try{
-            Statement stmt = jdbcpostgreSQL.conn.createStatement();
-            Statement stmt2 = jdbcpostgreSQL.conn.createStatement();
-            // SQL side;
-            ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM menu_key");
-            ResultSet resultButtonName = stmt2.executeQuery("SELECT item,name FROM menu_key WHERE item > 519");
-            if(result.next()){
-                numRows = result.getInt("count");
-                System.out.print(numRows);
-            }
-            while(resultButtonName.next()){
-                int i = 0;
-                buttonList.get(i+22).setName(resultButtonName.getString("item"));
-                buttonList.get(i+22).setText(resultButtonName.getString("name"));
-                i++;
-            }
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        numRows += 3; //+3 because of +, -, and finalize buttons
-        for(int i = 22; i < numRows; i++){
-            buttonList.get(i).setVisible(true);
-        }
     }
 
     public int alreadyInTicket(String item) {
@@ -186,6 +164,40 @@ public class Server implements ActionListener{
         totalPrice = 0.0;
         textPane1.setText("Total: $0.00");
     }
+
+    public void refreshMenu() {
+        extraButton1.setVisible(false);
+        extraButton2.setVisible(false);
+        extraButton3.setVisible(false);
+        extraButton4.setVisible(false);
+        int numRows = 19;
+        try{
+            Statement stmt = jdbcpostgreSQL.conn.createStatement();
+            Statement stmt2 = jdbcpostgreSQL.conn.createStatement();
+            // SQL side;
+            ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM menu_key");
+            ResultSet resultButtonName = stmt2.executeQuery("SELECT item,name FROM menu_key WHERE item > 519");
+            if(result.next()){
+                numRows = result.getInt("count");
+                System.out.print(numRows);
+            }
+            int i = 0;
+            while(resultButtonName.next()){
+                buttonList.get(i+23).setName(resultButtonName.getString("item"));
+                buttonList.get(i+23).setText(resultButtonName.getString("name"));
+                System.out.println(resultButtonName.getString("item") + "  " + resultButtonName.getString("name"));
+                i++;
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        numRows += 4; //+3 because of +, -, and finalize buttons
+        for(int i = 23; i < numRows; i++) {
+            buttonList.get(i).setVisible(true);
+        }
+    }
+
     public void actionPerformed(ActionEvent e) {
         if((((JButton)e.getSource()).getName()).equals("+"))
             plusMode = true;
@@ -221,36 +233,25 @@ public class Server implements ActionListener{
                 for(int i = 0; i < serverTableModel.getRowCount(); i++){
                     //grabs the current amount
                     int currQuant = 0;
-                    int hasIt = 0;
-                    ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
-                    if(result.next()){
-                        hasIt = result.getInt("count");
+                    ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+
+
+                    while(rs.next()){
+                        currQuant = Integer.parseInt(rs.getString("quantity"));
+                        currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
                     }
-                    if(hasIt == 0){
-                        //no update, need to populate
-                        int result3 = stmt.executeUpdate("INSERT INTO weeksales VALUES ('"
-                                + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "','"
-                                    + Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1)) + "');");
-                        print(result3);
-                    }else{
-                        ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
-
-
-                        if(rs.next()){
-                            currQuant = Integer.parseInt(rs.getString("quantity"));
-                            currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
-                        }
-                        //updates
-                        int result2 = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
-                        print("SERVER RESULTS: " + result2);
-                    }
-
+                    int result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+                    print("SERVER RESULTS: " + result);
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
             clearServerTable();
             clearPrice();
+        }
+
+        if(currButton.equals("refresh")) {
+            refreshMenu();
         }
 
         if(currButton.equals(itemID)) {
