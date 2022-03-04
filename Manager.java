@@ -3,19 +3,24 @@ import javax.swing.table.DefaultTableModel;
 
 public class Manager {
 
-    private JTabbedPane tabbedPane;
+    public JTabbedPane tabbedPane;
 
     public JTable invTable;
     public JTable invEditTable;
-    public JTable DTOTable;
+    public JTable DTOTable1;
+    public JTable DTOTable2;
+    public JTable DTOTable3;
     public JTable DTOEditTable;
     public JTable menuItemsTable;
     public JTable menuItemsEditTable;
 
+
     public DefaultTableModel invTableModel;
     public DefaultTableModel invEditTableModel;
 
-    public DefaultTableModel DTOTableModel;
+    public DefaultTableModel DTOTableModel1;
+    public DefaultTableModel DTOTableModel2;
+    public DefaultTableModel DTOTableModel3;
     public DefaultTableModel DTOEditTableModel;
 
     public DefaultTableModel menuItemsTableModel;
@@ -25,13 +30,17 @@ public class Manager {
     public JPanel inventoryPanel;
     public JPanel DTOPanel;
     public JPanel menuItemsPanel;
+    public JPanel DTOTableView;
 
-    private JScrollPane invScroll;
-    private JScrollPane invEditScroll;
-    private JScrollPane DTOScroll;
-    private JScrollPane DTOEditScroll;
+    public JScrollPane invScroll;
+    public JScrollPane invEditScroll;
+    public JScrollPane DTOScroll1;
+    public JScrollPane DTOScroll2;
+    public JScrollPane DTOScroll3;
+    public JScrollPane DTOEditScroll;
     public JScrollPane menuItemsScroll;
     public JScrollPane menuItemsEditScroll;
+
 
     public JButton invAddRowButton;
     public JButton invEditRowButton;
@@ -47,15 +56,22 @@ public class Manager {
     public JButton menuItemsDeleteRowButton;
     public JButton menuItemsEditRowButton;
     public JButton menuItemsRefreshButton;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
-    private JComboBox comboBox3;
-    private JComboBox comboBox4;
-    private JComboBox comboBox5;
-    private JComboBox comboBox6;
-    private JButton toggleTrendsButton;
-    private JCheckBox range1CheckBox;
-    private JCheckBox range2CheckBox;
+
+    public JButton toggleTrendsButton;
+
+    public JComboBox DTO_R1_MM_Box;
+    public JComboBox DTO_R1_DD_Box;
+    public JComboBox DTO_R1_YYYY_Box;
+    public JComboBox DTO_R2_MM_Box;
+    public JComboBox DTO_R2_DD_Box;
+    public JComboBox DTO_R2_YYYY_Box;
+
+    public JCheckBox range1CheckBox;
+    public JCheckBox range2CheckBox;
+
+
+
+
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
     final private String[] DTOCol = {"Item", "Quantity"};
@@ -63,18 +79,28 @@ public class Manager {
 
     public Manager() {
 
-        // setup table models -----------------------------------------------
+        // setup table models, most without directly editable cells -----------------------------------------------
         invTableModel = new DefaultTableModel(invCol, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
         invEditTableModel = new DefaultTableModel(invCol, 1);
 
-        DTOTableModel = new DefaultTableModel(DTOCol, 0) {
+
+        DTOTableModel1 = new DefaultTableModel(DTOCol, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {return false;}
+        };
+        DTOTableModel2 = new DefaultTableModel(DTOCol, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {return false;}
+        };
+        DTOTableModel3 = new DefaultTableModel(DTOCol, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
         DTOEditTableModel = new DefaultTableModel(DTOCol, 1);
+
 
         menuItemsTableModel = new DefaultTableModel(menuItemsCol, 0) {
             @Override
@@ -88,7 +114,9 @@ public class Manager {
         invTableModel.setColumnIdentifiers(invCol);
         invEditTableModel.setColumnIdentifiers(invCol);
 
-        DTOTableModel.setColumnIdentifiers(DTOCol);
+        DTOTableModel1.setColumnIdentifiers(DTOCol);
+        DTOTableModel2.setColumnIdentifiers(DTOCol);
+        DTOTableModel3.setColumnIdentifiers(DTOCol);
         DTOEditTableModel.setColumnIdentifiers(DTOCol);
 
         menuItemsTableModel.setColumnIdentifiers(menuItemsCol);
@@ -100,7 +128,9 @@ public class Manager {
         invScroll.setColumnHeaderView(invTable.getTableHeader());
         invEditScroll.setColumnHeaderView(invEditTable.getTableHeader());
 
-        DTOScroll.setColumnHeaderView(DTOTable.getTableHeader());
+        DTOScroll1.setColumnHeaderView(DTOTable1.getTableHeader());
+        DTOScroll2.setColumnHeaderView(DTOTable2.getTableHeader());
+        DTOScroll3.setColumnHeaderView(DTOTable3.getTableHeader());
         DTOEditScroll.setColumnHeaderView(DTOEditTable.getTableHeader());
 
         menuItemsScroll.setColumnHeaderView(menuItemsTable.getTableHeader());
@@ -112,7 +142,9 @@ public class Manager {
         invTable.setModel(invTableModel);
         invEditTable.setModel(invEditTableModel);
 
-        DTOTable.setModel(DTOTableModel);
+        DTOTable1.setModel(DTOTableModel1);
+        DTOTable2.setModel(DTOTableModel2);
+        DTOTable3.setModel(DTOTableModel3);
         DTOEditTable.setModel(DTOEditTableModel);
 
         menuItemsTable.setModel(menuItemsTableModel);
@@ -120,20 +152,16 @@ public class Manager {
         // --------------------------------------------------------------------
 
         // set table not editable so users dont mess up table -----------------
-        invTable.setRowSelectionAllowed(true);
-        invTable.setFocusable(false);
-        invTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        DTOTable.setRowSelectionAllowed(true);
-        DTOTable.setFocusable(false);
-        DTOTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        menuItemsTable.setRowSelectionAllowed(true);
-        menuItemsTable.setFocusable(false);
-        menuItemsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        setNonFocusable(invTable);
+        setNonFocusable(DTOTable1);
+        setNonFocusable(DTOTable2);
+        setNonFocusable(DTOTable3);
+        setNonFocusable(menuItemsTable);
         // ---------------------------------------------------------------------
 
-
+        // setup auto sort -----------------------------------------------------
+        invTable.getRowSorter().toggleSortOrder(1);
+        menuItemsTable.getRowSorter().toggleSortOrder(0);
     }
 
     public JPanel getRootPanel() {
@@ -145,7 +173,7 @@ public class Manager {
     }
 
     public void addRowToDTOTable(Object[] row) {
-        DTOTableModel.addRow(row);
+        DTOTableModel1.addRow(row);
     }
 
     public void addRowTomMenuItemsTable(Object[] row) {
@@ -154,7 +182,13 @@ public class Manager {
 
     public void clearTables() {
         invTableModel.setRowCount(0);
-        DTOTableModel.setRowCount(0);
+        DTOTableModel1.setRowCount(0);
         menuItemsTableModel.setRowCount(0);
+    }
+
+    public void setNonFocusable(JTable _table) {
+        _table.setRowSelectionAllowed(true);
+        _table.setFocusable(false);
+        _table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 }

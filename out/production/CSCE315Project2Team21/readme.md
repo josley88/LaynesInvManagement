@@ -6,4 +6,5 @@
 * Gets 'quantity' via item number in weeksales
   * weeksales unique IDs are in `date_itemNum` format, so there's a clientside (server gui side) date variable
 * Updates 'quantity' in the same way
+* Server GUI can hold an extra 4 menu items 
 ### MANAGER

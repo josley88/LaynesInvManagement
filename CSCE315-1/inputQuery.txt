@@ -16,3 +16,5 @@ SELECT * FROM inventory ORDER BY price;
 SELECT * FROM inventory ORDER BY delivered;
 SELECT Description FROM inventory 
 	WHERE delivered = 1;
+
+INSERT INTO table_name (column1, column2, column3, ...) VALUES (value1, value2, value3, ...);

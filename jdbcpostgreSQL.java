@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -472,8 +473,12 @@ public class jdbcpostgreSQL {
   }
 
   public static void setupManagerEventListeners(Manager manager) {
+    setupInventoryEventListeners(manager);
+    setupDTOEventListeners(manager);
+    setupMenuItemsListeners(manager);
+  }
 
-    // INVENTORY --------------------------------------------------------------------------------------------
+  public static void setupInventoryEventListeners(Manager manager) {
     // DELETE currently selected row
     manager.invDeleteRowButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
@@ -579,12 +584,8 @@ public class jdbcpostgreSQL {
         refreshTablesFromDB(manager);
       }
     });
-    // END INVENTORY --------------------------------------------------------------------------------------------
-
-
-
-
-    // DAILY TOTAL ORDERS ---------------------------------------------------------------------------------------
+  }
+  public static void setupDTOEventListeners(Manager manager) {
     // DELETE currently selected row
     manager.DTODeleteRowButton.addActionListener(ae -> {
       try {
@@ -602,13 +603,13 @@ public class jdbcpostgreSQL {
     });
 
     // UPDATE currently selected row view
-    manager.DTOTable.addMouseListener(new MouseAdapter() {
+    manager.DTOTable1.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
         JTable target = (JTable)e.getSource();
         int row = target.getSelectedRow();
 
         for (int i = 0; i < manager.DTOEditTableModel.getColumnCount(); i++) {
-          manager.DTOEditTable.setValueAt(manager.DTOTable.getValueAt(row, i), 0, i);
+          manager.DTOEditTable.setValueAt(manager.DTOTable1.getValueAt(row, i), 0, i);
         }
 
       }
@@ -624,7 +625,7 @@ public class jdbcpostgreSQL {
 
         String sqlStatement =
                 "INSERT INTO weeksales (item, quantity, total) " +
-                "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0);";
+                        "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0);";
 
         print(sqlStatement);
 
@@ -656,10 +657,10 @@ public class jdbcpostgreSQL {
           // build sql updateQuery
           String sqlStatement =
                   "UPDATE weeksales " +
-                  "SET " +
-                  "item = '" + row.get(0) +
-                  "', quantity = " + row.get(1) + ", total = 0 " +
-                  "WHERE item = '" + row.get(0) + "';";
+                          "SET " +
+                          "item = '" + row.get(0) +
+                          "', quantity = " + row.get(1) + ", total = 0 " +
+                          "WHERE item = '" + row.get(0) + "';";
 
           print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
@@ -677,10 +678,8 @@ public class jdbcpostgreSQL {
         refreshTablesFromDB(manager);
       }
     });
-    // -----------------------------------------------------------------------------------------------------------
-
-
-
+  }
+  public static void setupMenuItemsListeners(Manager manager) {
     // MENU ITEMS -------- ---------------------------------------------------------------------------------------
     // DELETE currently selected row
     manager.menuItemsDeleteRowButton.addActionListener(ae -> {
@@ -766,14 +765,22 @@ public class jdbcpostgreSQL {
         }
       }
     });
+
+    // REFRESH button
+    manager.menuItemsRefreshButton.addActionListener(new ActionListener(){
+      public void actionPerformed(ActionEvent ae){
+        refreshTablesFromDB(manager);
+      }
+    });
   }
 
   // print helper function
   public static void print(Object out) {
     System.out.println(out);
   }
-}
 
+
+}
 
 
 
