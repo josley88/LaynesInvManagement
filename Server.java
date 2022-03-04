@@ -115,6 +115,7 @@ public class Server implements ActionListener{
         extraButton2.setVisible(false);
         extraButton3.setVisible(false);
         extraButton4.setVisible(false);
+       // System.out.println("20th index: " + buttonList.get(20).getName());
 
         int numRows = 19;
         buttonList.add(extraButton1);
@@ -124,18 +125,26 @@ public class Server implements ActionListener{
 
         try{
             Statement stmt = jdbcpostgreSQL.conn.createStatement();
+            Statement stmt2 = jdbcpostgreSQL.conn.createStatement();
             // SQL side;
             ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM menu_key");
-
+            ResultSet resultButtonName = stmt2.executeQuery("SELECT item,name FROM menu_key WHERE item > 519");
             if(result.next()){
                 numRows = result.getInt("count");
                 System.out.print(numRows);
+            }
+            while(resultButtonName.next()){
+                int i = 0;
+                buttonList.get(i+22).setName(resultButtonName.getString("item"));
+                buttonList.get(i+22).setText(resultButtonName.getString("name"));
+                i++;
             }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        for(int i = 19; i < numRows; i++){
+        numRows += 3; //+3 because of +, -, and finalize buttons
+        for(int i = 22; i < numRows; i++){
             buttonList.get(i).setVisible(true);
         }
 
