@@ -166,7 +166,7 @@ public class jdbcpostgreSQL {
       tableName =  fileName.substring((fileName.length()-13), (fileName.length()-4));
       String sqlStatement = "CREATE TABLE " + tableName + " ( ";
       // populates in the following order Item, Quantity, Total
-      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT, " + "DateOPurchase" + " DATE );";
+      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " DOUBLE, "+ "FillAmt" + " DOUBLE, "  + parseArr[3].strip() + " TEXT, " + "DateOPurchase" + " DATE );";
       print(sqlStatement);
       // SQL side;
       int result = 0;
@@ -182,7 +182,7 @@ public class jdbcpostgreSQL {
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(parseArr[1].equals("")!=true) {
-            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
+            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
