@@ -43,7 +43,11 @@ public class jdbcpostgreSQL {
 
 
     // populate database if empty --------------------------------------------
+//    inputElementsIntoWeekOrders("./CSCE315-1/FirstWeekSales.csv");
+//    inputElementsIntoWeekOrders("./CSCE315-1/SecondWeekSales.csv");
+//    inputElementsIntoWeekOrders("./CSCE315-1/ThirdWeekSales.csv");
 //    inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
@@ -78,22 +82,79 @@ public class jdbcpostgreSQL {
     // -----------------------------------------------------------------------
   }
 
+  
 
 
   // ____________________________________________ FUNCTIONS __________________________________________________
 
+
+  public static String changeDate(String fileName){
+    int indexOffirstBS = fileName.indexOf('/');
+    String month = fileName.substring(fileName.indexOf('/')+1);
+    int indexOf2ndBS = month.indexOf('/') + fileName.length()-month.length();
+    month = fileName.substring(0,indexOffirstBS);
+    String day = fileName.substring(indexOffirstBS+1 , indexOf2ndBS);
+    String year = fileName.substring(indexOf2ndBS+1);
+    int monthI = Integer.parseInt(month);
+    int dayI = Integer.parseInt(day);
+    int yearI = Integer.parseInt(year);
+    
+    if(monthI == 2){
+        if(dayI == 28){
+            dayI = 1;
+            monthI = 3;
+        }
+        else{
+            dayI++;
+        }
+    }else  if(monthI == 1){
+      if(dayI == 31){
+        dayI = 1;
+        monthI = 2;
+      }
+      else{
+        dayI++;
+      }
+    }
+    else if(monthI == 3){
+        if(dayI == 31){
+            dayI = 1;
+            monthI = 4;
+        }
+        else{
+            dayI++;
+        }
+    }
+    else{
+        dayI++;
+    }
+    fileName = monthI + "/" + dayI + "/" + yearI;
+    return fileName;
+  }
+
+
   // function to input weekly purchase into daily order tables. It will take in the file name, and it will update the database directly
   public static void inputElementsIntoWeekOrders(String fileName) throws SQLException {
     // skip if table already exists
+    Boolean append = false;
     if (tableExist(conn, "weeksales")) {
-      return;
+      append = true;
     }
 
     Scanner sc;
     
-    try{
+//    try{
       Statement stmt = conn.createStatement();
-
+      String startDate = "01/30/2022";
+      if(fileName.equals("./CSCE315-1/SecondWeekSales.csv")){
+        startDate = "02/06/2022";
+      }
+      else if(fileName.equals("./CSCE315-1/ThirdWeekSales.csv")){
+        startDate = "02/13/2022";
+      }
+      else if(fileName.equals("./CSCE315-1/FourthWeekSales.csv")){
+        startDate = "02/20/2022";
+      }
 
       sc = new Scanner(new File(fileName));
       String filler = sc.nextLine().replace("\'", "\'\'");
@@ -105,19 +166,23 @@ public class jdbcpostgreSQL {
       tableName =  fileName.substring((fileName.length()-13), (fileName.length()-4));
       String sqlStatement = "CREATE TABLE " + tableName + " ( ";
       // populates in the following order Item, Quantity, Total
-      sqlStatement += parseArr[1].strip() + " TEXT PRIMARY KEY, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT );";
+      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " INT, "+ parseArr[3].strip() + " TEXT, " + "DateOPurchase" + " DATE );";
       print(sqlStatement);
       // SQL side;
-      int result = stmt.executeUpdate(sqlStatement);
-      print(result);
+      int result = 0;
+      if(!append){
+        result = stmt.executeUpdate(sqlStatement);
+        print(result);
+      }
+
 
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
-          if(!parseArr[1].equals("")) {
-            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\');";
+          if(parseArr[1].equals("")!=true) {
+            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
@@ -130,6 +195,7 @@ public class jdbcpostgreSQL {
           else{ // changes day if new day
             if(sc.hasNextLine()){ // checks if we are at end of file 
               //skips a line
+              startDate = changeDate(startDate);
               parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
               day = parseArr[0].strip();
               print("NEW DAY IS " + day);
