@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -33,6 +32,55 @@ public class jdbcpostgreSQL {
   public static String userPassword = "315gang";
   //___________________________________________________
 
+
+  // _______________________________________________ MAIN ____________________________________________________
+  public static void main(String[] args) throws SQLException {
+
+    // create connection -----------------------------------------------------
+    openConnection();
+    // -----------------------------------------------------------------------
+
+
+
+    // populate database if empty --------------------------------------------
+//    inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+    inputElementsIntoInventory("./CSCE315-1/First day order.csv");
+    inputItemConversions("./CSCE315-1/menuItemConversion.csv");
+    inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
+    // -----------------------------------------------------------------------
+
+
+
+    // setup manager and server GUI frame and attach Manager class -----------
+    JFrame managerGUI = new JFrame();
+    Manager manager = new Manager();
+    JFrame serverGUI = new JFrame();
+    Server server = new Server();
+
+    serverGUI.setContentPane(server.getRootPanel());
+    serverGUI.setSize(1280, 720);
+    managerGUI.setContentPane(manager.getRootPanel());
+    managerGUI.setSize(1280, 720);
+    // -----------------------------------------------------------------------
+
+
+
+    // fill tables and set up event listeners --------------------------------
+    refreshTablesFromDB(manager);
+    setupManagerEventListeners(manager);
+    // -----------------------------------------------------------------------
+
+
+
+    // display server and manager GUI ----------------------------------------
+    managerGUI.setVisible(true);
+    serverGUI.setVisible(true);
+    // -----------------------------------------------------------------------
+  }
+
+
+
+  // ____________________________________________ FUNCTIONS __________________________________________________
 
   // function to input weekly purchase into daily order tables. It will take in the file name, and it will update the database directly
   public static void inputElementsIntoWeekOrders(String fileName) throws SQLException {
@@ -68,7 +116,7 @@ public class jdbcpostgreSQL {
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
-          if(parseArr[1].equals("")!=true) {
+          if(!parseArr[1].equals("")) {
             sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\');";
            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
@@ -367,7 +415,7 @@ public class jdbcpostgreSQL {
         row.add(rs.getString("description"));
         row.add(rs.getString("price"));
         result.add(row);
-        print(row.toString());
+//        print(row.toString());
       }
 
 
@@ -382,7 +430,8 @@ public class jdbcpostgreSQL {
     return null;
   }
 
-  public static void setupDatabase() {
+  // open database connection
+  public static void openConnection() {
 
    try {
       conn = DriverManager.getConnection(dbConnectionString,userName, userPassword);
@@ -395,7 +444,7 @@ public class jdbcpostgreSQL {
     print("Opened database successfully");
   }
 
-
+  // close database connection
   public static void closeConnection() {
     try {
       conn.close();
@@ -405,57 +454,8 @@ public class jdbcpostgreSQL {
     }
   }
 
-
-  public static void main(String args[]) throws SQLException {
-
-    // create connection -----------------------------------------------------
-    setupDatabase();
-    // -----------------------------------------------------------------------
-
-
-
-    // populate database if empty --------------------------------------------
-    //inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
-    inputElementsIntoInventory("./CSCE315-1/First day order.csv");
-    inputItemConversions("./CSCE315-1/menuItemConversion.csv");
-    inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
-    // -----------------------------------------------------------------------
-
-
-
-    // setup manager and server GUI frame and attach Manager class -----------
-    JFrame managerGUI = new JFrame();
-    Manager manager = new Manager();
-
-    JFrame serverGUI = new JFrame();
-    Server server = new Server();
-
-    serverGUI.setContentPane(server.getRootPanel());
-    serverGUI.setSize(1280, 720);
-    managerGUI.setContentPane(manager.getRootPanel());
-    managerGUI.setSize(1280, 720);
-    // -----------------------------------------------------------------------
-
-
-
-    // fill tables and set up event listeners --------------------------------
-    refreshTablesFromDB(manager);
-    setupManagerEventListeners(manager);
-    // -----------------------------------------------------------------------
-
-
-
-
-    // display server and manager GUI ----------------------------------------
-    managerGUI.setVisible(true);
-    serverGUI.setVisible(true);
-    // -----------------------------------------------------------------------
-
-  }
-
+  // refresh tables in manager GUI
   public static void refreshTablesFromDB(Manager manager) {
-    //INSERT INTO inventory VALUES ('Ice Cream', 9, 'Cold', 3, '12.55');
-
     ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
     ArrayList<ArrayList<String>> DTODB = getDBDTO();
     ArrayList<ArrayList<String>> menuItemsDB = getDBMenuItems();
@@ -472,12 +472,12 @@ public class jdbcpostgreSQL {
     }
   }
 
+  // following functions set up the event listeners for buttons and tables in manager GUI
   public static void setupManagerEventListeners(Manager manager) {
     setupInventoryEventListeners(manager);
     setupDTOEventListeners(manager);
     setupMenuItemsListeners(manager);
   }
-
   public static void setupInventoryEventListeners(Manager manager) {
     // DELETE currently selected row
     manager.invDeleteRowButton.addActionListener(new ActionListener(){
@@ -485,11 +485,11 @@ public class jdbcpostgreSQL {
         try {
           Statement statement = conn.createStatement();
           String currentSKU = (String) manager.invEditTableModel.getValueAt(0, 1);
-          print(currentSKU);
+//          print(currentSKU);
           String sqlStatement = "DELETE FROM inventory WHERE sku='" + currentSKU + "';";
-          print(sqlStatement);
+//          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
-          print("Delete result: " + rs);
+//          print("Delete result: " + rs);
           refreshTablesFromDB(manager);
         }catch(SQLException e){
           e.printStackTrace();
@@ -522,12 +522,12 @@ public class jdbcpostgreSQL {
                 "INSERT INTO inventory (description, sku, quantity, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
                         "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", '" + row.get(4) + "', '" + row.get(5) + "', " + row.get(6) + ", '" + row.get(7) + "', '" + row.get(8) + "', '" + row.get(9) + "', " + row.get(10) + ", '" + row.get(11) + "');";
 
-        print(sqlStatement);
+//        print(sqlStatement);
 
         try {
           Statement stmt = conn.createStatement();
           int rs = stmt.executeUpdate(sqlStatement);
-          print("Result Add Row: " + rs);
+//          print("Result Add Row: " + rs);
           refreshTablesFromDB(manager);
         } catch (SQLException e) {
           e.printStackTrace();
@@ -568,9 +568,9 @@ public class jdbcpostgreSQL {
                           ", detailed_description = '" + row.get(11) + "' " +
                           "WHERE sku = '" + row.get(1) + "';";
 
-          print(sqlStatement);
+//          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
-          print("Update result: " + rs);
+//          print("Update result: " + rs);
           refreshTablesFromDB(manager);
         } catch (SQLException ex) {
           ex.printStackTrace();
@@ -591,11 +591,11 @@ public class jdbcpostgreSQL {
       try {
         Statement statement = conn.createStatement();
         String currentItem = (String) manager.DTOEditTableModel.getValueAt(0, 0);
-        print(currentItem);
+//        print(currentItem);
         String sqlStatement = "DELETE FROM weeksales WHERE item='" + currentItem + "';";
-        print(sqlStatement);
+//        print(sqlStatement);
         int rs = statement.executeUpdate(sqlStatement);
-        print("Delete result: " + rs);
+//        print("Delete result: " + rs);
         refreshTablesFromDB(manager);
       }catch(SQLException e){
         e.printStackTrace();
@@ -627,12 +627,12 @@ public class jdbcpostgreSQL {
                 "INSERT INTO weeksales (item, quantity, total) " +
                         "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0);";
 
-        print(sqlStatement);
+//        print(sqlStatement);
 
         try {
           Statement stmt = conn.createStatement();
           int rs = stmt.executeUpdate(sqlStatement);
-          print("Result Add Row: " + rs);
+//          print("Result Add Row: " + rs);
           refreshTablesFromDB(manager);
         } catch (SQLException e) {
           e.printStackTrace();
@@ -662,9 +662,9 @@ public class jdbcpostgreSQL {
                           "', quantity = " + row.get(1) + ", total = 0 " +
                           "WHERE item = '" + row.get(0) + "';";
 
-          print(sqlStatement);
+//          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
-          print("Update result: " + rs);
+//          print("Update result: " + rs);
           refreshTablesFromDB(manager);
         } catch (SQLException ex) {
           ex.printStackTrace();
@@ -686,11 +686,11 @@ public class jdbcpostgreSQL {
       try {
         Statement statement = conn.createStatement();
         String currentItem = (String) manager.menuItemsEditTableModel.getValueAt(0, 0);
-        print(currentItem);
+//        print(currentItem);
         String sqlStatement = "DELETE FROM menu_key WHERE item = " + currentItem + ";";
-        print(sqlStatement);
+//        print(sqlStatement);
         int rs = statement.executeUpdate(sqlStatement);
-        print("Delete result: " + rs);
+//        print("Delete result: " + rs);
         refreshTablesFromDB(manager);
       }catch(SQLException e){
         e.printStackTrace();
@@ -722,12 +722,12 @@ public class jdbcpostgreSQL {
                 "INSERT INTO menu_key (item, name, description, price) " +
                         "VALUES (" + row.get(0) + ", '" + row.get(1) + "', '" + row.get(2) + "', '" + row.get(3) + "');";
 
-        print(sqlStatement);
+//        print(sqlStatement);
 
         try {
           Statement stmt = conn.createStatement();
           int rs = stmt.executeUpdate(sqlStatement);
-          print("Result Add Row: " + rs);
+//          print("Result Add Row: " + rs);
           refreshTablesFromDB(manager);
         } catch (SQLException e) {
           e.printStackTrace();
@@ -756,9 +756,9 @@ public class jdbcpostgreSQL {
                           "', price = '" + row.get(3) + "' " +
                           "WHERE item = " + row.get(0) + ";";
 
-          print(sqlStatement);
+//          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
-          print("Update result: " + rs);
+//          print("Update result: " + rs);
           refreshTablesFromDB(manager);
         } catch (SQLException ex) {
           ex.printStackTrace();
@@ -773,6 +773,7 @@ public class jdbcpostgreSQL {
       }
     });
   }
+  // _____________________________________________________________________________________
 
   // print helper function
   public static void print(Object out) {
