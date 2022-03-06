@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class jdbcpostgreSQL {
@@ -43,14 +44,15 @@ public class jdbcpostgreSQL {
 
 
     // populate database if empty --------------------------------------------
-    inputElementsIntoWeekOrders("./CSCE315-1/FirstWeekSales.csv");
-    inputElementsIntoWeekOrders("./CSCE315-1/SecondWeekSales.csv");
-    inputElementsIntoWeekOrders("./CSCE315-1/ThirdWeekSales.csv");
-    inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+//    inputElementsIntoWeekOrders("./CSCE315-1/FirstWeekSales.csv");
+//    inputElementsIntoWeekOrders("./CSCE315-1/SecondWeekSales.csv");
+//    inputElementsIntoWeekOrders("./CSCE315-1/ThirdWeekSales.csv");
+//    inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
 
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
+    getItemConversionsDB("2022-01-30", "2022-02-01");
     // -----------------------------------------------------------------------
 
 
@@ -166,7 +168,7 @@ public class jdbcpostgreSQL {
       tableName =  fileName.substring((fileName.length()-13), (fileName.length()-4));
       String sqlStatement = "CREATE TABLE " + tableName + " ( ";
       // populates in the following order Item, Quantity, Total
-      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " INT, " + parseArr[3].strip() + " TEXT, " + "DateOPurchase" + " DATE );";
+      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " INT, " + parseArr[3].strip() + " TEXT, " + "DateOfPurchase" + " DATE );";
       print(sqlStatement);
       // SQL side;
       int result = 0;
@@ -380,6 +382,71 @@ public class jdbcpostgreSQL {
       e.printStackTrace();
       System.err.println(e.getClass().getName() + ": " + e.getMessage());
       System.exit(0);
+    }
+  }
+
+  public static void getItemConversionsDB(String dateA, String dateB) throws SQLException {
+    // psuedo-psuedo code for item conversions --> THIS CODE HAS NOT BEEN TESTED, BUT LOGIC IS THERE <--
+
+    // populate array of item conversions
+    Statement stmt = jdbcpostgreSQL.conn.createStatement();
+    String[] converArr = new String[19];
+
+
+    ResultSet result = stmt.executeQuery("SELECT * FROM itemconversion;");
+    while(result.next()){
+
+        // first value is the # of that item used, then its description
+        int i = result.getInt("item")-501;
+        converArr[i] = "0;" + result.getString("description");
+        print("Conversion Array: " + converArr[i]);
+    }
+
+    //grab resultset for weeksales, grab total # of each item used in timeframe
+    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateopurchase > '" + dateA + "' AND dateopurchase < '" + dateB + "';");
+    // SELECT * FROM weeksales WHERE dateopurchase > '2022-01-30' AND dateopurchase < '2022-01-31';
+    print("ParseArr: ");
+    while(result.next()){
+      String item = result.getString("item");
+
+      //splits the description into an array, recombine later
+      String parseArr[] = converArr[Integer.parseInt(item.substring(item.length()-3)) - 501].split(";");
+
+      //the # of used updated
+      parseArr[0] = String.valueOf(Integer.parseInt(parseArr[0]) + result.getInt("Quantity"));
+
+      //put string back together
+      converArr[Integer.parseInt(item.substring(item.length()-3)) - 501] = String.join(";",parseArr);
+
+      for (String s : parseArr) {
+        System.out.print(s + " | ");
+      }
+      print("");
+    }
+
+    // now converArr has: AMOUNT;.....restofdescription..... on each index
+    // final part
+    print("Amount Used: ");
+    for(String convItem : converArr){
+      String parseArr[] = convItem.split(";");
+      int multiplier = Integer.parseInt(parseArr[0]);
+
+      // might need an extra column in inventory for 'used'
+      // or some temporary column in the manager gui for that date range
+
+
+      // iterate the new parsed array from 2nd index onwards
+      // each is 'description=amount'
+
+      String[] descArray = Arrays.copyOfRange(parseArr, 1, parseArr.length);
+        for(String desc : descArray){
+          String[] parseDesc = desc.split("=");
+          double invUsed = Double.parseDouble(parseDesc[1]) * multiplier; // use this for the column
+          print(parseDesc[0] + ": " + invUsed + "    |    multiplier: " + multiplier);
+            // parseDesc[0] will match the description of the inventory item in a query,
+                // e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
+        }
+
     }
   }
 
