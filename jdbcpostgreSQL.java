@@ -34,7 +34,7 @@ public class jdbcpostgreSQL {
 
 
   // _______________________________________________ MAIN ____________________________________________________
-  public static void main(String[] args) throws SQLException {
+  public static void main(String[] args) throws SQLException, FileNotFoundException {
 
     // create connection -----------------------------------------------------
     openConnection();
@@ -43,10 +43,10 @@ public class jdbcpostgreSQL {
 
 
     // populate database if empty --------------------------------------------
-//    inputElementsIntoWeekOrders("./CSCE315-1/FirstWeekSales.csv");
-//    inputElementsIntoWeekOrders("./CSCE315-1/SecondWeekSales.csv");
-//    inputElementsIntoWeekOrders("./CSCE315-1/ThirdWeekSales.csv");
-//    inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+    inputElementsIntoWeekOrders("./CSCE315-1/FirstWeekSales.csv");
+    inputElementsIntoWeekOrders("./CSCE315-1/SecondWeekSales.csv");
+    inputElementsIntoWeekOrders("./CSCE315-1/ThirdWeekSales.csv");
+    inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
 
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
