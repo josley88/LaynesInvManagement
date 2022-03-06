@@ -59,12 +59,12 @@ public class Manager {
 
     public JButton toggleTrendsButton;
 
-    public JComboBox DTO_R1_MM_Box;
-    public JComboBox DTO_R1_DD_Box;
-    public JComboBox DTO_R1_YYYY_Box;
-    public JComboBox DTO_R2_MM_Box;
-    public JComboBox DTO_R2_DD_Box;
-    public JComboBox DTO_R2_YYYY_Box;
+    public JComboBox<String> DTO_R1_MM_Box;
+    public JComboBox<String> DTO_R1_DD_Box;
+    public JComboBox<String> DTO_R1_YYYY_Box;
+    public JComboBox<String> DTO_R2_MM_Box;
+    public JComboBox<String> DTO_R2_DD_Box;
+    public JComboBox<String> DTO_R2_YYYY_Box;
 
     public JCheckBox range1CheckBox;
     public JCheckBox range2CheckBox;
@@ -76,9 +76,6 @@ public class Manager {
     final private String[] invCol = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
     final private String[] DTOCol = {"Item", "Quantity"};
     final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
-    final private String[] months = {"01","02","03","04","05","06","07","08","09","10","11","12"};
-    final private String[] days = {"1"," 2"," 3"," 4"," 5"," 6"," 7"," 8"," 9"," 10"," 11"," 12"," 13"," 14"," 15"," 16"," 17"," 18"," 19"," 20"," 21"," 22"," 23"," 24"," 25"," 26"," 27"," 28"," 29"," 30"," 31"};
-    final private String[] years = {"2021"," 2022"," 2023"," 2024"," 2025"," 2026"," 2027"," 2028"," 2029"," 2030"};
 
     public Manager() {
 
@@ -113,12 +110,21 @@ public class Manager {
         // ------------------------------------------------------------------
 
         // fill in combo box dates
-//        DTO_R1_MM_Box = new JComboBox(months);
-//        DTO_R1_DD_Box = new JComboBox(days);
-//        DTO_R1_YYYY_Box = new JComboBox(years);
-//        DTO_R2_MM_Box = new JComboBox(months);
-//        DTO_R2_DD_Box = new JComboBox(days);
-//        DTO_R2_YYYY_Box = new JComboBox(years);
+        String[] months = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"};
+        for (String month : months) {
+            DTO_R1_MM_Box.addItem(month);
+            DTO_R2_MM_Box.addItem(month);
+        }
+        String[] days = {"1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9", " 10", " 11", " 12", " 13", " 14", " 15", " 16", " 17", " 18", " 19", " 20", " 21", " 22", " 23", " 24", " 25", " 26", " 27", " 28", " 29", " 30", " 31"};
+        for (String day : days) {
+            DTO_R1_DD_Box.addItem(day);
+            DTO_R2_DD_Box.addItem(day);
+        }
+        String[] years = {"2021", " 2022", " 2023", " 2024", " 2025", " 2026", " 2027", " 2028", " 2029", " 2030"};
+        for (String year : years) {
+            DTO_R1_YYYY_Box.addItem(year);
+            DTO_R2_YYYY_Box.addItem(year);
+        }
 
         // setup column identifiers ------------------------------------------
         invTableModel.setColumnIdentifiers(invCol);

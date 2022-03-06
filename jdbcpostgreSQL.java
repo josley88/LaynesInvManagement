@@ -89,12 +89,12 @@ public class jdbcpostgreSQL {
 
 
   public static String changeDate(String fileName){
-    int indexOffirstBS = fileName.indexOf('/');
+    int indexOfFirstBS = fileName.indexOf('/');
     String month = fileName.substring(fileName.indexOf('/')+1);
-    int indexOf2ndBS = month.indexOf('/') + fileName.length()-month.length();
-    month = fileName.substring(0,indexOffirstBS);
-    String day = fileName.substring(indexOffirstBS+1 , indexOf2ndBS);
-    String year = fileName.substring(indexOf2ndBS+1);
+    int indexOf2ndBS = month.indexOf('/') + fileName.length() - month.length();
+    month = fileName.substring(0,indexOfFirstBS);
+    String day = fileName.substring(indexOfFirstBS + 1 , indexOf2ndBS);
+    String year = fileName.substring(indexOf2ndBS + 1);
     int monthI = Integer.parseInt(month);
     int dayI = Integer.parseInt(day);
     int yearI = Integer.parseInt(year);
