@@ -166,7 +166,7 @@ public class jdbcpostgreSQL {
       tableName =  fileName.substring((fileName.length()-13), (fileName.length()-4));
       String sqlStatement = "CREATE TABLE " + tableName + " ( ";
       // populates in the following order Item, Quantity, Total
-      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " DOUBLE, "+ "FillAmt" + " DOUBLE, "  + parseArr[3].strip() + " TEXT, " + "DateOPurchase" + " DATE );";
+      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " INT, " + parseArr[3].strip() + " TEXT, " + "DateOPurchase" + " DATE );";
       print(sqlStatement);
       // SQL side;
       int result = 0;
@@ -182,7 +182,7 @@ public class jdbcpostgreSQL {
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(parseArr[1].equals("")!=true) {
-            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() + "\'," + parseArr[2].strip() + "," + "\'" + parseArr[2].strip() + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
+            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() +  "\',\'" + parseArr[2].strip() + "\'" + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
@@ -236,7 +236,7 @@ public class jdbcpostgreSQL {
       tableName = "INVENTORY";
       String sqlStatement = "CREATE TABLE " + "INVENTORY" + " ( ";
       // populates in the following order Item, Quantity, Total
-      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " TEXT PRIMARY KEY, "+ parseArr[3].strip() + " INT, "+ parseArr[4].strip() + " INT, "+ parseArr[5].strip() + " TEXT, "+ parseArr[6].strip() + " TEXT, "+ parseArr[7].strip() + " INT, "+ parseArr[8].strip() + " TEXT, "+ parseArr[9].strip() + " TEXT, "+ parseArr[10].strip() + " TEXT, "+ parseArr[11].strip() + " INT, "+ parseArr[12].strip() + " TEXT"+" );";
+      sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " TEXT PRIMARY KEY, "+ parseArr[3].strip() + " DOUBLE, "+ "FillAmt" + " DOUBLE, " + parseArr[4].strip() + " INT, "+ parseArr[5].strip() + " TEXT, "+ parseArr[6].strip() + " TEXT, "+ parseArr[7].strip() + " INT, "+ parseArr[8].strip() + " TEXT, "+ parseArr[9].strip() + " TEXT, "+ parseArr[10].strip() + " TEXT, "+ parseArr[11].strip() + " INT, "+ parseArr[12].strip() + " TEXT"+" );";
       print(sqlStatement);
       // SQL side;
       int result = stmt.executeUpdate(sqlStatement);
@@ -247,7 +247,7 @@ public class jdbcpostgreSQL {
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0 && sc.hasNextLine()){
           if(parseArr[1].equals("")!=true) {
-            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + parseArr[1].strip() + "\',\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + parseArr[4].strip() + "\'" + "," + "\'" + parseArr[5].strip() + "\'"+ "," + "\'" + parseArr[6].strip() + "\'" + "," + "\'" + parseArr[7].strip() + "\'" + "," + "\'" + parseArr[8].strip() + "\'" + "," + "\'" + parseArr[9].strip() + "\'" + "," + "\'" + parseArr[10].strip() + "\'" + "," + "\'" + parseArr[11].strip() + "\'" + "," + "\'" + parseArr[12].strip() + "\'" + ");";
+            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + parseArr[1].strip() + "\',\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + ","  + "\'" + parseArr[3].strip() + "\'" + ","+ "\'" + parseArr[4].strip() + "\'" + "," + "\'" + parseArr[5].strip() + "\'"+ "," + "\'" + parseArr[6].strip() + "\'" + "," + "\'" + parseArr[7].strip() + "\'" + "," + "\'" + parseArr[8].strip() + "\'" + "," + "\'" + parseArr[9].strip() + "\'" + "," + "\'" + parseArr[10].strip() + "\'" + "," + "\'" + parseArr[11].strip() + "\'" + "," + "\'" + parseArr[12].strip() + "\'" + ");";
             print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
