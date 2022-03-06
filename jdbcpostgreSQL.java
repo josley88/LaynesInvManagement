@@ -134,7 +134,7 @@ public class jdbcpostgreSQL {
 
 
   // function to input weekly purchase into daily order tables. It will take in the file name, and it will update the database directly
-  public static void inputElementsIntoWeekOrders(String fileName) throws SQLException {
+  public static void inputElementsIntoWeekOrders(String fileName) throws SQLException, FileNotFoundException {
     // skip if table already exists
     Boolean append = false;
     if (tableExist(conn, "weeksales")) {
@@ -143,7 +143,7 @@ public class jdbcpostgreSQL {
 
     Scanner sc;
     
-//    try{
+    try{
       Statement stmt = conn.createStatement();
       String startDate = "01/30/2022";
       if(fileName.equals("./CSCE315-1/SecondWeekSales.csv")){
@@ -207,12 +207,11 @@ public class jdbcpostgreSQL {
 
 
 
-    } 
-    catch (Exception e){
+    } catch (Exception e){
       e.printStackTrace();
       System.err.println(e.getClass().getName()+": "+e.getMessage());
       System.exit(0);
-  }
+    }
   }
 
   // function to input the elements into the inventory
