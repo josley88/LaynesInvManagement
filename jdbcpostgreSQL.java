@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.plaf.nimbus.State;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -31,6 +32,8 @@ public class jdbcpostgreSQL {
   public static String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
   public static String userName = "csce315" + sectionNumber + "_" + teamNumber + "user";
   public static String userPassword = "315gang";
+
+  public static Manager manager;
   //___________________________________________________
 
 
@@ -52,14 +55,14 @@ public class jdbcpostgreSQL {
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
-    getItemConversionsDB("2022-01-30", "2022-02-01");
+    getItemConversionsFromDateRange("2022-01-30", "2022-02-01");
     // -----------------------------------------------------------------------
 
 
 
     // setup manager and server GUI frame and attach Manager class -----------
     JFrame managerGUI = new JFrame();
-    Manager manager = new Manager();
+    manager = new Manager();
     JFrame serverGUI = new JFrame();
     Server server = new Server();
 
@@ -67,13 +70,14 @@ public class jdbcpostgreSQL {
     serverGUI.setSize(1280, 720);
     managerGUI.setContentPane(manager.getRootPanel());
     managerGUI.setSize(1280, 720);
+    log("Initialized");
     // -----------------------------------------------------------------------
 
 
 
     // fill tables and set up event listeners --------------------------------
-    refreshTablesFromDB(manager);
-    setupManagerEventListeners(manager);
+    refreshTablesFromDB();
+    setupManagerEventListeners();
     // -----------------------------------------------------------------------
 
 
@@ -89,7 +93,7 @@ public class jdbcpostgreSQL {
 
   // ____________________________________________ FUNCTIONS __________________________________________________
 
-
+  // helper function for changing date in inputElementsIntoWeekOrders
   public static String changeDate(String fileName){
     int indexOfFirstBS = fileName.indexOf('/');
     String month = fileName.substring(fileName.indexOf('/')+1);
@@ -385,70 +389,7 @@ public class jdbcpostgreSQL {
     }
   }
 
-  public static void getItemConversionsDB(String dateA, String dateB) throws SQLException {
-    // psuedo-psuedo code for item conversions --> THIS CODE HAS NOT BEEN TESTED, BUT LOGIC IS THERE <--
 
-    // populate array of item conversions
-    Statement stmt = jdbcpostgreSQL.conn.createStatement();
-    String[] converArr = new String[19];
-
-
-    ResultSet result = stmt.executeQuery("SELECT * FROM itemconversion;");
-    while(result.next()){
-
-        // first value is the # of that item used, then its description
-        int i = result.getInt("item")-501;
-        converArr[i] = "0;" + result.getString("description");
-        print("Conversion Array: " + converArr[i]);
-    }
-
-    //grab resultset for weeksales, grab total # of each item used in timeframe
-    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateopurchase > '" + dateA + "' AND dateopurchase < '" + dateB + "';");
-    // SELECT * FROM weeksales WHERE dateopurchase > '2022-01-30' AND dateopurchase < '2022-01-31';
-    print("ParseArr: ");
-    while(result.next()){
-      String item = result.getString("item");
-
-      //splits the description into an array, recombine later
-      String parseArr[] = converArr[Integer.parseInt(item.substring(item.length()-3)) - 501].split(";");
-
-      //the # of used updated
-      parseArr[0] = String.valueOf(Integer.parseInt(parseArr[0]) + result.getInt("Quantity"));
-
-      //put string back together
-      converArr[Integer.parseInt(item.substring(item.length()-3)) - 501] = String.join(";",parseArr);
-
-      for (String s : parseArr) {
-        System.out.print(s + " | ");
-      }
-      print("");
-    }
-
-    // now converArr has: AMOUNT;.....restofdescription..... on each index
-    // final part
-    print("Amount Used: ");
-    for(String convItem : converArr){
-      String parseArr[] = convItem.split(";");
-      int multiplier = Integer.parseInt(parseArr[0]);
-
-      // might need an extra column in inventory for 'used'
-      // or some temporary column in the manager gui for that date range
-
-
-      // iterate the new parsed array from 2nd index onwards
-      // each is 'description=amount'
-
-      String[] descArray = Arrays.copyOfRange(parseArr, 1, parseArr.length);
-        for(String desc : descArray){
-          String[] parseDesc = desc.split("=");
-          double invUsed = Double.parseDouble(parseDesc[1]) * multiplier; // use this for the column
-          print(parseDesc[0] + ": " + invUsed + "    |    multiplier: " + multiplier);
-            // parseDesc[0] will match the description of the inventory item in a query,
-                // e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
-        }
-
-    }
-  }
 
   // helper function to determine if a table already exists in the database
   public static boolean tableExist(Connection conn, String tableName) throws SQLException {
@@ -506,6 +447,72 @@ public class jdbcpostgreSQL {
     return null;
   }
 
+  // gets MenuItem to Inventory Conversions from the database
+  public static void getItemConversionsFromDateRange(String dateA, String dateB) throws SQLException {
+    // psuedo-psuedo code for item conversions --> THIS CODE HAS NOT BEEN TESTED, BUT LOGIC IS THERE <--
+
+    // populate array of item conversions
+    Statement stmt = jdbcpostgreSQL.conn.createStatement();
+    String[] converArr = new String[19];
+
+
+    ResultSet result = stmt.executeQuery("SELECT * FROM itemconversion;");
+    while(result.next()){
+
+      // first value is the # of that item used, then its description
+      int i = result.getInt("item")-501;
+      converArr[i] = "0;" + result.getString("description");
+      print("Conversion Array: " + converArr[i]);
+    }
+
+    //grab resultset for weeksales, grab total # of each item used in timeframe
+    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase > '" + dateA + "' AND dateofpurchase < '" + dateB + "';");
+    // SELECT * FROM weeksales WHERE dateofpurchase > '2022-01-30' AND dateofpurchase < '2022-01-31';
+    print("ParseArr: ");
+    while(result.next()){
+      String item = result.getString("item");
+
+      //splits the description into an array, recombine later
+      String parseArr[] = converArr[Integer.parseInt(item.substring(item.length()-3)) - 501].split(";");
+
+      //the # of used updated
+      parseArr[0] = String.valueOf(Integer.parseInt(parseArr[0]) + result.getInt("Quantity"));
+
+      //put string back together
+      converArr[Integer.parseInt(item.substring(item.length()-3)) - 501] = String.join(";",parseArr);
+
+      for (String s : parseArr) {
+        System.out.print(s + " | ");
+      }
+      print("");
+    }
+
+    // now converArr has: AMOUNT;.....restofdescription..... on each index
+    // final part
+    print("Amount Used: ");
+    for(String convItem : converArr){
+      String parseArr[] = convItem.split(";");
+      int multiplier = Integer.parseInt(parseArr[0]);
+
+      // might need an extra column in inventory for 'used'
+      // or some temporary column in the manager gui for that date range
+
+
+      // iterate the new parsed array from 2nd index onwards
+      // each is 'description=amount'
+
+      String[] descArray = Arrays.copyOfRange(parseArr, 1, parseArr.length);
+      for(String desc : descArray){
+        String[] parseDesc = desc.split("=");
+        double invUsed = Double.parseDouble(parseDesc[1]) * multiplier; // use this for the column
+        print(parseDesc[0] + ": " + invUsed + "    |    multiplier: " + multiplier);
+        // parseDesc[0] will match the description of the inventory item in a query,
+        // e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
+      }
+
+    }
+  }
+
   // gets Daily Total Orders from the database
   public static ArrayList<ArrayList<String>> getDBDTO () {
     try {
@@ -517,6 +524,7 @@ public class jdbcpostgreSQL {
         ArrayList<String> row = new ArrayList<String>();
         row.add(rs.getString("item"));
         row.add(rs.getString("quantity"));
+        row.add(rs.getString("dateofpurchase"));
         result.add(row);
         //print(row.toString());
       }
@@ -587,7 +595,7 @@ public class jdbcpostgreSQL {
   }
 
   // refresh tables in manager GUI
-  public static void refreshTablesFromDB(Manager manager) {
+  public static void refreshTablesFromDB() {
     ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
     ArrayList<ArrayList<String>> DTODB = getDBDTO();
     ArrayList<ArrayList<String>> menuItemsDB = getDBMenuItems();
@@ -604,13 +612,20 @@ public class jdbcpostgreSQL {
     }
   }
 
-  // following functions set up the event listeners for buttons and tables in manager GUI
-  public static void setupManagerEventListeners(Manager manager) {
-    setupInventoryEventListeners(manager);
-    setupDTOEventListeners(manager);
-    setupMenuItemsListeners(manager);
+  // refreshes the table number given with the date range given
+  public static void refreshInvTableFromRange(String dateA, String dateB) throws SQLException {
+    Statement stmt = conn.createStatement();
+    ResultSet result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase > '" + dateA + "' AND dateofpurchase < '" + dateB + "';");
+
   }
-  public static void setupInventoryEventListeners(Manager manager) {
+
+  // following functions set up the event listeners for buttons and tables in manager GUI
+  public static void setupManagerEventListeners() {
+    setupInventoryEventListeners();
+    setupDTOEventListeners();
+    setupMenuItemsListeners();
+  }
+  public static void setupInventoryEventListeners() {
     // DELETE currently selected row
     manager.invDeleteRowButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
@@ -622,7 +637,7 @@ public class jdbcpostgreSQL {
 //          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
 //          print("Delete result: " + rs);
-          refreshTablesFromDB(manager);
+          refreshTablesFromDB();
         }catch(SQLException e){
           e.printStackTrace();
         }
@@ -660,7 +675,7 @@ public class jdbcpostgreSQL {
           Statement stmt = conn.createStatement();
           int rs = stmt.executeUpdate(sqlStatement);
 //          print("Result Add Row: " + rs);
-          refreshTablesFromDB(manager);
+          refreshTablesFromDB();
         } catch (SQLException e) {
           e.printStackTrace();
         }
@@ -703,7 +718,7 @@ public class jdbcpostgreSQL {
 //          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
 //          print("Update result: " + rs);
-          refreshTablesFromDB(manager);
+          refreshTablesFromDB();
         } catch (SQLException ex) {
           ex.printStackTrace();
         }
@@ -713,11 +728,11 @@ public class jdbcpostgreSQL {
     // REFRESH button
     manager.invRefreshButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
-        refreshTablesFromDB(manager);
+        refreshTablesFromDB();
       }
     });
   }
-  public static void setupDTOEventListeners(Manager manager) {
+  public static void setupDTOEventListeners() {
     // DELETE currently selected row
     manager.DTODeleteRowButton.addActionListener(ae -> {
       try {
@@ -728,7 +743,7 @@ public class jdbcpostgreSQL {
 //        print(sqlStatement);
         int rs = statement.executeUpdate(sqlStatement);
 //        print("Delete result: " + rs);
-        refreshTablesFromDB(manager);
+        refreshTablesFromDB();
       }catch(SQLException e){
         e.printStackTrace();
       }
@@ -765,7 +780,7 @@ public class jdbcpostgreSQL {
           Statement stmt = conn.createStatement();
           int rs = stmt.executeUpdate(sqlStatement);
 //          print("Result Add Row: " + rs);
-          refreshTablesFromDB(manager);
+          refreshTablesFromDB();
         } catch (SQLException e) {
           e.printStackTrace();
         }
@@ -797,7 +812,7 @@ public class jdbcpostgreSQL {
 //          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
 //          print("Update result: " + rs);
-          refreshTablesFromDB(manager);
+          refreshTablesFromDB();
         } catch (SQLException ex) {
           ex.printStackTrace();
         }
@@ -807,11 +822,11 @@ public class jdbcpostgreSQL {
     // REFRESH button
     manager.DTORefreshButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
-        refreshTablesFromDB(manager);
+        refreshTablesFromDB();
       }
     });
   }
-  public static void setupMenuItemsListeners(Manager manager) {
+  public static void setupMenuItemsListeners() {
     // MENU ITEMS -------- ---------------------------------------------------------------------------------------
     // DELETE currently selected row
     manager.menuItemsDeleteRowButton.addActionListener(ae -> {
@@ -823,7 +838,7 @@ public class jdbcpostgreSQL {
 //        print(sqlStatement);
         int rs = statement.executeUpdate(sqlStatement);
 //        print("Delete result: " + rs);
-        refreshTablesFromDB(manager);
+        refreshTablesFromDB();
       }catch(SQLException e){
         e.printStackTrace();
       }
@@ -860,7 +875,7 @@ public class jdbcpostgreSQL {
           Statement stmt = conn.createStatement();
           int rs = stmt.executeUpdate(sqlStatement);
 //          print("Result Add Row: " + rs);
-          refreshTablesFromDB(manager);
+          refreshTablesFromDB();
         } catch (SQLException e) {
           e.printStackTrace();
         }
@@ -891,7 +906,7 @@ public class jdbcpostgreSQL {
 //          print(sqlStatement);
           int rs = statement.executeUpdate(sqlStatement);
 //          print("Update result: " + rs);
-          refreshTablesFromDB(manager);
+          refreshTablesFromDB();
         } catch (SQLException ex) {
           ex.printStackTrace();
         }
@@ -901,7 +916,7 @@ public class jdbcpostgreSQL {
     // REFRESH button
     manager.menuItemsRefreshButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
-        refreshTablesFromDB(manager);
+        refreshTablesFromDB();
       }
     });
   }
@@ -910,6 +925,10 @@ public class jdbcpostgreSQL {
   // print helper function
   public static void print(Object out) {
     System.out.println(out);
+  }
+
+  public static void log(Object out) {
+    manager.logTextField.setText((String) out);
   }
 
 
