@@ -175,8 +175,8 @@ public class Server implements ActionListener{
             Statement stmt = jdbcpostgreSQL.conn.createStatement();
             Statement stmt2 = jdbcpostgreSQL.conn.createStatement();
             // SQL side;
-            ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM menu_key");
-            ResultSet resultButtonName = stmt2.executeQuery("SELECT item,name FROM menu_key WHERE item > 519");
+            ResultSet result = stmt.executeQuery("SELECT COUNT(*) FROM menu_key;");
+            ResultSet resultButtonName = stmt2.executeQuery("SELECT item,name FROM menu_key WHERE item > 519;");
             if(result.next()){
                 numRows = result.getInt("count");
                 System.out.print(numRows);

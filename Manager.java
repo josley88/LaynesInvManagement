@@ -205,3 +205,61 @@ public class Manager {
         _table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
 }
+
+
+/* psuedo-psuedo code for item conversions --> THIS CODE HAS NOT BEEN TESTED, BUT LOGIC IS THERE <--
+    //populate array of item conversions
+
+    Statement stmt = jdbcpostgreSQL.conn.createStatement();
+    String converArr[] = new String[19];
+    
+
+    ResultSet result = stmt.executeQuery("SELECT * FROM itemconversions;");
+    while(result.next()){
+        //first value is the # of that item used, then its description
+        converArr[result.getInt("item")-501] = "0;" + result.getString(description);
+    } 
+
+    //grab resultset for weeksales, grab total # of each item used in timeframe
+    
+    result = stmt.executeQuery("SELECT * FROM weeksales WHERE date > a AND date < b;");
+    while(result.next()){
+        String item = result.getString("item");
+        //splits the description into an array, recombine later
+        String parseArr[] = converArr[Integer.parseInt(item.substring(item.length()-3)) - 501].split(";");
+        //the # of used updated
+        parseArr[0] = Integer.parseInt(parseArr[0]) + result.getInt("Quantity");
+        
+        //put string back together
+        converArr[Integer.parseInt(item.substring(item.length()-3)) - 501] = String.join(";",parseArr);
+    } 
+
+    //now converArr has: AMOUNT;.....restofdescription..... on each index
+    //final part
+    for(String convItem : converArr){
+        String parseArr[] = convItem.split(";");
+        int multiplier = Integer.parseInt(parseArr[0]);
+
+        //might need an extra column in inventory for 'used'
+            //or some temporary column in the manager gui for that date range
+        
+
+        //iterate the new parsed array from 2nd index onwards
+        //each is 'description=amount'
+        for(String desc : parseArr[].subList(1)){
+            parseDesc = desc.split("=");
+            double invUsed = parseDesc[1] * multiplier; //use this for the column
+            //parseDesc[0] will match the description of the inventory item in a query,
+                //e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
+        }
+        
+    }
+    
+    
+        
+
+
+
+
+
+*/
