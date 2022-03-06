@@ -10,17 +10,17 @@ import java.util.Scanner;
 
 public class jdbcpostgreSQL {
 
-  //Commands to run this script
-  //This will compile all java files in this directory
-  //javac *.java
-  //This command tells the file where to find the postgres jar which it needs to execute postgres commands, then executes the code
-  //Windows: java -cp ".;postgresql-42.2.8.jar" jdbcpostgreSQL.java
-  //Mac/Linux: java -cp ".:postgresql-42.2.8.jar" jdbcpostgreSQL.java
+  // Commands to run this script
+  // This will compile all java files in this directory
+  // javac *.java
+  // This command tells the file where to find the postgres jar which it needs to execute postgres commands, then executes the code
+  // Windows: java -cp ".;postgresql-42.2.8.jar" jdbcpostgreSQL.java
+  // Mac/Linux: java -cp ".:postgresql-42.2.8.jar" jdbcpostgreSQL.java
 
   // Access Database: psql -h csce-315-db.engr.tamu.edu -U csce315904_21user csce315904_21db
   // run this program from CMD: java -classpath ".\out\production\CSCE315Project2Team21;postgresql-42.2.8.jar" jdbcpostgreSQL
 
-  //MAKE SURE YOU ARE ON VPN or TAMU WI-FI TO ACCESS DATABASE
+  // MAKE SURE YOU ARE ON VPN or TAMU WI-FI TO ACCESS DATABASE
 
   // _________________Global Variables_________________
   public static Connection conn = null;
@@ -43,7 +43,7 @@ public class jdbcpostgreSQL {
 
 
     // populate database if empty --------------------------------------------
-//    inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
+    // inputElementsIntoWeekOrders("./CSCE315-1/FourthWeekSales.csv");
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
