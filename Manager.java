@@ -77,14 +77,18 @@ public class Manager {
 
     public JButton DTORefreshRange1Button;
     public JButton DTORefreshRange2Button;
-    public JCheckBox enableTrendCheckBox;
-    public JTextField logTextField;
 
+    public JCheckBox enableTrendCheckBox;
+
+    public JTextField logTextField;
+    public JTextField revenue2TextBox;
+    public JTextField revenue1TextBox;
 
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
     final private String[] DTOCol = {"Item", "Quantity", "Date of Purchase"};
     final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
+    final private String[] DTOTrendCol = {"Item", "Quant. 1", "Quant. 2", "Price", "Rev. 1", "Rev. 2", "Trend %"};
 
     public Manager() {
 
@@ -104,9 +108,18 @@ public class Manager {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
-        DTOTableModel3 = new DefaultTableModel(DTOCol, 0) {
+        DTOTableModel3 = new DefaultTableModel(DTOTrendCol, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 6) {
+                    return Double.class;
+                } else {
+                    return String.class;
+                }
+            }
         };
         DTOEditTableModel = new DefaultTableModel(DTOCol, 1);
 
@@ -148,7 +161,7 @@ public class Manager {
 
         DTOTableModel1.setColumnIdentifiers(DTOCol);
         DTOTableModel2.setColumnIdentifiers(DTOCol);
-        DTOTableModel3.setColumnIdentifiers(DTOCol);
+        DTOTableModel3.setColumnIdentifiers(DTOTrendCol);
         DTOEditTableModel.setColumnIdentifiers(DTOCol);
 
         menuItemsTableModel.setColumnIdentifiers(menuItemsCol);
@@ -194,6 +207,7 @@ public class Manager {
         // setup auto sort -----------------------------------------------------
         invTable.getRowSorter().toggleSortOrder(1);
         menuItemsTable.getRowSorter().toggleSortOrder(0);
+        DTOTable3.getRowSorter().toggleSortOrder(6);
         // ---------------------------------------------------------------------
 
         // setup tabbed pane font size -----------------------------------------
