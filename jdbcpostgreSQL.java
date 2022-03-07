@@ -622,7 +622,7 @@ public class jdbcpostgreSQL {
     }
   }
 
-  public static void updateTrends()
+  /*public static void updateTrends()
   {
     ArrayList<ArrayList<String>> idWithPricesFromMenuKey = getIdWithPricesFromMenuKey(); //gets item,price,name from db
 
@@ -747,31 +747,6 @@ public class jdbcpostgreSQL {
     }
   }
 
-  public static double getTotalRevenue(JTable table) {
-
-    double totalRevenue = 0.0;
-    for(int i = 0; i < table.getRowCount(); i++)
-    {
-      System.out.println(table.getValueAt(i,0)+"  "+table.getValueAt(i,1)+"  "+table.getValueAt(i,2)+"  ");
-    }
-
-    ArrayList<ArrayList<String>> idWithPricesFromMenuKey = getIdWithPricesFromMenuKey();
-
-    for(int i = 0; i < table.getRowCount(); i++) {
-      String itemID = table.getValueAt(i,0).toString().substring(table.getValueAt(i,0).toString().indexOf("_")+1);
-      for(int j = 0; j < idWithPricesFromMenuKey.size(); j++) {
-        if(itemID.equals(idWithPricesFromMenuKey.get(j).get(0))) {
-          double price = Double.parseDouble(idWithPricesFromMenuKey.get(j).get(1));
-          int quantity = Integer.parseInt(table.getValueAt(i,1).toString());
-          totalRevenue += (price * quantity);
-        }
-      }
-    }
-
-    System.out.println("total rev: " + totalRevenue);
-    return totalRevenue;
-  }
-
   public static ArrayList<ArrayList<String>> getIdWithPricesFromMenuKey() {
     ResultSet rs1;
     ArrayList<ArrayList<String>> idWithPricesFromMenuKey = new ArrayList<ArrayList<String>>();
@@ -789,7 +764,7 @@ public class jdbcpostgreSQL {
       ex.printStackTrace();
     }
     return idWithPricesFromMenuKey;
-  }
+  }*/
 
   // following functions set up the event listeners for buttons and tables in manager GUI
   public static void setupManagerEventListeners() {
@@ -1035,9 +1010,7 @@ public class jdbcpostgreSQL {
       public void itemStateChanged(ItemEvent e) {
         boolean selected = manager.enableTrendCheckBox.isSelected();
         if(selected) {
-          //call function to add all the rows
-          updateTrends();
-          System.out.println("selected!");
+         // updateTrends();
         }
         else {
           manager.clearTable(manager.DTOTableModel3);
