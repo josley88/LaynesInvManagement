@@ -1,10 +1,13 @@
 import javax.swing.*;
+import javax.swing.plaf.nimbus.State;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.event.*;
 import java.sql.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 
 public class jdbcpostgreSQL {
@@ -80,7 +83,7 @@ public class jdbcpostgreSQL {
     log("Initialized");
   }
 
-  
+
 
 
   // ____________________________________________ FUNCTIONS __________________________________________________
@@ -96,15 +99,15 @@ public class jdbcpostgreSQL {
     int monthI = Integer.parseInt(month);
     int dayI = Integer.parseInt(day);
     int yearI = Integer.parseInt(year);
-    
+
     if(monthI == 2){
-        if(dayI == 28){
-            dayI = 1;
-            monthI = 3;
-        }
-        else{
-            dayI++;
-        }
+      if(dayI == 28){
+        dayI = 1;
+        monthI = 3;
+      }
+      else{
+        dayI++;
+      }
     }else  if(monthI == 1){
       if(dayI == 31){
         dayI = 1;
@@ -115,16 +118,16 @@ public class jdbcpostgreSQL {
       }
     }
     else if(monthI == 3){
-        if(dayI == 31){
-            dayI = 1;
-            monthI = 4;
-        }
-        else{
-            dayI++;
-        }
+      if(dayI == 31){
+        dayI = 1;
+        monthI = 4;
+      }
+      else{
+        dayI++;
+      }
     }
     else{
-        dayI++;
+      dayI++;
     }
     fileName = monthI + "/" + dayI + "/" + yearI;
     return fileName;
@@ -140,7 +143,7 @@ public class jdbcpostgreSQL {
     }
 
     Scanner sc;
-    
+
     try{
       Statement stmt = conn.createStatement();
       String startDate = "01/30/2022";
@@ -157,7 +160,7 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String filler = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-    
+
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       String day = parseArr[0].strip();
@@ -175,13 +178,13 @@ public class jdbcpostgreSQL {
 
 
       while(sc.hasNextLine()){
-        
+
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(parseArr[1].equals("")!=true) {
             sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() +  "\',\'" + parseArr[2].strip() + "\'" + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
-           print(sqlStatement);
+            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
             for (String string : parseArr) {
@@ -191,7 +194,7 @@ public class jdbcpostgreSQL {
             }
           }
           else{ // changes day if new day
-            if(sc.hasNextLine()){ // checks if we are at end of file 
+            if(sc.hasNextLine()){ // checks if we are at end of file
               //skips a line
               startDate = changeDate(startDate);
               parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -220,7 +223,7 @@ public class jdbcpostgreSQL {
     }
 
     Scanner sc;
-    
+
     try{
       Statement stmt = conn.createStatement();
 
@@ -228,7 +231,7 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String filler = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-    
+
       String tableName = sc.nextLine().replace("\'", "\'\'").replace(" ", "_").replace("_#", "");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       tableName = "INVENTORY";
@@ -240,7 +243,7 @@ public class jdbcpostgreSQL {
       int result = stmt.executeUpdate(sqlStatement);
       print(result);
       while(sc.hasNextLine()){
-        
+
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0 && sc.hasNextLine()){
@@ -261,7 +264,7 @@ public class jdbcpostgreSQL {
 
 
 
-    } 
+    }
     catch (Exception e){
       e.printStackTrace();
       System.err.println(e.getClass().getName()+": "+e.getMessage());
@@ -277,15 +280,15 @@ public class jdbcpostgreSQL {
     }
 
     Scanner sc;
-    
+
     try{
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-      
+
       tableName = "Menu_Key";
       String sqlStatement = "CREATE TABLE " + "Menu_Key" + " ( ";
-      // populates in the following order Item, name, Description, price 
+      // populates in the following order Item, name, Description, price
       String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       //sanitizes the parse Arr values for (" ")
@@ -301,7 +304,7 @@ public class jdbcpostgreSQL {
       int result = stmt.executeUpdate(sqlStatement);
       print(result);
       while(sc.hasNextLine()){
-        
+
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + ",\'" + parseArr[4].strip() + "\');";
@@ -318,30 +321,30 @@ public class jdbcpostgreSQL {
 
 
 
-    } 
+    }
     catch (Exception e){
       e.printStackTrace();
       System.err.println(e.getClass().getName()+": "+e.getMessage());
       System.exit(0);
-  }
+    }
   }
 
   // function to input item conversions
   public static void inputItemConversions(String fileName){
     Scanner sc;
     String[] parseArr;
-    
+
     try{
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-      
+
       // only create table if it doesn't already exist
       if (!tableExist(conn, "itemconversion")) {
         print("Table doesn't exist");
         tableName = "itemConversion";
         String sqlStatement = "CREATE TABLE " + tableName + " ( ";
-        // populates in the following order Item, Description 
+        // populates in the following order Item, Description
         String tableFormatting = sc.nextLine().replace("\'", "\'\'");
         parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         //sanitizes the parse Arr values for (" ")
@@ -373,7 +376,7 @@ public class jdbcpostgreSQL {
       }
 
 
-    } 
+    }
     catch (Exception e) {
       e.printStackTrace();
       System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -385,29 +388,29 @@ public class jdbcpostgreSQL {
 
   // helper function to determine if a table already exists in the database
   public static boolean tableExist(Connection conn, String tableName) throws SQLException {
-  boolean tExists = false;
-  ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null);
-  
-  try {
-    while (rs.next()) { 
-      String tName = rs.getString("TABLE_NAME");
-      if (tName != null && tName.equals(tableName)) {
-        
+    boolean tExists = false;
+    ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null);
+
+    try {
+      while (rs.next()) {
+        String tName = rs.getString("TABLE_NAME");
+        if (tName != null && tName.equals(tableName)) {
+
           tExists = true;
           break;
+        }
       }
+    } catch (Exception e) {
+      print(e);
     }
-  } catch (Exception e) {
-     print(e);
+    return tExists;
   }
-  return tExists;
-}
 
   // gets Inventory from the database
   public static ArrayList<ArrayList<String>> getDBInventory () {
     try {
-        Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
+      Statement statement = conn.createStatement();
+      ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
       ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<String>();
@@ -565,7 +568,7 @@ public class jdbcpostgreSQL {
   // open database connection
   public static void openConnection() {
 
-   try {
+    try {
       conn = DriverManager.getConnection(dbConnectionString,userName, userPassword);
     } catch (Exception e) {
       e.printStackTrace();
@@ -617,6 +620,175 @@ public class jdbcpostgreSQL {
       tableModel.addRow(row.toArray());
 
     }
+  }
+
+  public static void updateTrends()
+  {
+    ArrayList<ArrayList<String>> idWithPricesFromMenuKey = getIdWithPricesFromMenuKey(); //gets item,price,name from db
+
+    //sets everything to 0
+    for(int i = 0; i < idWithPricesFromMenuKey.size(); i++){
+      ArrayList<String> row = new ArrayList<String>();
+      manager.DTOTableModel3.addRow(row.toArray());
+      manager.DTOTableModel3.setValueAt(idWithPricesFromMenuKey.get(i).get(0).toString(),i,0);
+      manager.DTOTableModel3.setValueAt("0",i,2);
+      manager.DTOTableModel3.setValueAt("0",i,1);
+    }
+
+    //find total revenue of range 1
+    //also stores total amount of revenue for each item in last column of trend result
+    double totalRevenue1 = 0.0;
+    for(int i = 0; i < manager.DTOTable1.getRowCount(); i++)
+    {
+      System.out.println(manager.DTOTable1.getValueAt(i,0)+"  "+manager.DTOTable1.getValueAt(i,1)+"  "+manager.DTOTable1.getValueAt(i,2)+"  ");
+    }
+
+    for(int i = 0; i < manager.DTOTable1.getRowCount(); i++) {
+      String itemID = manager.DTOTable1.getValueAt(i,0).toString().substring(manager.DTOTable1.getValueAt(i,0).toString().indexOf("_")+1);
+      for(int j = 0; j < idWithPricesFromMenuKey.size(); j++) {
+        if(itemID.equals(idWithPricesFromMenuKey.get(j).get(0))) {
+          double price = Double.parseDouble(idWithPricesFromMenuKey.get(j).get(1));
+          int quantity = Integer.parseInt(manager.DTOTable1.getValueAt(i,1).toString());
+          double totalForThisItem = price * quantity;
+
+          double currTotalForThisItem = Double.parseDouble(manager.DTOTableModel3.getValueAt(j,2).toString());
+          double newTotalForThisItem = currTotalForThisItem + totalForThisItem;
+          manager.DTOTableModel3.setValueAt(String.valueOf(newTotalForThisItem),j,2);
+          totalRevenue1 += (totalForThisItem);
+        }
+      }
+    }
+
+    //finds revenue for second range
+    //also stores total amount of revenue for each item in middle column of trend result
+    double totalRevenue2 = 0.0;
+    for(int i = 0; i < manager.DTOTable2.getRowCount(); i++)
+    {
+      System.out.println(manager.DTOTable2.getValueAt(i,0)+"  "+manager.DTOTable2.getValueAt(i,1)+"  "+manager.DTOTable2.getValueAt(i,2)+"  ");
+    }
+
+    for(int i = 0; i < manager.DTOTable2.getRowCount(); i++) {
+      String itemID = manager.DTOTable2.getValueAt(i,0).toString().substring(manager.DTOTable2.getValueAt(i,0).toString().indexOf("_")+1);
+      for(int j = 0; j < idWithPricesFromMenuKey.size(); j++) {
+        if(itemID.equals(idWithPricesFromMenuKey.get(j).get(0))) {
+          double price = Double.parseDouble(idWithPricesFromMenuKey.get(j).get(1));
+          int quantity = Integer.parseInt(manager.DTOTable2.getValueAt(i,1).toString());
+          double totalForThisItem = price * quantity;
+
+          double currTotalForThisItem = Double.parseDouble(manager.DTOTableModel3.getValueAt(j,1).toString());
+          double newTotalForThisItem = currTotalForThisItem + totalForThisItem;
+          manager.DTOTableModel3.setValueAt(String.valueOf(newTotalForThisItem),j,1);
+          totalRevenue2 += (totalForThisItem);
+        }
+      }
+    }
+
+    System.out.println("total rev: " + totalRevenue1);
+
+    System.out.println("total rev: " + totalRevenue2);
+
+    //converts middle(range 2) and last(range 1) column of trend result to that items percentage of total revenue
+    for(int i = 0; i < manager.DTOTableModel3.getRowCount(); i++) {
+      double percentage = Double.parseDouble(manager.DTOTableModel3.getValueAt(i,2).toString()) / totalRevenue1 * 100;
+      String inputPercentage = String.valueOf(percentage);
+      manager.DTOTableModel3.setValueAt(inputPercentage,i,2);
+    }
+
+    for(int i = 0; i < manager.DTOTableModel3.getRowCount(); i++) {
+      double percentage = Double.parseDouble(manager.DTOTableModel3.getValueAt(i,1).toString()) / totalRevenue2 * 100;
+      String inputPercentage = String.valueOf(percentage);
+      manager.DTOTableModel3.setValueAt(inputPercentage,i,1);
+    }
+
+    //finds difference by subtracting last(range 1) column from middle(range 2) column and stores in last column in trend result
+    ArrayList<ArrayList<Double>> list = new ArrayList<ArrayList<Double>>();
+    for(int i = 0; i < manager.DTOTableModel3.getRowCount(); i++) {
+      double rangeOnePercentage = Double.parseDouble(manager.DTOTableModel3.getValueAt(i,2).toString());
+      double rangeTwoPercentage = Double.parseDouble(manager.DTOTableModel3.getValueAt(i,1).toString());
+      double trendPercentage = rangeTwoPercentage - rangeOnePercentage;
+      ArrayList<Double> row = new ArrayList<Double>();
+      row.add(Double.parseDouble(manager.DTOTableModel3.getValueAt(i,0).toString()));
+      row.add(trendPercentage);
+      list.add(row);
+    }
+
+
+    //sorts the percentages in descending order
+    ArrayList<ArrayList<Double>> sortedList = new ArrayList<ArrayList<Double>>();
+    while(list.size() > 0) {
+      ArrayList<Double> row = new ArrayList<Double>();
+      double min = list.get(0).get(1);
+      int minIndex = 0;
+      for(int i = 0; i < list.size(); i++) {
+        if(list.get(i).get(1) < min) {
+          min = list.get(i).get(1);
+          minIndex = i;
+        }
+      }
+      row.add(list.get(minIndex).get(0));
+      row.add(list.get(minIndex).get(1));
+      list.remove(minIndex);
+      sortedList.add(row);
+    }
+
+    //reverses list to put in ascending
+    Collections.reverse(sortedList);
+
+    //rewrites first and last column using sorted list
+    //rewrites middle column to be name of the item
+    for(int i = 0; i < manager.DTOTableModel3.getRowCount(); i++) {
+      manager.DTOTableModel3.setValueAt(String.valueOf(sortedList.get(i).get(0).intValue()),i,0);
+      manager.DTOTableModel3.setValueAt(String.valueOf(sortedList.get(i).get(1)),i,2);
+      for(int j = 0; j < idWithPricesFromMenuKey.size(); j++) {
+        if(manager.DTOTableModel3.getValueAt(i,0).toString().equals(idWithPricesFromMenuKey.get(j).get(0))) {
+          manager.DTOTableModel3.setValueAt(idWithPricesFromMenuKey.get(j).get(2),i,1);
+        }
+      }
+    }
+  }
+
+  public static double getTotalRevenue(JTable table) {
+
+    double totalRevenue = 0.0;
+    for(int i = 0; i < table.getRowCount(); i++)
+    {
+      System.out.println(table.getValueAt(i,0)+"  "+table.getValueAt(i,1)+"  "+table.getValueAt(i,2)+"  ");
+    }
+
+    ArrayList<ArrayList<String>> idWithPricesFromMenuKey = getIdWithPricesFromMenuKey();
+
+    for(int i = 0; i < table.getRowCount(); i++) {
+      String itemID = table.getValueAt(i,0).toString().substring(table.getValueAt(i,0).toString().indexOf("_")+1);
+      for(int j = 0; j < idWithPricesFromMenuKey.size(); j++) {
+        if(itemID.equals(idWithPricesFromMenuKey.get(j).get(0))) {
+          double price = Double.parseDouble(idWithPricesFromMenuKey.get(j).get(1));
+          int quantity = Integer.parseInt(table.getValueAt(i,1).toString());
+          totalRevenue += (price * quantity);
+        }
+      }
+    }
+
+    System.out.println("total rev: " + totalRevenue);
+    return totalRevenue;
+  }
+
+  public static ArrayList<ArrayList<String>> getIdWithPricesFromMenuKey() {
+    ResultSet rs1;
+    ArrayList<ArrayList<String>> idWithPricesFromMenuKey = new ArrayList<ArrayList<String>>();
+    try {
+      Statement stmt = conn.createStatement();
+      rs1 = stmt.executeQuery("SELECT item,price,name FROM menu_key;");
+      while(rs1.next()) {
+        ArrayList<String> row = new ArrayList<String>();
+        row.add(rs1.getString("item"));
+        row.add(rs1.getString("price").substring(1));
+        row.add(rs1.getString("name"));
+        idWithPricesFromMenuKey.add(row);
+      }
+    }catch (SQLException ex) {
+      ex.printStackTrace();
+    }
+    return idWithPricesFromMenuKey;
   }
 
   // following functions set up the event listeners for buttons and tables in manager GUI
@@ -861,7 +1033,16 @@ public class jdbcpostgreSQL {
     // TOGGLE TREND table visibility
     manager.enableTrendCheckBox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        manager.DTOTable3Panel.setVisible(manager.enableTrendCheckBox.isSelected());
+        boolean selected = manager.enableTrendCheckBox.isSelected();
+        if(selected) {
+          //call function to add all the rows
+          updateTrends();
+          System.out.println("selected!");
+        }
+        else {
+          manager.clearTable(manager.DTOTableModel3);
+        }
+        manager.DTOTable3Panel.setVisible(selected);
         log("Toggled Trends");
       }
     });
@@ -986,10 +1167,9 @@ public class jdbcpostgreSQL {
 
 /*
 database communication psuedocode
-
 week sales taking from menukey and itemconversion
   // item string example - sunday_501 or friday_512
-  weeksales-> item.substring(item.length()-3); 
+  weeksales-> item.substring(item.length()-3);
   match above to menukey to grab price
   match above to menuitemconversion to grab ingredients
     menuitemconversion conversion to ingredients
@@ -997,5 +1177,4 @@ week sales taking from menukey and itemconversion
       use split ";" to grab string, then seperate by "="
         left side of = should match inventory ingredients (after tolowercase)
           right side of = is the quantity
-
 */

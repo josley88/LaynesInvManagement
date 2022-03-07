@@ -84,6 +84,7 @@ public class Manager {
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
     final private String[] DTOCol = {"Item", "Quantity", "Date of Purchase"};
+    final private String[] DTOTrend = {"Item", "Name", "Trend (%)"};
     final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
 
     public Manager() {
@@ -104,7 +105,7 @@ public class Manager {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
-        DTOTableModel3 = new DefaultTableModel(DTOCol, 0) {
+        DTOTableModel3 = new DefaultTableModel(DTOTrend, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
@@ -148,7 +149,7 @@ public class Manager {
 
         DTOTableModel1.setColumnIdentifiers(DTOCol);
         DTOTableModel2.setColumnIdentifiers(DTOCol);
-        DTOTableModel3.setColumnIdentifiers(DTOCol);
+        DTOTableModel3.setColumnIdentifiers(DTOTrend);
         DTOEditTableModel.setColumnIdentifiers(DTOCol);
 
         menuItemsTableModel.setColumnIdentifiers(menuItemsCol);
