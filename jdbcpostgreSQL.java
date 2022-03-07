@@ -167,9 +167,13 @@ public class jdbcpostgreSQL {
   // purpse of the func is to update inven database given global vars date.
   public static void updateInventoryGivenDate(){
     try{
-      Statement stmt = conn.createStatement();
-    
-    
+      ArrayList<ArrayList<String>> weeksales = getweeksales();
+      if(weeksales == null){
+        return;
+      }
+      
+      
+      
     
     } catch (Exception e){
       e.printStackTrace();
