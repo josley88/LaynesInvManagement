@@ -565,6 +565,179 @@ public class jdbcpostgreSQL {
     return null;
   }
 
+  // get Daily Order Trends from ranges selected in table 1 and table 2
+  public static ArrayList<ArrayList<Object>> getOrderTrends() {
+
+    // this will hold our menu items. (Item, Quantity, Price, Revenue, Trend %). Two arrays because we have two date ranges.
+    ArrayList<String> itemNames = new ArrayList<String>();
+    int numItems = manager.menuItemsTableModel.getRowCount();
+    ArrayList<ArrayList<Object>> trendTableList = new ArrayList<ArrayList<Object>>();
+    for (int i = 0; i < numItems; i++) {
+      ArrayList<Object> tempList = new ArrayList<Object>(7);
+      tempList.add("");
+      tempList.add("");
+      tempList.add("");
+      tempList.add("");
+      tempList.add("");
+      tempList.add("");
+      tempList.add("");
+      trendTableList.add(tempList);
+    }
+
+
+
+    // table 1 and 2 need to be populated first
+    if (manager.DTOTable1.getRowCount() > 1 && manager.DTOTable2.getRowCount() > 1) {
+      JTable table1 = manager.DTOTable1;
+      JTable table2 = manager.DTOTable2;
+
+      // fill trend list with the appropriate data from list 1
+      for (int i = 0; i < table1.getRowCount(); i++) {
+
+        // get item name minus day of week
+        String itemName = (String) table1.getValueAt(i, 0);
+        itemName = itemName.substring(itemName.indexOf("_") + 1, itemName.length());
+
+        // get quantity
+        String quantity = (String) table1.getValueAt(i, 1);
+
+        // check the items list and see if any new menu items were added from this row. If so, add to the trendTableList
+        if (!itemNames.contains(itemName)) {
+          itemNames.add(itemName);
+
+          // add new item price from menuItems
+          int index = Integer.parseInt(itemName.substring(1)) - 1;
+          String price = (String) manager.menuItemsTableModel.getValueAt(index, 3);
+
+          double revenue1 = Double.parseDouble(price.substring(1)) * Integer.parseInt(quantity);
+
+          ArrayList<Object> newRow = new ArrayList<>(7);
+          newRow.add(itemName);
+          newRow.add(quantity);
+          newRow.add("0");
+          newRow.add(price);
+          newRow.add("$" + revenue1);
+          newRow.add("$0");
+          newRow.add("0");
+          trendTableList.set(index, newRow);
+
+        } else {
+          // index is whatever the name is without the 5 and leading 0's, - 1 (503 -> 2)
+          int index = Integer.parseInt(itemName.substring(1)) - 1;
+          ArrayList<Object> currentRow = trendTableList.get(i);
+
+          // get current row quantity and add new quantity (basically | row[1] = row[1] + quantity | in String version)
+          int currentRowQuantity = Integer.parseInt((String) currentRow.get(1));
+          int rowQuantityToAdd = Integer.parseInt(quantity);
+          int newQuantity = currentRowQuantity + rowQuantityToAdd;
+          currentRow.set(1, Integer.toString(currentRowQuantity + rowQuantityToAdd));
+
+          // update revenue
+          double price = Double.parseDouble(((String) currentRow.get(3)).substring(1));
+          double revenue1 = price * newQuantity;
+          currentRow.set(4, "$" + revenue1);
+          trendTableList.set(i, currentRow);
+        }
+
+
+      }
+
+      // fill trend list with the appropriate data from list 2
+      for (int i = 0; i < table2.getRowCount(); i++) {
+
+        // get item name minus day of week
+        String itemName = (String) table2.getValueAt(i, 0);
+        itemName = itemName.substring(itemName.indexOf("_") + 1);
+
+        // get quantity
+        String quantity = (String) table2.getValueAt(i, 1);
+
+        // check the items list and see if any new menu items were added from this row. If so, add to the trendTableList
+        if (!itemNames.contains(itemName)) {
+          itemNames.add(itemName);
+          // add new item price from menuItems
+          int index = Integer.parseInt(itemName.substring(1)) - 1;
+          String price = (String) manager.menuItemsTableModel.getValueAt(index, 3);
+
+          ArrayList<Object> newRow = new ArrayList<>(7);
+          newRow.add(itemName);
+          newRow.add("0");
+          newRow.add(quantity);
+          newRow.add(price);
+          newRow.add("0");
+          newRow.add("0");
+          newRow.add("0");
+          trendTableList.set(index, newRow);
+        } else {
+          // index is whatever the name is without the 5 and leading 0's, - 1 (503 -> 2)
+          int index = Integer.parseInt(itemName.substring(1));
+
+          ArrayList<Object> currentRow = trendTableList.get(i);
+
+          // get current row quantity and add new quantity (basically | row[2] = row[2] + quantity | in String version)
+          int currentRowQuantity = Integer.parseInt((String) currentRow.get(2));
+          int rowQuantityToAdd = Integer.parseInt(quantity);
+          int newQuantity = currentRowQuantity + rowQuantityToAdd;
+//          print(index + " " + itemName + " " + newQuantity);
+          currentRow.set(2, Integer.toString(newQuantity));
+
+          // update revenue
+          double price = Double.parseDouble(((String) currentRow.get(3)).substring(1));
+          double revenue2 = price * newQuantity;
+          currentRow.set(5, "$" + Double.toString(revenue2));
+          trendTableList.set(i, currentRow);
+        }
+
+
+      }
+
+      // set Total Revenue
+      double totalRevenue1 = 0;
+      double totalRevenue2 = 0;
+      for (int i = 0; i < numItems; i++) {
+        totalRevenue1 += Double.parseDouble(((String) trendTableList.get(i).get(4)).substring(1));
+      }
+      for (int i = 0; i < numItems; i++) {
+        totalRevenue2 += Double.parseDouble(((String) trendTableList.get(i).get(5)).substring(1));
+      }
+      manager.revenue1TextBox.setText("$" + totalRevenue1);
+      manager.revenue2TextBox.setText("$" + totalRevenue2);
+
+      // set Trend %
+      double trendPercent = 0;
+      double revenue1 = 0;
+      double revenue2 = 0;
+      for (int i = 0; i < numItems; i++) {
+        revenue1 = Double.parseDouble(((String) trendTableList.get(i).get(4)).substring(1));
+        revenue2 = Double.parseDouble(((String) trendTableList.get(i).get(5)).substring(1));
+
+        double revenuePercent1 = revenue1 / totalRevenue1;
+        double revenuePercent2 = revenue2 / totalRevenue2;
+
+//        print("");
+//        print(revenue1);
+//        print(revenue2);
+//        print(totalRevenue1);
+//        print(totalRevenue2);
+//        print(revenuePercent1);
+//        print(revenuePercent2);
+
+        trendPercent = revenuePercent2 - revenuePercent1;
+
+//        print(trendPercent);
+        trendPercent *= 100; // change from decimal to percentage
+//        print(trendPercent);
+        ArrayList<Object> tempRow = trendTableList.get(i);
+        Double trendPercentFormatted = trendPercent;
+        tempRow.set(6, trendPercentFormatted);
+        trendTableList.set(i, tempRow);
+      }
+
+    }
+
+    return trendTableList;
+  }
+
   // open database connection
   public static void openConnection() {
 
@@ -899,12 +1072,17 @@ public class jdbcpostgreSQL {
     // UPDATE currently selected row view
     manager.DTOTable1.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
-        JTable target = (JTable)e.getSource();
-        int row = target.getSelectedRow();
+        // dont run if table empty
+        if (manager.DTOTableModel1.getRowCount() > 1) {
+          JTable target = (JTable)e.getSource();
+          int row = target.getSelectedRow();
 
-        for (int i = 0; i < manager.DTOEditTableModel.getColumnCount(); i++) {
-          manager.DTOEditTable.setValueAt(manager.DTOTable1.getValueAt(row, i), 0, i);
+          for (int i = 0; i < manager.DTOEditTableModel.getColumnCount(); i++) {
+            manager.DTOEditTable.setValueAt(manager.DTOTable1.getValueAt(row, i), 0, i);
+          }
         }
+
+
 
       }
     });
@@ -1008,15 +1186,23 @@ public class jdbcpostgreSQL {
     // TOGGLE TREND table visibility
     manager.enableTrendCheckBox.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        boolean selected = manager.enableTrendCheckBox.isSelected();
-        if(selected) {
-         // updateTrends();
-        }
-        else {
-          manager.clearTable(manager.DTOTableModel3);
-        }
-        manager.DTOTable3Panel.setVisible(selected);
+        boolean isSelected = manager.enableTrendCheckBox.isSelected();
+        manager.DTOTable3Panel.setVisible(isSelected);
         log("Toggled Trends");
+        if (isSelected) {
+          print("Toggled!");
+
+          // clear trend table then populate it using getOrderTrends
+          manager.DTOTableModel3.setRowCount(0);
+          ArrayList<ArrayList<Object>> trends = getOrderTrends();
+          for (ArrayList<Object> row : trends) {
+            manager.DTOTableModel3.addRow(row.toArray());
+          }
+
+
+
+        }
+
       }
     });
   }
