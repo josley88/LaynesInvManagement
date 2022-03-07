@@ -29,6 +29,9 @@ public class jdbcpostgreSQL {
   public static String dbConnectionString = "jdbc:postgresql://csce-315-db.engr.tamu.edu/" + dbName;
   public static String userName = "csce315" + sectionNumber + "_" + teamNumber + "user";
   public static String userPassword = "315gang";
+  //current date: meant to aid in the prgram in updating the inventory 
+  public static String currentDate = "2022-02-26";
+
 
   public static Manager manager;
   //___________________________________________________
@@ -36,6 +39,9 @@ public class jdbcpostgreSQL {
 
   // _______________________________________________ MAIN ____________________________________________________
   public static void main(String[] args) throws SQLException, FileNotFoundException {
+    
+    currentDate = "2022-02-26";
+
 
     // create connection -----------------------------------------------------
     openConnection();
@@ -129,6 +135,49 @@ public class jdbcpostgreSQL {
     fileName = monthI + "/" + dayI + "/" + yearI;
     return fileName;
   }
+
+  public static ArrayList<ArrayList<String>> getweeksales() {
+    try {
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
+      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      while (rs.next()) {
+        ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("item"));
+        row.add(rs.getString("quantity"));
+        row.add(rs.getString("total"));
+        row.add(rs.getString("dateofpurchase"));
+        
+        result.add(row);
+        // print(row.toString());
+      }
+
+
+      rs.close();
+      return result;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+
+    return null;
+  }
+
+  // purpse of the func is to update inven database given global vars date.
+  public static void updateInventoryGivenDate(){
+    try{
+      Statement stmt = conn.createStatement();
+    
+    
+    
+    } catch (Exception e){
+      e.printStackTrace();
+      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.exit(0);
+    }
+  }
+
 
 
   // function to input weekly purchase into daily order tables. It will take in the file name, and it will update the database directly
