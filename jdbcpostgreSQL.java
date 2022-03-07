@@ -1,9 +1,6 @@
 import javax.swing.*;
-import javax.swing.plaf.nimbus.State;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import javax.swing.table.DefaultTableModel;
+import java.awt.event.*;
 import java.sql.*;
 import java.io.*;
 import java.util.ArrayList;
@@ -44,7 +41,17 @@ public class jdbcpostgreSQL {
     openConnection();
     // -----------------------------------------------------------------------
 
+    // setup manager and server GUI frame and attach Manager class -----------
+    JFrame managerGUI = new JFrame();
+    manager = new Manager();
+    JFrame serverGUI = new JFrame();
+    Server server = new Server();
 
+    serverGUI.setContentPane(server.getRootPanel());
+    serverGUI.setSize(1280, 720);
+    managerGUI.setContentPane(manager.getRootPanel());
+    managerGUI.setSize(1280, 720);
+    // -----------------------------------------------------------------------
 
     // populate database if empty --------------------------------------------
 //    inputElementsIntoWeekOrders("./CSCE315-1/FirstWeekSales.csv");
@@ -58,23 +65,6 @@ public class jdbcpostgreSQL {
     getItemConversionsFromDateRange("2022-01-30", "2022-02-01");
     // -----------------------------------------------------------------------
 
-
-
-    // setup manager and server GUI frame and attach Manager class -----------
-    JFrame managerGUI = new JFrame();
-    manager = new Manager();
-    JFrame serverGUI = new JFrame();
-    Server server = new Server();
-
-    serverGUI.setContentPane(server.getRootPanel());
-    serverGUI.setSize(1280, 720);
-    managerGUI.setContentPane(manager.getRootPanel());
-    managerGUI.setSize(1280, 720);
-    log("Initialized");
-    // -----------------------------------------------------------------------
-
-
-
     // fill tables and set up event listeners --------------------------------
     refreshTablesFromDB();
     setupManagerEventListeners();
@@ -86,6 +76,8 @@ public class jdbcpostgreSQL {
     managerGUI.setVisible(true);
     serverGUI.setVisible(true);
     // -----------------------------------------------------------------------
+
+    log("Initialized");
   }
 
   
@@ -467,7 +459,7 @@ public class jdbcpostgreSQL {
 
     //grab resultset for weeksales, grab total # of each item used in timeframe
     result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase > '" + dateA + "' AND dateofpurchase < '" + dateB + "';");
-    // SELECT * FROM weeksales WHERE dateofpurchase > '2022-01-30' AND dateofpurchase < '2022-01-31';
+    // SELECT * FROM weeksales WHERE dateofpurchase > '2022-01-30' AND dateofpurchase < '2022-02-01';
     print("ParseArr: ");
     while(result.next()){
       String item = result.getString("item");
@@ -584,16 +576,6 @@ public class jdbcpostgreSQL {
     print("Opened database successfully");
   }
 
-  // close database connection
-  public static void closeConnection() {
-    try {
-      conn.close();
-      print("Connection Closed.");
-    } catch(Exception e) {
-      print("Connection NOT Closed.");
-    }
-  }
-
   // refresh tables in manager GUI
   public static void refreshTablesFromDB() {
     ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
@@ -612,11 +594,29 @@ public class jdbcpostgreSQL {
     }
   }
 
-  // refreshes the table number given with the date range given
-  public static void refreshInvTableFromRange(String dateA, String dateB) throws SQLException {
+  // refreshes the table model given with the date range given (Inclusive)
+  public static void refreshInvTableFromRange(String dateA, String dateB, DefaultTableModel tableModel) throws SQLException {
     Statement stmt = conn.createStatement();
-    ResultSet result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase > '" + dateA + "' AND dateofpurchase < '" + dateB + "';");
+    String sqlStatement = "SELECT * FROM weeksales WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';";
+    ResultSet rs = stmt.executeQuery(sqlStatement);
+    print(sqlStatement);
+    // SELECT * FROM weeksales WHERE dateofpurchase >= '2022-01-30' AND dateofpurchase <= '2022-02-01';
 
+    ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+    log("Got data from " + dateA + " to " + dateB);
+    while (rs.next()) {
+      ArrayList<String> row = new ArrayList<String>();
+      row.add(rs.getString("item"));
+      row.add(rs.getString("quantity"));
+      row.add(rs.getString("dateofpurchase"));
+      result.add(row);
+    }
+    manager.clearTable(tableModel);
+
+    for (ArrayList<String> row : result) {
+      tableModel.addRow(row.toArray());
+
+    }
   }
 
   // following functions set up the event listeners for buttons and tables in manager GUI
@@ -823,6 +823,46 @@ public class jdbcpostgreSQL {
     manager.DTORefreshButton.addActionListener(new ActionListener(){
       public void actionPerformed(ActionEvent ae){
         refreshTablesFromDB();
+      }
+    });
+
+    // RANGE 1 REFRESH
+    manager.DTORefreshRange1Button.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String dateA = manager.DTO_R1From_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R1From_MM_Box.getSelectedItem() + "-" + manager.DTO_R1From_DD_Box.getSelectedItem();
+        String dateB = manager.DTO_R1To_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R1To_MM_Box.getSelectedItem() + "-" + manager.DTO_R1To_DD_Box.getSelectedItem();
+        print(dateA);
+        print(dateB);
+        try {
+          refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel1);
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+      }
+    });
+
+    // RANGE 2 REFRESH
+    manager.DTORefreshRange2Button.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        String dateA = manager.DTO_R2From_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R2From_MM_Box.getSelectedItem() + "-" + manager.DTO_R2From_DD_Box.getSelectedItem();
+        String dateB = manager.DTO_R2To_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R2To_MM_Box.getSelectedItem() + "-" + manager.DTO_R2To_DD_Box.getSelectedItem();
+        print(dateA);
+        print(dateB);
+        try {
+          refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel2);
+        } catch (SQLException ex) {
+          ex.printStackTrace();
+        }
+      }
+    });
+
+    // TOGGLE TREND table visibility
+    manager.enableTrendCheckBox.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        manager.DTOTable3Panel.setVisible(manager.enableTrendCheckBox.isSelected());
+        log("Toggled Trends");
       }
     });
   }
