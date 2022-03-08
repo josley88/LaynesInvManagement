@@ -695,7 +695,7 @@ public class jdbcpostgreSQL {
           k.add(Double.toString(invUsed));
           finalArr.add(k);
         }
-        print(parseDesc[0] + ": " + invUsed + "    |    multiplier: " + multiplier);
+//        print(parseDesc[0] + ": " + invUsed + "    |    multiplier: " + multiplier);
         // parseDesc[0] will match the description of the inventory item in a query,
         // e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
       }
@@ -735,20 +735,20 @@ public class jdbcpostgreSQL {
   }
 
   // gets Menu Items from the database
-  public static ArrayList<ArrayList<String>> getDBMenuItems () {
+  public static ArrayList < ArrayList < String >> getDBMenuItems() {
     try {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery("SELECT * FROM menu_key;");
-      ArrayList<ArrayList<String>> result = new ArrayList<>();
+      ArrayList < ArrayList < String >> result = new ArrayList < > ();
       //print("OPENED: " + rs.next());
       while (rs.next()) {
-        ArrayList<String> row = new ArrayList<>();
+        ArrayList < String > row = new ArrayList < > ();
         row.add(rs.getString("item"));
         row.add(rs.getString("name"));
         row.add(rs.getString("description"));
         row.add(rs.getString("price"));
         result.add(row);
-//        print(row.toString());
+        // print(row.toString());
       }
 
 
@@ -972,10 +972,10 @@ public class jdbcpostgreSQL {
     for (ArrayList<String> row : menuItemsDB) {
       manager.addRowTomMenuItemsTable(row.toArray());
     }
-    assert orderPopularityDB != null;
-    for (ArrayList<String> row : orderPopularityDB) {
-      manager.addRowTomMenuItemsTable(row.toArray());
-    }
+//    assert orderPopularityDB != null;
+//    for (ArrayList<String> row : orderPopularityDB) {
+//      manager.addRowTomMenuItemsTable(row.toArray());
+//    }
   }
 
   // refreshes the table model given with the date range given (Inclusive)

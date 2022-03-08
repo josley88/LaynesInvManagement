@@ -1,21 +1,21 @@
 itemConversion,,
 ,item,description
-,501,Chicken breast=1
-,502,Chicken breast=0.8
-,503,Chicken breast=0.6
-,504,Chicken breast=0.3
-,505,Tea bags=1
-,506,Chicken breast=4
-,507,Chicken breast=0.3
-,508,Chicken breast=0.3
-,509,Chicken breast=0.3
-,510,Sliced cheese=2
-,511,Sliced cheese=2
-,512,Chicken breast=0.2
-,513,Potato Salad=1
-,514,Fries=0.5
-,515,Chicken breast = 1;
-,516,Potato Salad=1
-,517,Fries=0.5
-,518,Straw=1; 16 oz cup=1; drink lid=1;
-,519,Bottled drink=1
+,501,Chicken breast=0.5;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
+,502,Chicken breast=0.4;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
+,503,Chicken breast=0.3;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
+,504,Chicken breast=0.15;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
+,505,Tea bags=0.041
+,506,Chicken breast=2;Thick bread=0.024;Fries=0.008;Potato Salad=0.8;Layne's sauce=0.008
+,507,Chicken breast=0.15;Thick bread=0.012;Potato Salad=0.2;Layne's sauce=0.001
+,508,Chicken breast=0.15;Thick bread=0.012;Potato Salad=0.2;Layne's sauce=0.001
+,509,Chicken breast=0.15;Thick bread=0.012;Potato Salad=0.2;Layne's sauce=0.001
+,510,Sliced cheese=0.002;Thick bread=0.012;Chicken breast=0.15
+,511,Sliced cheese=0.002;Chicken breast=0.3;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
+,512,Chicken breast=0.1
+,513,Potato Salad=0.2
+,514,Chicken breast=0.1
+,515,Chicken breast=0.5
+,516,Potato Salad=0.2
+,517,Fries=0.002
+,518,Straw=0.00125;16 oz Cup=0.001;Drink lid=0.001
+,519,Bottled Drink=0.04
