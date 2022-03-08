@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.lang.*;
 
 public class jdbcpostgreSQL {
 
@@ -68,7 +69,7 @@ public class jdbcpostgreSQL {
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
-    String[] USED = getItemConversionsFromDateRange("2022-02-01", "2022-02-03");
+    ArrayList<ArrayList<String>> USED = getItemConversionsFromDateRange("2022-02-01", "2022-02-03");
     // -----------------------------------------------------------------------
 
     // fill tables and set up event listeners --------------------------------
@@ -618,7 +619,7 @@ public class jdbcpostgreSQL {
   }
 
   // gets MenuItem to Inventory Conversions from the database
-  public static String[] getItemConversionsFromDateRange(String dateA, String dateB) throws SQLException {
+  public static ArrayList<ArrayList<String>> getItemConversionsFromDateRange(String dateA, String dateB) throws SQLException {
     // psuedo-psuedo code for item conversions --> THIS CODE HAS NOT BEEN TESTED, BUT LOGIC IS THERE <--
 
     // populate array of item conversions
@@ -636,7 +637,7 @@ public class jdbcpostgreSQL {
     }
 
     //grab resultset for weeksales, grab total # of each item used in timeframe
-    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase > '" + dateA + "' AND dateofpurchase < '" + dateB + "';");
+    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';");
     // SELECT * FROM weeksales WHERE dateofpurchase > '2022-01-30' AND dateofpurchase < '2022-02-01';
     print("ParseArr: ");
     while(result.next()){
@@ -662,6 +663,7 @@ public class jdbcpostgreSQL {
     // now converArr has: AMOUNT;.....restofdescription..... on each index
     // final part
     print("Amount Used: ");
+    ArrayList<ArrayList<String>> finalArr = new ArrayList<ArrayList<String>>();
     for(String convItem : converArr){
       String[] parseArr = convItem.split(";");
       int multiplier = Integer.parseInt(parseArr[0]);
@@ -677,14 +679,31 @@ public class jdbcpostgreSQL {
       for(String desc : descArray){
         String[] parseDesc = desc.split("=");
         double invUsed = Double.parseDouble(parseDesc[1]) * multiplier; // use this for the column
+        invUsed = Math.round(invUsed*1000)/1000;
+        boolean added = false;
+        for(int i = 0; i < finalArr.size(); i++){
+          if(finalArr.get(i).get(0).equals(parseDesc[0])){
+            added = true;
+            //change to new update number
+            double newNum = Double.parseDouble(finalArr.get(i).get(1)) + invUsed;
+            finalArr.get(i).set(1,Double.toString(newNum));
+          }
+        }
+        if(!added){
+          ArrayList<String> k = new ArrayList<String>();
+          k.add(parseDesc[0]);
+          k.add(Double.toString(invUsed));
+          finalArr.add(k);
+        }
         print(parseDesc[0] + ": " + invUsed + "    |    multiplier: " + multiplier);
         // parseDesc[0] will match the description of the inventory item in a query,
         // e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
       }
-      return descArray;
-
     }
-    return null;
+    for(ArrayList<String> k : finalArr){
+      print(k.toString());
+    }
+    return finalArr;
   }
 
   // gets Daily Total Orders from the database
