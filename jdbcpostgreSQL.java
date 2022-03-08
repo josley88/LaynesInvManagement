@@ -235,18 +235,22 @@ public class jdbcpostgreSQL {
   }
 
   public static void updateInventoryGivenRange(String dateA, String dateB) throws SQLException {
-    ArrayList<ArrayList<String>> invUpdates;
-    invUpdates = getItemConversionsFromDateRange(dateA, dateB);
+    ArrayList<ArrayList<String>> invUpdates = getItemConversionsFromDateRange(dateA, dateB);
     try{
       Statement stmt = jdbcpostgreSQL.conn.createStatement();
-      ResultSet result = stmt.executeQuery("SELECT description,quantity FROM inventory");
+      ResultSet result = stmt.executeQuery("SELECT description,quantity FROM inventory;");
+      Statement stmt2 = jdbcpostgreSQL.conn.createStatement();
       while(result.next()){
         for (ArrayList<String> invUpdate : invUpdates) {
+          //print(invUpdate.get(0) + " : " + result.getString("description"));
           if (invUpdate.get(0).equals(result.getString("description"))) {
             double amt = Double.parseDouble(result.getString("quantity"));
+            //print(amt + " " + Double.parseDouble(invUpdate.get(1)));
             amt = amt - Double.parseDouble(invUpdate.get(1));
-            int rs = stmt.executeUpdate("UPDATE inventory SET quantity='" + amt + "' WHERE description='" + result.getString("description") + "';");
-            if (rs == -123012) {
+            String sqlstmt = "UPDATE inventory SET quantity='" + amt + "' WHERE description='" + result.getString("description") + "';";
+            print(sqlstmt);
+            int rs = stmt2.executeUpdate(sqlstmt);
+            if(rs == -123012) {
               print(rs);
             }
           }
@@ -658,9 +662,9 @@ public class jdbcpostgreSQL {
       converArr[i] = "0;" + result.getString("description");
       print("Conversion Array: " + converArr[i]);
     }
-
     //grab resultset for weeksales, grab total # of each item used in timeframe
-    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';");
+    String sqlStmt = "SELECT * FROM weeksales WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';";
+    result = stmt.executeQuery(sqlStmt);
     // SELECT * FROM weeksales WHERE dateofpurchase > '2022-01-30' AND dateofpurchase < '2022-02-01';
     print("ParseArr: ");
     while(result.next()){
@@ -672,7 +676,7 @@ public class jdbcpostgreSQL {
       String[] parseArr = convertItem.split(";");
 
       //the # of used updated
-      parseArr[0] = String.valueOf(Integer.parseInt(parseArr[0]) + result.getInt("Quantity"));
+      parseArr[0] = String.valueOf(Integer.parseInt(parseArr[0]) + result.getInt("quantity"));
 
       //put string back together
       converArr[i] = String.join(";",parseArr);
@@ -725,9 +729,9 @@ public class jdbcpostgreSQL {
     }
 
     finalArr = sortInventoryPopularity(finalArr);
-    /*for(ArrayList<String> k : finalArr){
+    for(ArrayList<String> k : finalArr){
       print(k.toString());
-    }*/
+    }
     return finalArr;
   }
 
@@ -1330,8 +1334,8 @@ public class jdbcpostgreSQL {
 
     // DATE RANGE REFRESH -- This won't work until our inventory can track ingredient usage by date
     manager.updateInventoryButton.addActionListener(e -> {
-      String dateA = manager.inv_From_YYYY_Box.getSelectedItem() + "-" + manager.inv_From_MM_Box.getSelectedItem() + "-" + manager.inv_From_DD_Box.getSelectedItem();
-      String dateB = manager.inv_To_YYYY_Box.getSelectedItem() + "-" + manager.inv_To_MM_Box.getSelectedItem() + "-" + manager.inv_To_DD_Box.getSelectedItem();
+      String dateA = manager.invUpdate_From_YYYY_Box.getSelectedItem() + "-" + manager.invUpdate_From_MM_Box.getSelectedItem() + "-" + manager.invUpdate_From_DD_Box.getSelectedItem();
+      String dateB = manager.invUpdate_To_YYYY_Box.getSelectedItem() + "-" + manager.invUpdate_To_MM_Box.getSelectedItem() + "-" + manager.invUpdate_To_DD_Box.getSelectedItem();
       log("Selecting date range from " + dateA + " to " + dateB);
       print("Running!");
       try {
