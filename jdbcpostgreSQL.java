@@ -50,9 +50,14 @@ public class jdbcpostgreSQL {
 
     // setup manager and server GUI frame and attach Manager class -----------
     JFrame managerGUI = new JFrame("Layne's Manager");
+    ImageIcon img = new ImageIcon("./CSCE315-1/managerIcon.png");
     manager = new Manager();
+    managerGUI.setIconImage(img.getImage());
+
     JFrame serverGUI = new JFrame("Layne's Server");
+    ImageIcon img2 = new ImageIcon("./CSCE315-1/serverIcon.png");
     Server server = new Server();
+    serverGUI.setIconImage(img2.getImage());
 
     serverGUI.setContentPane(server.getRootPanel());
     serverGUI.setSize(1280, 720);
