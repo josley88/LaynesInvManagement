@@ -68,7 +68,7 @@ public class jdbcpostgreSQL {
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
-    String[] USED = getItemConversionsFromDateRange("2022-02-01", "2022-02-03");
+    ArrayList<String> USED = getItemConversionsFromDateRange("2022-02-01", "2022-02-03");
     // -----------------------------------------------------------------------
 
     // fill tables and set up event listeners --------------------------------
@@ -618,7 +618,7 @@ public class jdbcpostgreSQL {
   }
 
   // gets MenuItem to Inventory Conversions from the database
-  public static String[] getItemConversionsFromDateRange(String dateA, String dateB) throws SQLException {
+  public static ArrayList<String> getItemConversionsFromDateRange(String dateA, String dateB) throws SQLException {
     // psuedo-psuedo code for item conversions --> THIS CODE HAS NOT BEEN TESTED, BUT LOGIC IS THERE <--
 
     // populate array of item conversions
@@ -662,6 +662,7 @@ public class jdbcpostgreSQL {
     // now converArr has: AMOUNT;.....restofdescription..... on each index
     // final part
     print("Amount Used: ");
+    ArrayList<String> finalArr = new ArrayList<String>();
     for(String convItem : converArr){
       String[] parseArr = convItem.split(";");
       int multiplier = Integer.parseInt(parseArr[0]);
@@ -677,14 +678,15 @@ public class jdbcpostgreSQL {
       for(String desc : descArray){
         String[] parseDesc = desc.split("=");
         double invUsed = Double.parseDouble(parseDesc[1]) * multiplier; // use this for the column
+        finalArr.add(parseDesc[0] + "=" + invUsed);
         print(parseDesc[0] + ": " + invUsed + "    |    multiplier: " + multiplier);
         // parseDesc[0] will match the description of the inventory item in a query,
         // e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
       }
-      return descArray;
+
 
     }
-    return null;
+    return finalArr;
   }
 
   // gets Daily Total Orders from the database
