@@ -30,7 +30,7 @@ public class jdbcpostgreSQL {
   public static String userName = "csce315" + sectionNumber + "_" + teamNumber + "user";
   public static String userPassword = "315gang";
   //current date: meant to aid in the prgram in updating the inventory 
-  public static String currentDate = "2022-03-01";
+  public static String currentDate = "2022-01-30";
 
 
   public static Manager manager;
@@ -238,69 +238,75 @@ public class jdbcpostgreSQL {
   // purpse of the func is to update inven database given global vars date.
   public static void updateInventoryGivenDate(){
     try{
-      // ArrayList<ArrayList<String>> weeksales =  getweeksales();
-      // ArrayList<ArrayList<String>> MenuItemConvert =  getItemConversion();
-      // ArrayList<ArrayList<String>> menuKey =  getMenuKey();
+       ArrayList<ArrayList<String>> weeksales =  getweeksales();
+       ArrayList<ArrayList<String>> MenuItemConvert =  getItemConversion();
+       ArrayList<ArrayList<String>> menuKey =  getMenuKey();
       ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<ArrayList<String>>();
-      //ArrayList<ArrayList<String>> inventory = getDBInventory();
-      // if(weeksales == null){
-      //   return;
-      // }
-      // //sets up function to fill with items to update
-      // for(int i = 0; i < weeksales.size(); i++){
-      //   if(weeksales.get(i).get(3).trim().equals(currentDate.trim())){
-      //     itemsToUpdate.add(weeksales.get(i));
-      //   }
-      // }
+      ArrayList<ArrayList<String>> inventory = getDBInventory();
+       if(weeksales == null){
+         return;
+       }
+       //sets up function to fill with items to update
+       for(int i = 0; i < weeksales.size(); i++){
+         if(weeksales.get(i).get(3).trim().equals(currentDate.trim())){
+           itemsToUpdate.add(weeksales.get(i));
+         }
+       }
 
-      // ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
-      // for(int i = 0; i < itemsToUpdate.size(); i++){
-      //   ArrayList<String> tempLine = new ArrayList<String>();
-      //   //templine = food number, base ingredients, base additionals, quantity, oldAmt
+       ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
+       for(int i = 0; i < itemsToUpdate.size(); i++){
+         ArrayList<String> tempLine = new ArrayList<String>();
+         //templine = food number, base ingredients, base additionals, quantity, oldAmt
 
-      //   tempLine.add(itemsToUpdate.get(i).get(0).substring(itemsToUpdate.get(i).get(0).indexOf('_')+1));
+         tempLine.add(itemsToUpdate.get(i).get(0).substring(itemsToUpdate.get(i).get(0).indexOf('_')+1));
         
-      //   for(int menuNumber = 0; menuNumber < MenuItemConvert.size(); menuNumber++){
-      //     if(tempLine.get(0).trim().equals(MenuItemConvert.get(menuNumber).get(0).trim())){
-      //       tempLine.add(MenuItemConvert.get(menuNumber).get(1)); // adds base ingrediants
-      //     }
+         for(int menuNumber = 0; menuNumber < MenuItemConvert.size(); menuNumber++){
+           if(tempLine.get(0).trim().equals(MenuItemConvert.get(menuNumber).get(0).trim())){
+             tempLine.add(MenuItemConvert.get(menuNumber).get(1)); // adds base ingrediants
+           }
           
-      // }
-      //   //print("starting here\n" + itemsToUpdate + "\n\n");
+       }
+         //print("starting here\n" + itemsToUpdate + "\n\n");
 
-      //   for(int menuNumber = 0; menuNumber < menuKey.size(); menuNumber++){
-      //       if(tempLine.get(0).equals(menuKey.get(menuNumber).get(0))){
-      //         tempLine.add(menuKey.get(menuNumber).get(2)); // adds additionals
-      //       }
+         for(int menuNumber = 0; menuNumber < menuKey.size(); menuNumber++){
+             if(tempLine.get(0).equals(menuKey.get(menuNumber).get(0))){
+               tempLine.add(menuKey.get(menuNumber).get(2)); // adds additionals
+             }
 
-      //   }
+         }
 
-      //   tempLine.add(itemsToUpdate.get(i).get(1)); // adds quantity
+         tempLine.add(itemsToUpdate.get(i).get(1)); // adds quantity
         
-      //   for(int oldAmt = 0; oldAmt < inventory.size(); oldAmt++){
-      //     if(tempLine.get(1).split(";")[0].split("=")[0].trim().equals(inventory.get(oldAmt).get(0))){
-      //       tempLine.add(inventory.get(oldAmt).get(2)); // adds old total
-      //     }
+         for(int oldAmt = 0; oldAmt < inventory.size(); oldAmt++){
+           if(tempLine.get(1).split(";")[0].split("=")[0].trim().equals(inventory.get(oldAmt).get(0))){
+             tempLine.add(inventory.get(oldAmt).get(2)); // adds old total
+           }
 
-      // }
+       }
         
-      //   temp.add(tempLine);
-      //   tempLine = new ArrayList<String>();
-      // }
-      // itemsToUpdate = temp;
-      // temp = new ArrayList<ArrayList<String>>();
+         temp.add(tempLine);
+         tempLine = new ArrayList<String>();
+       }
+       itemsToUpdate = temp;
+       temp = new ArrayList<ArrayList<String>>();
 
-      // print("starting here\n" + itemsToUpdate + "\n\n");
-       // public static String currentDate = "2022-03-01";
+//       print("starting here\n" + itemsToUpdate + "\n\n");
+//        public static String currentDate = "2022-03-01";
 
       //description how to much to change by
-      itemsToUpdate = getItemConversionsFromDateRange(currentDate, currentDate);
+      temp = getItemConversionsFromDateRange(currentDate, currentDate);
       print("starting here\n" + itemsToUpdate + "\n\n");
-      for(int i = 0; i < itemsToUpdate.size(); i++){
+      for(int i = 0; i < temp.size(); i++){
        // print("starting here\n" + itemsToUpdate.get(i).get(4).split(";")[0] + "\n\n");
-        double oldAmt = Double.parseDouble(itemsToUpdate.get(i).get(4));
-        double changeBy = Double.parseDouble(itemsToUpdate.get(i).get(1));
-        String item = itemsToUpdate.get(i).get(0);
+        double oldAmt = 0;
+        String item = temp.get(i).get(0);
+        for(int oldAmtt = 0; oldAmtt < inventory.size(); oldAmtt++){
+          if(item.strip().equals(inventory.get(oldAmtt).get(0))){
+            oldAmt = Double.parseDouble(inventory.get(oldAmtt).get(2)); // adds old total
+          }
+        }
+        double changeBy = Double.parseDouble(temp.get(i).get(1));
+
         //print( Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]));
       //  print(Double.parseDouble(itemsToUpdate.get(i).get(3).split(";")[0].split("=")[1]));
         executeSingleInvUpdate(item,oldAmt,changeBy);
