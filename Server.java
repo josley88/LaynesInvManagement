@@ -47,7 +47,9 @@ public class Server implements ActionListener{
     private double totalPrice = 0;
     private boolean plusMode = true; //true means in plus mode, false means in minus mode. default to plus mode
     LocalDate dt = LocalDate.now();
-    String currDay = dt.getDayOfWeek().toString().charAt(0) + dt.getDayOfWeek().toString().substring(1).toLowerCase();
+    //String currDay = dt.getDayOfWeek().toString().charAt(0) + dt.getDayOfWeek().toString().substring(1).toLowerCase();
+    String currDay = "Tuesday";
+    String currDate = "2022-02-01";
 
 
     public Server(){
@@ -233,14 +235,14 @@ public class Server implements ActionListener{
                 for(int i = 0; i < serverTableModel.getRowCount(); i++){
                     //grabs the current amount
                     int currQuant = 0;
-                    ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+                    ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE dateofpurchase=\'" + currDate + "\' AND item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
 
 
                     while(rs.next()){
                         currQuant = Integer.parseInt(rs.getString("quantity"));
                         currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
                     }
-                    int result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+                    int result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE dateofpurchase=\'" + currDate + "\' AND item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
                     print("SERVER RESULTS: " + result);
                 }
             } catch (SQLException ex) {

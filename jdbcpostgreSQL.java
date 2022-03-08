@@ -771,7 +771,9 @@ public class jdbcpostgreSQL {
         } else {
           // index is whatever the name is without the 5 and leading 0's, - 1 (503 -> 2)
           int index = Integer.parseInt(itemName.substring(1)) - 1;
-          ArrayList<Object> currentRow = trendTableList.get(i);
+          print("SIZE: " + trendTableList.size());
+          print("INDEX: " + index);
+          ArrayList<Object> currentRow = trendTableList.get(index);
 
           // get current row quantity and add new quantity (basically | row[1] = row[1] + quantity | in String version)
           int currentRowQuantity = Integer.parseInt((String) currentRow.get(1));
@@ -783,7 +785,7 @@ public class jdbcpostgreSQL {
           double price = Double.parseDouble(((String) currentRow.get(3)).substring(1));
           double revenue1 = price * newQuantity;
           currentRow.set(4, "$" + revenue1);
-          trendTableList.set(i, currentRow);
+          trendTableList.set(index, currentRow);
         }
 
 
@@ -817,9 +819,9 @@ public class jdbcpostgreSQL {
           trendTableList.set(index, newRow);
         } else {
           // index is whatever the name is without the 5 and leading 0's, - 1 (503 -> 2)
-          int index = Integer.parseInt(itemName.substring(1));
+          int index = Integer.parseInt(itemName.substring(1)) - 1;
 
-          ArrayList<Object> currentRow = trendTableList.get(i);
+          ArrayList<Object> currentRow = trendTableList.get(index);
 
           // get current row quantity and add new quantity (basically | row[2] = row[2] + quantity | in String version)
           int currentRowQuantity = Integer.parseInt((String) currentRow.get(2));
@@ -832,7 +834,7 @@ public class jdbcpostgreSQL {
           double price = Double.parseDouble(((String) currentRow.get(3)).substring(1));
           double revenue2 = price * newQuantity;
           currentRow.set(5, "$" + Double.toString(revenue2));
-          trendTableList.set(i, currentRow);
+          trendTableList.set(index, currentRow);
         }
 
 
