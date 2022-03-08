@@ -28,6 +28,7 @@ public class Manager {
     public DefaultTableModel menuItemsEditTableModel;
 
     public DefaultTableModel orderPopTableModel;
+    public DefaultTableModel invPopTableModel;
 
     public JPanel rootPanel;
     public JPanel inventoryPanel;
@@ -100,6 +101,9 @@ public class Manager {
     public JPanel orderPopPanel;
     public JTable orderPopTable;
     private JScrollPane orderPopScroll;
+    private JPanel invPopPanel;
+    private JScrollPane invPopScroll;
+    private JTable invPopTable;
 
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Fill Amt", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
@@ -108,6 +112,7 @@ public class Manager {
     final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
     final private String[] DTOTrendCol = {"Item", "Quant. 1", "Quant. 2", "Price", "Rev. 1", "Rev. 2", "Trend %"};
     final private String[] orderPopCol = {"Item ID", "Quantity"};
+    final private String[] invPopCol = {"Description", "Qty Used"};
     public Manager() {
 
         // setup table models, most without directly editable cells -----------------------------------------------
@@ -155,6 +160,10 @@ public class Manager {
             }
         };
 
+        invPopTableModel = new DefaultTableModel(invPopCol, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {return false;}
+        };
 
         menuItemsTableModel = new DefaultTableModel(menuItemsCol, 0) {
             @Override
@@ -205,6 +214,7 @@ public class Manager {
         menuItemsTableModel.setColumnIdentifiers(menuItemsCol);
         menuItemsEditTableModel.setColumnIdentifiers(menuItemsCol);
         orderPopTableModel.setColumnIdentifiers(orderPopCol);
+        invPopTableModel.setColumnIdentifiers(invPopCol);
         // --------------------------------------------------------------------
 
 
@@ -221,6 +231,7 @@ public class Manager {
         menuItemsEditScroll.setColumnHeaderView(menuItemsEditTable.getTableHeader());
 
         orderPopScroll.setColumnHeaderView(orderPopTable.getTableHeader());
+        invPopScroll.setColumnHeaderView(invPopTable.getTableHeader());
         // --------------------------------------------------------------------
 
 
@@ -237,6 +248,7 @@ public class Manager {
         menuItemsEditTable.setModel(menuItemsEditTableModel);
 
         orderPopTable.setModel(orderPopTableModel);
+        invPopTable.setModel(invPopTableModel);
         // --------------------------------------------------------------------
 
         // set table not editable so users dont mess up table -----------------
@@ -246,6 +258,7 @@ public class Manager {
         setNonFocusable(DTOTable3);
         setNonFocusable(menuItemsTable);
         setNonFocusable(orderPopTable);
+        setNonFocusable(invPopTable);
         // ---------------------------------------------------------------------
 
         // setup auto sort -----------------------------------------------------
@@ -253,6 +266,7 @@ public class Manager {
         menuItemsTable.getRowSorter().toggleSortOrder(0);
         DTOTable3.getRowSorter().toggleSortOrder(6);
         orderPopTable.getRowSorter().toggleSortOrder(1);
+//        invPopTable.getRowSorter().toggleSortOrder(1);
         // ---------------------------------------------------------------------
 
         // setup tabbed pane font size -----------------------------------------

@@ -1037,26 +1037,12 @@ public class jdbcpostgreSQL {
 
   // refreshes the inv table model given with the date range given (Inclusive)
   public static void refreshInvTableFromRange(String dateA, String dateB, DefaultTableModel tableModel) throws SQLException {
-    Statement stmt = conn.createStatement();
-    String sqlStatement = "SELECT * FROM inventory WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';";
-    ResultSet rs = stmt.executeQuery(sqlStatement);
-    print(sqlStatement);
-    // SELECT * FROM weeksales WHERE dateofpurchase >= '2022-01-30' AND dateofpurchase <= '2022-02-01';
 
-    ArrayList<ArrayList<String>> result = new ArrayList<>();
-    log("Got data from " + dateA + " to " + dateB);
-    while (rs.next()) {
-      ArrayList<String> row = new ArrayList<>();
-      row.add(rs.getString("item"));
-      row.add(rs.getString("quantity"));
-      row.add(rs.getString("dateofpurchase"));
-      result.add(row);
-    }
+    ArrayList<ArrayList<String>> result = getItemConversionsFromDateRange(dateA, dateB);
     manager.clearTable(tableModel);
 
     for (ArrayList<String> row : result) {
       tableModel.addRow(row.toArray());
-
     }
   }
 
@@ -1210,9 +1196,9 @@ public class jdbcpostgreSQL {
     ArrayList<ArrayList<String>> idWithPricesMenuKey = getIdWithPricesFromMenuKey();
     System.out.println(idWithPricesMenuKey.size());
 
-    ArrayList<ArrayList<Object>> list = new ArrayList<ArrayList<Object>>();
+    ArrayList<ArrayList<Object>> list = new ArrayList<>();
     for (ArrayList<String> strings : idWithPricesMenuKey) {
-      ArrayList<Object> row = new ArrayList<Object>();
+      ArrayList<Object> row = new ArrayList<>();
       row.add(strings.get(0));
       row.add(0);
       list.add(row);
@@ -1358,11 +1344,11 @@ public class jdbcpostgreSQL {
       String dateA = manager.inv_From_YYYY_Box.getSelectedItem() + "-" + manager.inv_From_MM_Box.getSelectedItem() + "-" + manager.inv_From_DD_Box.getSelectedItem();
       String dateB = manager.inv_To_YYYY_Box.getSelectedItem() + "-" + manager.inv_To_MM_Box.getSelectedItem() + "-" + manager.inv_To_DD_Box.getSelectedItem();
       log("Selecting date range from " + dateA + " to " + dateB);
-//      try {
-////        refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel1);
-//      } catch (SQLException ex) {
-//        ex.printStackTrace();
-//      }
+      try {
+        refreshInvTableFromRange(dateA, dateB, manager.invPopTableModel);
+      } catch (SQLException ex) {
+        ex.printStackTrace();
+      }
     });
 
     // REFRESH button
