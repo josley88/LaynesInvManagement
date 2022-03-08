@@ -591,6 +591,7 @@ public class jdbcpostgreSQL {
         row.add(rs.getString("description"));
         row.add(rs.getString("sku"));
         row.add(rs.getString("Quantity"));
+        row.add(rs.getString("fillamt"));
         row.add(rs.getString("delivered"));
         row.add(rs.getString("sold_by"));
         row.add(rs.getString("delivered_by"));
@@ -1188,10 +1189,8 @@ public class jdbcpostgreSQL {
       }
 
       String sqlStatement =
-              "INSERT INTO inventory (description, sku, quantity, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
-                      "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", '" + row.get(4) + "', '" + row.get(5) + "', " + row.get(6) + ", '" + row.get(7) + "', '" + row.get(8) + "', '" + row.get(9) + "', " + row.get(10) + ", '" + row.get(11) + "');";
-
-//        print(sqlStatement);
+              "INSERT INTO inventory (description, sku, quantity, fillamt, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
+                      "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", " + row.get(4) + ", '" + row.get(5) + "', '" + row.get(6) + "', " + row.get(7) + ", '" + row.get(8) + "', '" + row.get(9) + "', '" + row.get(10) + "', " + row.get(11) + ", '" + row.get(12) + "');";
 
       try {
         Statement stmt = conn.createStatement();
@@ -1223,15 +1222,16 @@ public class jdbcpostgreSQL {
                         "description = '" + row.get(0) +
                         "', sku = '" + row.get(1) +
                         "', quantity = " + row.get(2) +
-                        ", delivered = " + row.get(3) +
-                        ", sold_by = '" + row.get(4) +
-                        "', delivered_by = '" + row.get(5) +
-                        "', quantity_multiplyer = " + row.get(6) +
-                        ", _price_ = '" + row.get(7) +
-                        "', _extended_ = '" + row.get(8) +
-                        "', category = '" + row.get(9) +
-                        "', invoice_line = " + row.get(10) +
-                        ", detailed_description = '" + row.get(11) + "' " +
+                        ", fillamt = " + row.get(3) +
+                        ", delivered = " + row.get(4) +
+                        ", sold_by = '" + row.get(5) +
+                        "', delivered_by = '" + row.get(6) +
+                        "', quantity_multiplyer = " + row.get(7) +
+                        ", _price_ = '" + row.get(8) +
+                        "', _extended_ = '" + row.get(9) +
+                        "', category = '" + row.get(10) +
+                        "', invoice_line = " + row.get(11) +
+                        ", detailed_description = '" + row.get(12) + "' " +
                         "WHERE sku = '" + row.get(1) + "';";
 
 //          print(sqlStatement);
