@@ -89,7 +89,7 @@ public class jdbcpostgreSQL {
     log("Initialized");
   }
 
-
+  
 
 
   // ____________________________________________ FUNCTIONS __________________________________________________
@@ -105,15 +105,15 @@ public class jdbcpostgreSQL {
     int monthI = Integer.parseInt(month);
     int dayI = Integer.parseInt(day);
     int yearI = Integer.parseInt(year);
-
+    
     if(monthI == 2){
-      if(dayI == 28){
-        dayI = 1;
-        monthI = 3;
-      }
-      else{
-        dayI++;
-      }
+        if(dayI == 28){
+            dayI = 1;
+            monthI = 3;
+        }
+        else{
+            dayI++;
+        }
     }else  if(monthI == 1){
       if(dayI == 31){
         dayI = 1;
@@ -124,21 +124,22 @@ public class jdbcpostgreSQL {
       }
     }
     else if(monthI == 3){
-      if(dayI == 31){
-        dayI = 1;
-        monthI = 4;
-      }
-      else{
-        dayI++;
-      }
+        if(dayI == 31){
+            dayI = 1;
+            monthI = 4;
+        }
+        else{
+            dayI++;
+        }
     }
     else{
-      dayI++;
+        dayI++;
     }
     fileName = monthI + "/" + dayI + "/" + yearI;
     return fileName;
   }
 
+// purpose of this command is to get the most up to date version of weeksales database from db
   public static ArrayList<ArrayList<String>> getweeksales() {
     try {
         Statement statement = conn.createStatement();
@@ -167,14 +168,78 @@ public class jdbcpostgreSQL {
     return null;
   }
 
+// purpose of this command is to get the most up to date version of itemconversion from db
+
+  public static ArrayList<ArrayList<String>> getItemConversion() {
+    try {
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
+      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      while (rs.next()) {
+        ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("item"));
+        row.add(rs.getString("description"));
+        
+        result.add(row);
+        // print(row.toString());
+      }
+
+
+      rs.close();
+      return result;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+
+    return null;
+  }
+  // purpose of this command is to get the most up to date version of menukey database from table
+
+  public static ArrayList<ArrayList<String>> getMenuKey() {
+    try {
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
+      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      while (rs.next()) {
+        ArrayList<String> row = new ArrayList<String>();
+        row.add(rs.getString("item"));
+        row.add(rs.getString("name"));
+        row.add(rs.getString("description"));
+        row.add(rs.getString("price"));
+        
+        result.add(row);
+        // print(row.toString());
+      }
+
+
+      rs.close();
+      return result;
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+
+    return null;
+  }
   // purpse of the func is to update inven database given global vars date.
   public static void updateInventoryGivenDate(){
     try{
-      ArrayList<ArrayList<String>> weeksales = getweeksales();
+      ArrayList<ArrayList<String>> weeksales =  getweeksales();
+      ArrayList<ArrayList<String>> MenuItemConvert =  getItemConversion();
+      ArrayList<ArrayList<String>> menuKey =  getMenuKey();
+      ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<ArrayList<String>>();
       if(weeksales == null){
         return;
       }
-      
+
+      for(int i = 0; i < weeksales.size(); i++){
+        if(weeksales.get(i).get(3).trim().equals(currentDate.trim())){
+          itemsToUpdate.add(weeksales.get(i));
+        }
+      }
       
       
     
@@ -196,7 +261,7 @@ public class jdbcpostgreSQL {
     }
 
     Scanner sc;
-
+    
     try{
       Statement stmt = conn.createStatement();
       String startDate = "01/30/2022";
@@ -213,7 +278,7 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String filler = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
+    
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       String day = parseArr[0].strip();
@@ -231,13 +296,13 @@ public class jdbcpostgreSQL {
 
 
       while(sc.hasNextLine()){
-
+        
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(parseArr[1].equals("")!=true) {
             sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() +  "\',\'" + parseArr[2].strip() + "\'" + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
-            print(sqlStatement);
+           print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
             for (String string : parseArr) {
@@ -247,7 +312,7 @@ public class jdbcpostgreSQL {
             }
           }
           else{ // changes day if new day
-            if(sc.hasNextLine()){ // checks if we are at end of file
+            if(sc.hasNextLine()){ // checks if we are at end of file 
               //skips a line
               startDate = changeDate(startDate);
               parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -276,7 +341,7 @@ public class jdbcpostgreSQL {
     }
 
     Scanner sc;
-
+    
     try{
       Statement stmt = conn.createStatement();
 
@@ -284,7 +349,7 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String filler = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
+    
       String tableName = sc.nextLine().replace("\'", "\'\'").replace(" ", "_").replace("_#", "");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       tableName = "INVENTORY";
@@ -296,7 +361,7 @@ public class jdbcpostgreSQL {
       int result = stmt.executeUpdate(sqlStatement);
       print(result);
       while(sc.hasNextLine()){
-
+        
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0 && sc.hasNextLine()){
@@ -317,7 +382,7 @@ public class jdbcpostgreSQL {
 
 
 
-    }
+    } 
     catch (Exception e){
       e.printStackTrace();
       System.err.println(e.getClass().getName()+": "+e.getMessage());
@@ -333,15 +398,15 @@ public class jdbcpostgreSQL {
     }
 
     Scanner sc;
-
+    
     try{
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
+      
       tableName = "Menu_Key";
       String sqlStatement = "CREATE TABLE " + "Menu_Key" + " ( ";
-      // populates in the following order Item, name, Description, price
+      // populates in the following order Item, name, Description, price 
       String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       //sanitizes the parse Arr values for (" ")
@@ -357,7 +422,7 @@ public class jdbcpostgreSQL {
       int result = stmt.executeUpdate(sqlStatement);
       print(result);
       while(sc.hasNextLine()){
-
+        
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + ",\'" + parseArr[4].strip() + "\');";
@@ -374,30 +439,30 @@ public class jdbcpostgreSQL {
 
 
 
-    }
+    } 
     catch (Exception e){
       e.printStackTrace();
       System.err.println(e.getClass().getName()+": "+e.getMessage());
       System.exit(0);
-    }
+  }
   }
 
   // function to input item conversions
   public static void inputItemConversions(String fileName){
     Scanner sc;
     String[] parseArr;
-
+    
     try{
       sc = new Scanner(new File(fileName));
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-
+      
       // only create table if it doesn't already exist
       if (!tableExist(conn, "itemconversion")) {
         print("Table doesn't exist");
         tableName = "itemConversion";
         String sqlStatement = "CREATE TABLE " + tableName + " ( ";
-        // populates in the following order Item, Description
+        // populates in the following order Item, Description 
         String tableFormatting = sc.nextLine().replace("\'", "\'\'");
         parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         //sanitizes the parse Arr values for (" ")
@@ -429,7 +494,7 @@ public class jdbcpostgreSQL {
       }
 
 
-    }
+    } 
     catch (Exception e) {
       e.printStackTrace();
       System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -441,29 +506,29 @@ public class jdbcpostgreSQL {
 
   // helper function to determine if a table already exists in the database
   public static boolean tableExist(Connection conn, String tableName) throws SQLException {
-    boolean tExists = false;
-    ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null);
-
-    try {
-      while (rs.next()) {
-        String tName = rs.getString("TABLE_NAME");
-        if (tName != null && tName.equals(tableName)) {
-
+  boolean tExists = false;
+  ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null);
+  
+  try {
+    while (rs.next()) { 
+      String tName = rs.getString("TABLE_NAME");
+      if (tName != null && tName.equals(tableName)) {
+        
           tExists = true;
           break;
-        }
       }
-    } catch (Exception e) {
-      print(e);
     }
-    return tExists;
+  } catch (Exception e) {
+     print(e);
   }
+  return tExists;
+}
 
   // gets Inventory from the database
   public static ArrayList<ArrayList<String>> getDBInventory () {
     try {
-      Statement statement = conn.createStatement();
-      ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
+        Statement statement = conn.createStatement();
+        ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
       ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<String>();
@@ -794,7 +859,7 @@ public class jdbcpostgreSQL {
   // open database connection
   public static void openConnection() {
 
-    try {
+   try {
       conn = DriverManager.getConnection(dbConnectionString,userName, userPassword);
     } catch (Exception e) {
       e.printStackTrace();
@@ -848,7 +913,7 @@ public class jdbcpostgreSQL {
     }
   }
 
-  /*public static void updateTrends()
+   /*public static void updateTrends()
   {
     ArrayList<ArrayList<String>> idWithPricesFromMenuKey = getIdWithPricesFromMenuKey(); //gets item,price,name from db
 
@@ -1379,9 +1444,10 @@ public class jdbcpostgreSQL {
 
 /*
 database communication psuedocode
+
 week sales taking from menukey and itemconversion
   // item string example - sunday_501 or friday_512
-  weeksales-> item.substring(item.length()-3);
+  weeksales-> item.substring(item.length()-3); 
   match above to menukey to grab price
   match above to menuitemconversion to grab ingredients
     menuitemconversion conversion to ingredients
@@ -1389,4 +1455,5 @@ week sales taking from menukey and itemconversion
       use split ";" to grab string, then seperate by "="
         left side of = should match inventory ingredients (after tolowercase)
           right side of = is the quantity
+
 */
