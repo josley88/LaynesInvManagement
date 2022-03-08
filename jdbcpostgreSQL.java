@@ -6,7 +6,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.lang.*;
 
 public class jdbcpostgreSQL {
 
@@ -679,7 +678,7 @@ public class jdbcpostgreSQL {
       for(String desc : descArray){
         String[] parseDesc = desc.split("=");
         double invUsed = Double.parseDouble(parseDesc[1]) * multiplier; // use this for the column
-        invUsed = Math.round(invUsed*1000)/1000;
+
         boolean added = false;
         for(int i = 0; i < finalArr.size(); i++){
           if(finalArr.get(i).get(0).equals(parseDesc[0])){
