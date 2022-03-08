@@ -221,23 +221,79 @@ public class jdbcpostgreSQL {
 
     return null;
   }
+  public static void executeSingleInvUpdate(String item, double oldTotal, double base, double amt){
+
+    try {
+      Statement stmt = jdbcpostgreSQL.conn.createStatement();
+      double newVal = oldTotal - (base * amt);
+      int result = stmt.executeUpdate("UPDATE inventory SET quantity=" + Double.toString(newVal) + " WHERE description=\'" + item + "\';");
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    }
+
+
   // purpse of the func is to update inven database given global vars date.
   public static void updateInventoryGivenDate(){
     try{
       ArrayList<ArrayList<String>> weeksales =  getweeksales();
       ArrayList<ArrayList<String>> MenuItemConvert =  getItemConversion();
       ArrayList<ArrayList<String>> menuKey =  getMenuKey();
-      ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<>();
+      ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> inventory = getDBInventory();
       if(weeksales == null){
         return;
       }
-
-      for (ArrayList<String> weeksale : weeksales) {
-        if (weeksale.get(3).trim().equals(currentDate.trim())) {
-          itemsToUpdate.add(weeksale);
+      //sets up function to fill with items to update
+      for(int i = 0; i < weeksales.size(); i++){
+        if(weeksales.get(i).get(3).trim().equals(currentDate.trim())){
+          itemsToUpdate.add(weeksales.get(i));
         }
       }
+      ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
+      for(int i = 0; i < itemsToUpdate.size(); i++){
+        ArrayList<String> tempLine = new ArrayList<String>();
+        //templine = food number, base ingredients, base additionals, quantity, oldAmt
+
+        tempLine.add(itemsToUpdate.get(i).get(0).substring(itemsToUpdate.get(i).get(0).indexOf('_')+1));
+        
+        for(int menuNumber = 0; menuNumber < MenuItemConvert.size(); menuNumber++){
+          if(tempLine.get(0).trim().equals(MenuItemConvert.get(i).get(0).trim())){
+            tempLine.add(MenuItemConvert.get(i).get(1)); // adds base ingrediants
+          }
+          
+      }
+
+        for(int menuNumber = 0; menuNumber < menuKey.size(); menuNumber++){
+            if(tempLine.get(0).equals(menuKey.get(i).get(0))){
+              tempLine.add(menuKey.get(i).get(2)); // adds additionals 
+            }
+
+        }
+
+        tempLine.add(itemsToUpdate.get(i).get(1)); // adds quantity
+        
+        for(int oldAmt = 0; oldAmt < inventory.size(); oldAmt++){
+          if(tempLine.get(1).split(";")[0].split("=")[0].trim().equals(inventory.get(i).get(0))){
+            tempLine.add(inventory.get(i).get(2)); // adds old total 
+          }
+
+      }
+        
+        temp.add(tempLine);
+      }
+      itemsToUpdate = temp;
+      temp = new ArrayList<ArrayList<String>>();
       
+      for(int i = 0; i < itemsToUpdate.size(); i++){
+        double base = Double.parseDouble(itemsToUpdate.get(i).get(4));
+
+        executeSingleInvUpdate(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[0], base, Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]), Double.parseDouble(itemsToUpdate.get(i).get(3)));
+
+      }
+
       
     
     } catch (Exception e){
