@@ -1000,16 +1000,42 @@ public class jdbcpostgreSQL {
   }
 
   public static void refreshOrderPopularity() {
-    ArrayList<ArrayList<String>> orderPopularityDB = getOrderPopularity();
-    for (ArrayList<String> row : orderPopularityDB) {
+    manager.clearTable(manager.orderPopTableModel);
+    ArrayList<ArrayList<Object>> orderPopularityDB = getOrderPopularity();
+    for (ArrayList<Object> row : orderPopularityDB) {
       manager.orderPopTableModel.addRow(row.toArray());
     }
   }
 
   // refreshes the table model given with the date range given (Inclusive)
-  public static void refreshInvTableFromRange(String dateA, String dateB, DefaultTableModel tableModel) throws SQLException {
+  public static void refreshDTOTableFromRange(String dateA, String dateB, DefaultTableModel tableModel) throws SQLException {
     Statement stmt = conn.createStatement();
     String sqlStatement = "SELECT * FROM weeksales WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';";
+    ResultSet rs = stmt.executeQuery(sqlStatement);
+    print(sqlStatement);
+    // SELECT * FROM weeksales WHERE dateofpurchase >= '2022-01-30' AND dateofpurchase <= '2022-02-01';
+
+    ArrayList<ArrayList<String>> result = new ArrayList<>();
+    log("Got data from " + dateA + " to " + dateB);
+    while (rs.next()) {
+      ArrayList<String> row = new ArrayList<>();
+      row.add(rs.getString("item"));
+      row.add(rs.getString("quantity"));
+      row.add(rs.getString("dateofpurchase"));
+      result.add(row);
+    }
+    manager.clearTable(tableModel);
+
+    for (ArrayList<String> row : result) {
+      tableModel.addRow(row.toArray());
+
+    }
+  }
+
+  // refreshes the inv table model given with the date range given (Inclusive)
+  public static void refreshInvTableFromRange(String dateA, String dateB, DefaultTableModel tableModel) throws SQLException {
+    Statement stmt = conn.createStatement();
+    String sqlStatement = "SELECT * FROM inventory WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';";
     ResultSet rs = stmt.executeQuery(sqlStatement);
     print(sqlStatement);
     // SELECT * FROM weeksales WHERE dateofpurchase >= '2022-01-30' AND dateofpurchase <= '2022-02-01';
@@ -1177,27 +1203,27 @@ public class jdbcpostgreSQL {
     return idWithPricesFromMenuKey;
   }
 
-  public static ArrayList<ArrayList<String>> getOrderPopularity(){
+  public static ArrayList<ArrayList<Object>> getOrderPopularity(){
     ArrayList<ArrayList<String>> idWithPricesMenuKey = getIdWithPricesFromMenuKey();
     System.out.println(idWithPricesMenuKey.size());
 
-    ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
-    for(int i = 0; i < idWithPricesMenuKey.size(); i++) {
-      ArrayList<String> row = new ArrayList<String>();
-      row.add(idWithPricesMenuKey.get(i).get(0));
-      row.add("0");
+    ArrayList<ArrayList<Object>> list = new ArrayList<ArrayList<Object>>();
+    for (ArrayList<String> strings : idWithPricesMenuKey) {
+      ArrayList<Object> row = new ArrayList<Object>();
+      row.add(strings.get(0));
+      row.add(0);
       list.add(row);
     }
 
     for(int i = 0; i < manager.DTOTable1.getRowCount(); i++) {
       int indexAfterUnderscore = manager.DTOTable1.getValueAt(i,0).toString().indexOf('_');
       String itemID = manager.DTOTable1.getValueAt(i,0).toString().substring(indexAfterUnderscore+1);
-      for(int j = 0; j < list.size(); j++) {
-        if(itemID.equals(list.get(j).get(0))) {
-          int currQuantity = Integer.parseInt(list.get(j).get(1).toString());
-          int addQuantity = Integer.parseInt(manager.DTOTable1.getValueAt(i,1).toString());
+      for (ArrayList<Object> objects : list) {
+        if (itemID.equals(objects.get(0))) {
+          int currQuantity = Integer.parseInt(objects.get(1).toString());
+          int addQuantity = Integer.parseInt(manager.DTOTable1.getValueAt(i, 1).toString());
           int newQuantity = currQuantity + addQuantity;
-          list.get(j).set(1,String.valueOf(newQuantity));
+          objects.set(1, newQuantity);
         }
       }
     }
@@ -1324,6 +1350,18 @@ public class jdbcpostgreSQL {
       }
     });
 
+    // DATE RANGE REFRESH -- This won't work until our inventory can track ingredient usage by date
+    manager.invRefreshRangeButton.addActionListener(e -> {
+      String dateA = manager.inv_From_YYYY_Box.getSelectedItem() + "-" + manager.inv_From_MM_Box.getSelectedItem() + "-" + manager.inv_From_DD_Box.getSelectedItem();
+      String dateB = manager.inv_To_YYYY_Box.getSelectedItem() + "-" + manager.inv_To_MM_Box.getSelectedItem() + "-" + manager.inv_To_DD_Box.getSelectedItem();
+      log("Selecting date range from " + dateA + " to " + dateB);
+//      try {
+////        refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel1);
+//      } catch (SQLException ex) {
+//        ex.printStackTrace();
+//      }
+    });
+
     // REFRESH button
     manager.invRefreshButton.addActionListener(ae -> refreshTablesFromDB());
   }
@@ -1424,7 +1462,7 @@ public class jdbcpostgreSQL {
       print(dateA);
       print(dateB);
       try {
-        refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel1);
+        refreshDTOTableFromRange(dateA, dateB, manager.DTOTableModel1);
         refreshOrderPopularity();
       } catch (SQLException ex) {
         ex.printStackTrace();
@@ -1438,7 +1476,7 @@ public class jdbcpostgreSQL {
       print(dateA);
       print(dateB);
       try {
-        refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel2);
+        refreshDTOTableFromRange(dateA, dateB, manager.DTOTableModel2);
       } catch (SQLException ex) {
         ex.printStackTrace();
       }

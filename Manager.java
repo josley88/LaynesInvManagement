@@ -88,7 +88,7 @@ public class Manager {
     public JTextField revenue1TextBox;
 
     public JButton updateInventoryButton;
-    public JButton refreshInventoryRangeButton;
+    public JButton invRefreshRangeButton;
 
     public JComboBox<String> inv_From_YYYY_Box;
     public JComboBox<String> inv_From_MM_Box;
@@ -144,6 +144,15 @@ public class Manager {
         orderPopTableModel = new DefaultTableModel(orderPopCol, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 1) {
+                    return Integer.class;
+                } else {
+                    return String.class;
+                }
+            }
         };
 
 
@@ -243,7 +252,7 @@ public class Manager {
         invTable.getRowSorter().toggleSortOrder(1);
         menuItemsTable.getRowSorter().toggleSortOrder(0);
         DTOTable3.getRowSorter().toggleSortOrder(6);
-        orderPopTable.getRowSorter().toggleSortOrder(0);
+        orderPopTable.getRowSorter().toggleSortOrder(1);
         // ---------------------------------------------------------------------
 
         // setup tabbed pane font size -----------------------------------------
