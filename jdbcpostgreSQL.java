@@ -439,6 +439,7 @@ public class jdbcpostgreSQL {
 
       sc = new Scanner(new File(fileName));
       String[] parseArr;
+      sc.nextLine();
     
       String tableName = sc.nextLine().replace("'", "''").replace(" ", "_").replace("_#", "");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -1368,6 +1369,19 @@ public class jdbcpostgreSQL {
 
     // REFRESH button
     manager.invRefreshButton.addActionListener(ae -> refreshTablesFromDB());
+
+    // REFRESH INV POP TABLE
+    manager.invRefreshRangeButton.addActionListener(ae -> {
+      String dateA = manager.inv_From_YYYY_Box.getSelectedItem() + "-" + manager.inv_From_MM_Box.getSelectedItem() + "-" + manager.inv_From_DD_Box.getSelectedItem();
+      String dateB = manager.inv_To_YYYY_Box.getSelectedItem() + "-" + manager.inv_To_MM_Box.getSelectedItem() + "-" + manager.inv_To_DD_Box.getSelectedItem();
+      log("Selecting date range from " + dateA + " to " + dateB);
+      print("Selecting date range from " + dateA + " to " + dateB);
+      try {
+        refreshInvTableFromRange(dateA, dateB, manager.invPopTableModel);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    });
   }
   public static void setupDTOEventListeners() {
     // DELETE currently selected row

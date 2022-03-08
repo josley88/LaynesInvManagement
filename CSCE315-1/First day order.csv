@@ -1,13 +1,13 @@
 ,Initial order ,,,,Date,2/12/2022,,,,,,
 ,Description,SKU,Quantity,delivered,sold by,delivered by,quantity Multiplyer, price , Extended ,category,Invoice line #,Detailed description
 Food,,,,,,,,,,,,
-,Chicken breast,c1001,21,21,lb,case,20,$3.90 ,"$1,638.00 ",Cold,1,"raw unbreaded chicken breast, fresh, 20 lb cases 6 oz breast, cut to 1.5 oz per strip"
+,Chicken breast,c1001,80,80,lb,case,20,$3.90 ,"$1,638.00 ",Cold,1,"raw unbreaded chicken breast, fresh, 20 lb cases 6 oz breast, cut to 1.5 oz per strip"
 ,flour,d2001,5,5,each,bag,1,$19.50 ,$97.50 ,Dry,2,"AP flour, 50 lb sack"
 ,salt,d2002,1,1,each,bag,1,$25.95 ,$25.95 ,Dry,3,"bulk sea salt, 50 lb bag"
 ,black pepper,d2003,2,2,each,container,1,$30.00 ,$60.00 ,Dry,4,5 lb plastic jar
 ,Fries,f3002,30,30,case,case,1,$30.90 ,$927.00 ,Frozen,5,"30 lb case,  oz per serving"
 ,Thick bread,d2004,9,9,Case,case,1,$37.99 ,$341.91 ,Dry,6,170 slices per case.
-,Potato Salad,c1002,10,10,each,each,1,$17.01 ,$170.10 ,Cold,7,"Spring Glen 5lb Dutch potato saled,"
+,Potato Salad,c1002,40,40,each,each,1,$17.01 ,$170.10 ,Cold,7,"Spring Glen 5lb Dutch potato saled,"
 ,Liquid margarine,c1003,4,4,4/case,case,1,$57.81 ,$231.24 ,Cold,8,"Liquid margarine, 4/case"
 ,Garlic powder,d2005,2,2,each,each,1,$20.49 ,$40.98 ,Dry,9,Granulated garlic 5lb
 ,Ranch,c1004,12,12,each,each,1,$39.98 ,$479.76 ,Cold,10,Ranch dressing 1 gallon
