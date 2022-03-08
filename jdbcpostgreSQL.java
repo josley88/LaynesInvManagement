@@ -1,13 +1,10 @@
 import javax.swing.*;
-import javax.swing.plaf.nimbus.State;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.awt.event.*;
 import java.sql.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class jdbcpostgreSQL {
@@ -41,7 +38,7 @@ public class jdbcpostgreSQL {
 
 
   // _______________________________________________ MAIN ____________________________________________________
-  public static void main(String[] args) throws SQLException, FileNotFoundException {
+  public static void main(String[] args) throws SQLException {
     
     currentDate = "2022-02-26";
 
@@ -139,14 +136,14 @@ public class jdbcpostgreSQL {
     return fileName;
   }
 
-// purpose of this command is to get the most up to date version of weeksales database from db
+// purpose of this command is to get the most up-to-date version of weeksales database from db
   public static ArrayList<ArrayList<String>> getweeksales() {
     try {
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
-      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> result = new ArrayList<>();
       while (rs.next()) {
-        ArrayList<String> row = new ArrayList<String>();
+        ArrayList<String> row = new ArrayList<>();
         row.add(rs.getString("item"));
         row.add(rs.getString("quantity"));
         row.add(rs.getString("total"));
@@ -168,15 +165,15 @@ public class jdbcpostgreSQL {
     return null;
   }
 
-// purpose of this command is to get the most up to date version of itemconversion from db
+// purpose of this command is to get the most up-to-date version of itemconversion from db
 
   public static ArrayList<ArrayList<String>> getItemConversion() {
     try {
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
-      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> result = new ArrayList<>();
       while (rs.next()) {
-        ArrayList<String> row = new ArrayList<String>();
+        ArrayList<String> row = new ArrayList<>();
         row.add(rs.getString("item"));
         row.add(rs.getString("description"));
         
@@ -195,15 +192,15 @@ public class jdbcpostgreSQL {
 
     return null;
   }
-  // purpose of this command is to get the most up to date version of menukey database from table
+  // purpose of this command is to get the most up-to-date version of menukey database from table
 
   public static ArrayList<ArrayList<String>> getMenuKey() {
     try {
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
-      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> result = new ArrayList<>();
       while (rs.next()) {
-        ArrayList<String> row = new ArrayList<String>();
+        ArrayList<String> row = new ArrayList<>();
         row.add(rs.getString("item"));
         row.add(rs.getString("name"));
         row.add(rs.getString("description"));
@@ -230,14 +227,14 @@ public class jdbcpostgreSQL {
       ArrayList<ArrayList<String>> weeksales =  getweeksales();
       ArrayList<ArrayList<String>> MenuItemConvert =  getItemConversion();
       ArrayList<ArrayList<String>> menuKey =  getMenuKey();
-      ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<>();
       if(weeksales == null){
         return;
       }
 
-      for(int i = 0; i < weeksales.size(); i++){
-        if(weeksales.get(i).get(3).trim().equals(currentDate.trim())){
-          itemsToUpdate.add(weeksales.get(i));
+      for (ArrayList<String> weeksale : weeksales) {
+        if (weeksale.get(3).trim().equals(currentDate.trim())) {
+          itemsToUpdate.add(weeksale);
         }
       }
       
@@ -253,31 +250,24 @@ public class jdbcpostgreSQL {
 
 
   // function to input weekly purchase into daily order tables. It will take in the file name, and it will update the database directly
-  public static void inputElementsIntoWeekOrders(String fileName) throws SQLException, FileNotFoundException {
+  public static void inputElementsIntoWeekOrders(String fileName) throws SQLException {
     // skip if table already exists
-    Boolean append = false;
-    if (tableExist(conn, "weeksales")) {
-      append = true;
-    }
+    boolean append = tableExist(conn, "weeksales");
 
     Scanner sc;
     
     try{
       Statement stmt = conn.createStatement();
-      String startDate = "01/30/2022";
-      if(fileName.equals("./CSCE315-1/SecondWeekSales.csv")){
-        startDate = "02/06/2022";
-      }
-      else if(fileName.equals("./CSCE315-1/ThirdWeekSales.csv")){
-        startDate = "02/13/2022";
-      }
-      else if(fileName.equals("./CSCE315-1/FourthWeekSales.csv")){
-        startDate = "02/20/2022";
-      }
+      String startDate = switch (fileName) {
+        case "./CSCE315-1/SecondWeekSales.csv" -> "02/06/2022";
+        case "./CSCE315-1/ThirdWeekSales.csv" -> "02/13/2022";
+        case "./CSCE315-1/FourthWeekSales.csv" -> "02/20/2022";
+        default -> "01/30/2022";
+      };
 
       sc = new Scanner(new File(fileName));
       String filler = sc.nextLine().replace("\'", "\'\'");
-      String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      String[] parseArr;
     
       String tableName = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -288,7 +278,7 @@ public class jdbcpostgreSQL {
       sqlStatement += parseArr[1].strip() + " TEXT, " + parseArr[2].strip() + " INT, " + parseArr[3].strip() + " TEXT, " + "DateOfPurchase" + " DATE );";
       print(sqlStatement);
       // SQL side;
-      int result = 0;
+      int result;
       if(!append){
         result = stmt.executeUpdate(sqlStatement);
         print(result);
@@ -300,7 +290,7 @@ public class jdbcpostgreSQL {
         //creates array of elements in a line
         parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
-          if(parseArr[1].equals("")!=true) {
+          if(!parseArr[1].equals("")) {
             sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() +  "\',\'" + parseArr[2].strip() + "\'" + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
@@ -407,7 +397,7 @@ public class jdbcpostgreSQL {
       tableName = "Menu_Key";
       String sqlStatement = "CREATE TABLE " + "Menu_Key" + " ( ";
       // populates in the following order Item, name, Description, price 
-      String tableFormatting = sc.nextLine().replace("\'", "\'\'");;
+      String tableFormatting = sc.nextLine().replace("\'", "\'\'");
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       //sanitizes the parse Arr values for (" ")
       for (String string : parseArr) {
@@ -529,9 +519,9 @@ public class jdbcpostgreSQL {
     try {
         Statement statement = conn.createStatement();
         ResultSet rs = statement.executeQuery("SELECT * FROM inventory;");
-      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> result = new ArrayList<>();
       while (rs.next()) {
-        ArrayList<String> row = new ArrayList<String>();
+        ArrayList<String> row = new ArrayList<>();
         row.add(rs.getString("description"));
         row.add(rs.getString("sku"));
         row.add(rs.getString("Quantity"));
@@ -586,13 +576,15 @@ public class jdbcpostgreSQL {
       String item = result.getString("item");
 
       //splits the description into an array, recombine later
-      String parseArr[] = converArr[Integer.parseInt(item.substring(item.length()-3)) - 501].split(";");
+      int i = Integer.parseInt(item.substring(item.length() - 3)) - 501;
+      String convertItem = converArr[i];
+      String[] parseArr = convertItem.split(";");
 
       //the # of used updated
       parseArr[0] = String.valueOf(Integer.parseInt(parseArr[0]) + result.getInt("Quantity"));
 
       //put string back together
-      converArr[Integer.parseInt(item.substring(item.length()-3)) - 501] = String.join(";",parseArr);
+      converArr[i] = String.join(";",parseArr);
 
       for (String s : parseArr) {
         System.out.print(s + " | ");
@@ -604,7 +596,7 @@ public class jdbcpostgreSQL {
     // final part
     print("Amount Used: ");
     for(String convItem : converArr){
-      String parseArr[] = convItem.split(";");
+      String[] parseArr = convItem.split(";");
       int multiplier = Integer.parseInt(parseArr[0]);
 
       // might need an extra column in inventory for 'used'
@@ -631,10 +623,10 @@ public class jdbcpostgreSQL {
     try {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
-      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> result = new ArrayList<>();
       //print("OPENED: " + rs.next());
       while (rs.next()) {
-        ArrayList<String> row = new ArrayList<String>();
+        ArrayList<String> row = new ArrayList<>();
         row.add(rs.getString("item"));
         row.add(rs.getString("quantity"));
         row.add(rs.getString("dateofpurchase"));
@@ -659,10 +651,10 @@ public class jdbcpostgreSQL {
     try {
       Statement statement = conn.createStatement();
       ResultSet rs = statement.executeQuery("SELECT * FROM menu_key;");
-      ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> result = new ArrayList<>();
       //print("OPENED: " + rs.next());
       while (rs.next()) {
-        ArrayList<String> row = new ArrayList<String>();
+        ArrayList<String> row = new ArrayList<>();
         row.add(rs.getString("item"));
         row.add(rs.getString("name"));
         row.add(rs.getString("description"));
@@ -687,11 +679,11 @@ public class jdbcpostgreSQL {
   public static ArrayList<ArrayList<Object>> getOrderTrends() {
 
     // this will hold our menu items. (Item, Quantity, Price, Revenue, Trend %). Two arrays because we have two date ranges.
-    ArrayList<String> itemNames = new ArrayList<String>();
+    ArrayList<String> itemNames = new ArrayList<>();
     int numItems = manager.menuItemsTableModel.getRowCount();
-    ArrayList<ArrayList<Object>> trendTableList = new ArrayList<ArrayList<Object>>();
+    ArrayList<ArrayList<Object>> trendTableList = new ArrayList<>();
     for (int i = 0; i < numItems; i++) {
-      ArrayList<Object> tempList = new ArrayList<Object>(7);
+      ArrayList<Object> tempList = new ArrayList<>(7);
       tempList.add("");
       tempList.add("");
       tempList.add("");
@@ -714,7 +706,7 @@ public class jdbcpostgreSQL {
 
         // get item name minus day of week
         String itemName = (String) table1.getValueAt(i, 0);
-        itemName = itemName.substring(itemName.indexOf("_") + 1, itemName.length());
+        itemName = itemName.substring(itemName.indexOf("_") + 1);
 
         // get quantity
         String quantity = (String) table1.getValueAt(i, 1);
@@ -804,7 +796,7 @@ public class jdbcpostgreSQL {
           // update revenue
           double price = Double.parseDouble(((String) currentRow.get(3)).substring(1));
           double revenue2 = price * newQuantity;
-          currentRow.set(5, "$" + Double.toString(revenue2));
+          currentRow.set(5, "$" + revenue2);
           trendTableList.set(index, currentRow);
         }
 
@@ -824,9 +816,9 @@ public class jdbcpostgreSQL {
       manager.revenue2TextBox.setText("$" + totalRevenue2);
 
       // set Trend %
-      double trendPercent = 0;
-      double revenue1 = 0;
-      double revenue2 = 0;
+      double trendPercent;
+      double revenue1;
+      double revenue2;
       for (int i = 0; i < numItems; i++) {
         revenue1 = Double.parseDouble(((String) trendTableList.get(i).get(4)).substring(1));
         revenue2 = Double.parseDouble(((String) trendTableList.get(i).get(5)).substring(1));
@@ -879,12 +871,15 @@ public class jdbcpostgreSQL {
     ArrayList<ArrayList<String>> menuItemsDB = getDBMenuItems();
     manager.clearTables();
 
+    assert inventoryDB != null;
     for (ArrayList<String> row : inventoryDB) {
       manager.addRowToInventoryTable(row.toArray());
     }
+    assert DTODB != null;
     for (ArrayList<String> row : DTODB) {
       manager.addRowToDTOTable(row.toArray());
     }
+    assert menuItemsDB != null;
     for (ArrayList<String> row : menuItemsDB) {
       manager.addRowTomMenuItemsTable(row.toArray());
     }
@@ -898,10 +893,10 @@ public class jdbcpostgreSQL {
     print(sqlStatement);
     // SELECT * FROM weeksales WHERE dateofpurchase >= '2022-01-30' AND dateofpurchase <= '2022-02-01';
 
-    ArrayList<ArrayList<String>> result = new ArrayList<ArrayList<String>>();
+    ArrayList<ArrayList<String>> result = new ArrayList<>();
     log("Got data from " + dateA + " to " + dateB);
     while (rs.next()) {
-      ArrayList<String> row = new ArrayList<String>();
+      ArrayList<String> row = new ArrayList<>();
       row.add(rs.getString("item"));
       row.add(rs.getString("quantity"));
       row.add(rs.getString("dateofpurchase"));
@@ -1067,20 +1062,18 @@ public class jdbcpostgreSQL {
   }
   public static void setupInventoryEventListeners() {
     // DELETE currently selected row
-    manager.invDeleteRowButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        try {
-          Statement statement = conn.createStatement();
-          String currentSKU = (String) manager.invEditTableModel.getValueAt(0, 1);
+    manager.invDeleteRowButton.addActionListener(ae -> {
+      try {
+        Statement statement = conn.createStatement();
+        String currentSKU = (String) manager.invEditTableModel.getValueAt(0, 1);
 //          print(currentSKU);
-          String sqlStatement = "DELETE FROM inventory WHERE sku='" + currentSKU + "';";
+        String sqlStatement = "DELETE FROM inventory WHERE sku='" + currentSKU + "';";
 //          print(sqlStatement);
-          int rs = statement.executeUpdate(sqlStatement);
+        statement.executeUpdate(sqlStatement);
 //          print("Delete result: " + rs);
-          refreshTablesFromDB();
-        }catch(SQLException e){
-          e.printStackTrace();
-        }
+        refreshTablesFromDB();
+      }catch(SQLException e){
+        e.printStackTrace();
       }
     });
 
@@ -1098,79 +1091,70 @@ public class jdbcpostgreSQL {
     });
 
     // ADD new row from editTable button
-    manager.invAddRowButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        ArrayList<String> row = new ArrayList<String>(manager.invEditTableModel.getColumnCount());
-        for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
-          row.add((String) manager.invEditTableModel.getValueAt(0, j));
-        }
+    manager.invAddRowButton.addActionListener(ae -> {
+      ArrayList<String> row = new ArrayList<>(manager.invEditTableModel.getColumnCount());
+      for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
+        row.add((String) manager.invEditTableModel.getValueAt(0, j));
+      }
 
-        String sqlStatement =
-                "INSERT INTO inventory (description, sku, quantity, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
-                        "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", '" + row.get(4) + "', '" + row.get(5) + "', " + row.get(6) + ", '" + row.get(7) + "', '" + row.get(8) + "', '" + row.get(9) + "', " + row.get(10) + ", '" + row.get(11) + "');";
+      String sqlStatement =
+              "INSERT INTO inventory (description, sku, quantity, delivered, sold_by, delivered_by, quantity_multiplyer, _price_, _extended_, category, invoice_line, detailed_description) " +
+                      "VALUES ('" + row.get(0) + "', '" + row.get(1) + "', " + row.get(2) + ", " + row.get(3) + ", '" + row.get(4) + "', '" + row.get(5) + "', " + row.get(6) + ", '" + row.get(7) + "', '" + row.get(8) + "', '" + row.get(9) + "', " + row.get(10) + ", '" + row.get(11) + "');";
 
 //        print(sqlStatement);
 
-        try {
-          Statement stmt = conn.createStatement();
-          int rs = stmt.executeUpdate(sqlStatement);
+      try {
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(sqlStatement);
 //          print("Result Add Row: " + rs);
-          refreshTablesFromDB();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-
+        refreshTablesFromDB();
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
+
     });
 
     // EDIT currently selected row button
-    manager.invEditRowButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        ArrayList<String> row = new ArrayList<String>(manager.invEditTableModel.getColumnCount());
-        for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
-          row.add((String) manager.invEditTableModel.getValueAt(0, j));
-        }
+    manager.invEditRowButton.addActionListener(ae -> {
+      ArrayList<String> row = new ArrayList<>(manager.invEditTableModel.getColumnCount());
+      for (int j = 0; j < manager.invEditTableModel.getColumnCount(); j++) {
+        row.add((String) manager.invEditTableModel.getValueAt(0, j));
+      }
 
-        // update database, then refresh page
-        Statement statement = null;
-        try {
-          statement = conn.createStatement();
-          String currentSKU = row.get(0);
+      // update database, then refresh page
+      Statement statement;
+      try {
+        statement = conn.createStatement();
 
-          // build sql updateQuery
-          String sqlStatement =
-                  "UPDATE inventory " +
-                          "SET " +
-                          "description = '" + row.get(0) +
-                          "', sku = '" + row.get(1) +
-                          "', quantity = " + row.get(2) +
-                          ", delivered = " + row.get(3) +
-                          ", sold_by = '" + row.get(4) +
-                          "', delivered_by = '" + row.get(5) +
-                          "', quantity_multiplyer = " + row.get(6) +
-                          ", _price_ = '" + row.get(7) +
-                          "', _extended_ = '" + row.get(8) +
-                          "', category = '" + row.get(9) +
-                          "', invoice_line = " + row.get(10) +
-                          ", detailed_description = '" + row.get(11) + "' " +
-                          "WHERE sku = '" + row.get(1) + "';";
+        // build sql updateQuery
+        String sqlStatement =
+                "UPDATE inventory " +
+                        "SET " +
+                        "description = '" + row.get(0) +
+                        "', sku = '" + row.get(1) +
+                        "', quantity = " + row.get(2) +
+                        ", delivered = " + row.get(3) +
+                        ", sold_by = '" + row.get(4) +
+                        "', delivered_by = '" + row.get(5) +
+                        "', quantity_multiplyer = " + row.get(6) +
+                        ", _price_ = '" + row.get(7) +
+                        "', _extended_ = '" + row.get(8) +
+                        "', category = '" + row.get(9) +
+                        "', invoice_line = " + row.get(10) +
+                        ", detailed_description = '" + row.get(11) + "' " +
+                        "WHERE sku = '" + row.get(1) + "';";
 
 //          print(sqlStatement);
-          int rs = statement.executeUpdate(sqlStatement);
+        statement.executeUpdate(sqlStatement);
 //          print("Update result: " + rs);
-          refreshTablesFromDB();
-        } catch (SQLException ex) {
-          ex.printStackTrace();
-        }
+        refreshTablesFromDB();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
       }
     });
 
     // REFRESH button
-    manager.invRefreshButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        refreshTablesFromDB();
-      }
-    });
+    manager.invRefreshButton.addActionListener(ae -> refreshTablesFromDB());
   }
   public static void setupDTOEventListeners() {
     // DELETE currently selected row
@@ -1181,7 +1165,7 @@ public class jdbcpostgreSQL {
 //        print(currentItem);
         String sqlStatement = "DELETE FROM weeksales WHERE item='" + currentItem + "';";
 //        print(sqlStatement);
-        int rs = statement.executeUpdate(sqlStatement);
+        statement.executeUpdate(sqlStatement);
 //        print("Delete result: " + rs);
         refreshTablesFromDB();
       }catch(SQLException e){
@@ -1192,7 +1176,7 @@ public class jdbcpostgreSQL {
     // UPDATE currently selected row view
     manager.DTOTable1.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
-        // dont run if table empty
+        // don't run if table empty
         if (manager.DTOTableModel1.getRowCount() > 1) {
           JTable target = (JTable)e.getSource();
           int row = target.getSelectedRow();
@@ -1208,122 +1192,105 @@ public class jdbcpostgreSQL {
     });
 
     // ADD new row from editTable button
-    manager.DTOAddRowButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        ArrayList<String> row = new ArrayList<String>(manager.DTOEditTableModel.getColumnCount());
-        for (int j = 0; j < manager.DTOEditTableModel.getColumnCount(); j++) {
-          row.add((String) manager.DTOEditTableModel.getValueAt(0, j));
-        }
+    manager.DTOAddRowButton.addActionListener(ae -> {
+      ArrayList<String> row = new ArrayList<>(manager.DTOEditTableModel.getColumnCount());
+      for (int j = 0; j < manager.DTOEditTableModel.getColumnCount(); j++) {
+        row.add((String) manager.DTOEditTableModel.getValueAt(0, j));
+      }
 
-        String sqlStatement =
-                "INSERT INTO weeksales (item, quantity, total) " +
-                        "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0);";
+      String sqlStatement =
+              "INSERT INTO weeksales (item, quantity, total) " +
+                      "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0);";
 
 //        print(sqlStatement);
 
-        try {
-          Statement stmt = conn.createStatement();
-          int rs = stmt.executeUpdate(sqlStatement);
+      try {
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(sqlStatement);
 //          print("Result Add Row: " + rs);
-          refreshTablesFromDB();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
+        refreshTablesFromDB();
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
     });
 
     // EDIT currently selected row button
-    manager.DTOEditRowButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        ArrayList<String> row = new ArrayList<String>(manager.DTOEditTableModel.getColumnCount());
-        for (int j = 0; j < manager.DTOEditTableModel.getColumnCount(); j++) {
-          row.add((String) manager.DTOEditTableModel.getValueAt(0, j));
-        }
+    manager.DTOEditRowButton.addActionListener(ae -> {
+      ArrayList<String> row = new ArrayList<>(manager.DTOEditTableModel.getColumnCount());
+      for (int j = 0; j < manager.DTOEditTableModel.getColumnCount(); j++) {
+        row.add((String) manager.DTOEditTableModel.getValueAt(0, j));
+      }
 
-        // update database, then refresh page
-        Statement statement = null;
-        try {
-          statement = conn.createStatement();
-          String currentItem = row.get(0);
+      // update database, then refresh page
+      Statement statement;
+      try {
+        statement = conn.createStatement();
 
-          // build sql updateQuery
-          String sqlStatement =
-                  "UPDATE weeksales " +
-                          "SET " +
-                          "item = '" + row.get(0) +
-                          "', quantity = " + row.get(1) + ", total = 0 " +
-                          "WHERE item = '" + row.get(0) + "';";
+        // build sql updateQuery
+        String sqlStatement =
+                "UPDATE weeksales " +
+                        "SET " +
+                        "item = '" + row.get(0) +
+                        "', quantity = " + row.get(1) + ", total = 0 " +
+                        "WHERE item = '" + row.get(0) + "';";
 
 //          print(sqlStatement);
-          int rs = statement.executeUpdate(sqlStatement);
+        statement.executeUpdate(sqlStatement);
 //          print("Update result: " + rs);
-          refreshTablesFromDB();
-        } catch (SQLException ex) {
-          ex.printStackTrace();
-        }
+        refreshTablesFromDB();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
       }
     });
 
     // REFRESH button
-    manager.DTORefreshButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        refreshTablesFromDB();
-      }
-    });
+    manager.DTORefreshButton.addActionListener(ae -> refreshTablesFromDB());
 
     // RANGE 1 REFRESH
-    manager.DTORefreshRange1Button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String dateA = manager.DTO_R1From_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R1From_MM_Box.getSelectedItem() + "-" + manager.DTO_R1From_DD_Box.getSelectedItem();
-        String dateB = manager.DTO_R1To_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R1To_MM_Box.getSelectedItem() + "-" + manager.DTO_R1To_DD_Box.getSelectedItem();
-        print(dateA);
-        print(dateB);
-        try {
-          refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel1);
-        } catch (SQLException ex) {
-          ex.printStackTrace();
-        }
+    manager.DTORefreshRange1Button.addActionListener(e -> {
+      String dateA = manager.DTO_R1From_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R1From_MM_Box.getSelectedItem() + "-" + manager.DTO_R1From_DD_Box.getSelectedItem();
+      String dateB = manager.DTO_R1To_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R1To_MM_Box.getSelectedItem() + "-" + manager.DTO_R1To_DD_Box.getSelectedItem();
+      print(dateA);
+      print(dateB);
+      try {
+        refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel1);
+      } catch (SQLException ex) {
+        ex.printStackTrace();
       }
     });
 
     // RANGE 2 REFRESH
-    manager.DTORefreshRange2Button.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        String dateA = manager.DTO_R2From_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R2From_MM_Box.getSelectedItem() + "-" + manager.DTO_R2From_DD_Box.getSelectedItem();
-        String dateB = manager.DTO_R2To_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R2To_MM_Box.getSelectedItem() + "-" + manager.DTO_R2To_DD_Box.getSelectedItem();
-        print(dateA);
-        print(dateB);
-        try {
-          refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel2);
-        } catch (SQLException ex) {
-          ex.printStackTrace();
-        }
+    manager.DTORefreshRange2Button.addActionListener(e -> {
+      String dateA = manager.DTO_R2From_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R2From_MM_Box.getSelectedItem() + "-" + manager.DTO_R2From_DD_Box.getSelectedItem();
+      String dateB = manager.DTO_R2To_YYYY_Box.getSelectedItem() + "-" + manager.DTO_R2To_MM_Box.getSelectedItem() + "-" + manager.DTO_R2To_DD_Box.getSelectedItem();
+      print(dateA);
+      print(dateB);
+      try {
+        refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel2);
+      } catch (SQLException ex) {
+        ex.printStackTrace();
       }
     });
 
     // TOGGLE TREND table visibility
-    manager.enableTrendCheckBox.addItemListener(new ItemListener() {
-      public void itemStateChanged(ItemEvent e) {
-        boolean isSelected = manager.enableTrendCheckBox.isSelected();
-        manager.DTOTable3Panel.setVisible(isSelected);
-        log("Toggled Trends");
-        if (isSelected) {
-          print("Toggled!");
+    manager.enableTrendCheckBox.addItemListener(e -> {
+      boolean isSelected = manager.enableTrendCheckBox.isSelected();
+      manager.DTOTable3Panel.setVisible(isSelected);
+      log("Toggled Trends");
+      if (isSelected) {
+        print("Toggled!");
 
-          // clear trend table then populate it using getOrderTrends
-          manager.DTOTableModel3.setRowCount(0);
-          ArrayList<ArrayList<Object>> trends = getOrderTrends();
-          for (ArrayList<Object> row : trends) {
-            manager.DTOTableModel3.addRow(row.toArray());
-          }
-
-
-
+        // clear trend table then populate it using getOrderTrends
+        manager.DTOTableModel3.setRowCount(0);
+        ArrayList<ArrayList<Object>> trends = getOrderTrends();
+        for (ArrayList<Object> row : trends) {
+          manager.DTOTableModel3.addRow(row.toArray());
         }
 
+
+
       }
+
     });
   }
   public static void setupMenuItemsListeners() {
@@ -1336,7 +1303,7 @@ public class jdbcpostgreSQL {
 //        print(currentItem);
         String sqlStatement = "DELETE FROM menu_key WHERE item = " + currentItem + ";";
 //        print(sqlStatement);
-        int rs = statement.executeUpdate(sqlStatement);
+        statement.executeUpdate(sqlStatement);
 //        print("Delete result: " + rs);
         refreshTablesFromDB();
       }catch(SQLException e){
@@ -1358,67 +1325,58 @@ public class jdbcpostgreSQL {
     });
 
     // ADD new row from editTable button
-    manager.menuItemsAddRowButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        ArrayList<String> row = new ArrayList<String>(manager.menuItemsEditTableModel.getColumnCount());
-        for (int j = 0; j < manager.menuItemsEditTableModel.getColumnCount(); j++) {
-          row.add((String) manager.menuItemsEditTableModel.getValueAt(0, j));
-        }
+    manager.menuItemsAddRowButton.addActionListener(ae -> {
+      ArrayList<String> row = new ArrayList<>(manager.menuItemsEditTableModel.getColumnCount());
+      for (int j = 0; j < manager.menuItemsEditTableModel.getColumnCount(); j++) {
+        row.add((String) manager.menuItemsEditTableModel.getValueAt(0, j));
+      }
 
-        String sqlStatement =
-                "INSERT INTO menu_key (item, name, description, price) " +
-                        "VALUES (" + row.get(0) + ", '" + row.get(1) + "', '" + row.get(2) + "', '" + row.get(3) + "');";
+      String sqlStatement =
+              "INSERT INTO menu_key (item, name, description, price) " +
+                      "VALUES (" + row.get(0) + ", '" + row.get(1) + "', '" + row.get(2) + "', '" + row.get(3) + "');";
 
 //        print(sqlStatement);
 
-        try {
-          Statement stmt = conn.createStatement();
-          int rs = stmt.executeUpdate(sqlStatement);
+      try {
+        Statement stmt = conn.createStatement();
+        stmt.executeUpdate(sqlStatement);
 //          print("Result Add Row: " + rs);
-          refreshTablesFromDB();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
+        refreshTablesFromDB();
+      } catch (SQLException e) {
+        e.printStackTrace();
       }
     });
 
     // EDIT currently selected row button
-    manager.menuItemsEditRowButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        ArrayList<String> row = new ArrayList<String>(manager.menuItemsEditTableModel.getColumnCount());
-        for (int j = 0; j < manager.menuItemsEditTableModel.getColumnCount(); j++) {
-          row.add((String) manager.menuItemsEditTableModel.getValueAt(0, j));
-        }
+    manager.menuItemsEditRowButton.addActionListener(ae -> {
+      ArrayList<String> row = new ArrayList<>(manager.menuItemsEditTableModel.getColumnCount());
+      for (int j = 0; j < manager.menuItemsEditTableModel.getColumnCount(); j++) {
+        row.add((String) manager.menuItemsEditTableModel.getValueAt(0, j));
+      }
 
-        Statement statement;
-        try {
-          statement = conn.createStatement();
-          String currentItem = row.get(0);
-          String sqlStatement =
-                  "UPDATE menu_key " +
-                          "SET " +
-                          "item = " + row.get(0) +
-                          ", name = '" + row.get(1) +
-                          "', description = '" + row.get(2) +
-                          "', price = '" + row.get(3) + "' " +
-                          "WHERE item = " + row.get(0) + ";";
+      Statement statement;
+      try {
+        statement = conn.createStatement();
+        String sqlStatement =
+                "UPDATE menu_key " +
+                        "SET " +
+                        "item = " + row.get(0) +
+                        ", name = '" + row.get(1) +
+                        "', description = '" + row.get(2) +
+                        "', price = '" + row.get(3) + "' " +
+                        "WHERE item = " + row.get(0) + ";";
 
 //          print(sqlStatement);
-          int rs = statement.executeUpdate(sqlStatement);
+        statement.executeUpdate(sqlStatement);
 //          print("Update result: " + rs);
-          refreshTablesFromDB();
-        } catch (SQLException ex) {
-          ex.printStackTrace();
-        }
+        refreshTablesFromDB();
+      } catch (SQLException ex) {
+        ex.printStackTrace();
       }
     });
 
     // REFRESH button
-    manager.menuItemsRefreshButton.addActionListener(new ActionListener(){
-      public void actionPerformed(ActionEvent ae){
-        refreshTablesFromDB();
-      }
-    });
+    manager.menuItemsRefreshButton.addActionListener(ae -> refreshTablesFromDB());
   }
   // _____________________________________________________________________________________
 
