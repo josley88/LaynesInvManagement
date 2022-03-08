@@ -956,7 +956,7 @@ public class jdbcpostgreSQL {
     ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
     ArrayList<ArrayList<String>> DTODB = getDBDTO();
     ArrayList<ArrayList<String>> menuItemsDB = getDBMenuItems();
-    ArrayList<ArrayList<String>> orderPopularityDB = getOrderPopularity();
+
     manager.clearTables();
 
     assert inventoryDB != null;
@@ -971,10 +971,15 @@ public class jdbcpostgreSQL {
     for (ArrayList<String> row : menuItemsDB) {
       manager.addRowTomMenuItemsTable(row.toArray());
     }
-//    assert orderPopularityDB != null;
-//    for (ArrayList<String> row : orderPopularityDB) {
-//      manager.addRowTomMenuItemsTable(row.toArray());
-//    }
+    refreshOrderPopularity();
+
+  }
+
+  public static void refreshOrderPopularity() {
+    ArrayList<ArrayList<String>> orderPopularityDB = getOrderPopularity();
+    for (ArrayList<String> row : orderPopularityDB) {
+      manager.orderPopTableModel.addRow(row.toArray());
+    }
   }
 
   // refreshes the table model given with the date range given (Inclusive)
@@ -1160,8 +1165,6 @@ public class jdbcpostgreSQL {
       list.add(row);
     }
 
-    print(list);
-
     for(int i = 0; i < manager.DTOTable1.getRowCount(); i++) {
       int indexAfterUnderscore = manager.DTOTable1.getValueAt(i,0).toString().indexOf('_');
       String itemID = manager.DTOTable1.getValueAt(i,0).toString().substring(indexAfterUnderscore+1);
@@ -1175,27 +1178,27 @@ public class jdbcpostgreSQL {
       }
     }
 
+
+
+//    ArrayList<ArrayList<String>> sortedList = new ArrayList<ArrayList<String>>();
+//
+//    while(list.size() > 0) {
+//      ArrayList<String> row = new ArrayList<String>();
+//      int max = Integer.parseInt(list.get(0).get(1));
+//      int maxIndex = 0;
+//      for(int i = 0; i < list.size(); i++) {
+//        if(Integer.parseInt(list.get(i).get(1)) > max) {
+//          max = Integer.parseInt(list.get(i).get(1));
+//          maxIndex = i;
+//        }
+//      }
+//      row.add(list.get(maxIndex).get(0));
+//      row.add(list.get(maxIndex).get(1));
+//      list.remove(maxIndex);
+//      sortedList.add(row);
+//    }
     print(list);
-
-    ArrayList<ArrayList<String>> sortedList = new ArrayList<ArrayList<String>>();
-
-    while(list.size() > 0) {
-      ArrayList<String> row = new ArrayList<String>();
-      int max = Integer.parseInt(list.get(0).get(1));
-      int maxIndex = 0;
-      for(int i = 0; i < list.size(); i++) {
-        if(Integer.parseInt(list.get(i).get(1)) > max) {
-          max = Integer.parseInt(list.get(i).get(1));
-          maxIndex = i;
-        }
-      }
-      row.add(list.get(maxIndex).get(0));
-      row.add(list.get(maxIndex).get(1));
-      list.remove(maxIndex);
-      sortedList.add(row);
-    }
-    print(sortedList);
-    return sortedList;
+    return list;
 
   }
 
@@ -1398,6 +1401,7 @@ public class jdbcpostgreSQL {
       print(dateB);
       try {
         refreshInvTableFromRange(dateA, dateB, manager.DTOTableModel1);
+        refreshOrderPopularity();
       } catch (SQLException ex) {
         ex.printStackTrace();
       }
@@ -1430,8 +1434,6 @@ public class jdbcpostgreSQL {
         for (ArrayList<Object> row : trends) {
           manager.DTOTableModel3.addRow(row.toArray());
         }
-
-        getOrderPopularity();
 
       }
 

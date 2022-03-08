@@ -90,17 +90,16 @@ public class Manager {
     public JButton updateInventoryButton;
     public JButton refreshInventoryRangeButton;
 
-    public JComboBox inv_From_YYYY_Box;
-    public JComboBox inv_From_MM_Box;
-    public JComboBox inv_From_DD_Box;
-    public JComboBox inv_To_YYYY_Box;
-    public JComboBox inv_To_MM_Box;
-    public JComboBox inv_To_DD_Box;
+    public JComboBox<String> inv_From_YYYY_Box;
+    public JComboBox<String> inv_From_MM_Box;
+    public JComboBox<String> inv_From_DD_Box;
+    public JComboBox<String> inv_To_YYYY_Box;
+    public JComboBox<String> inv_To_MM_Box;
+    public JComboBox<String> inv_To_DD_Box;
 
     public JPanel orderPopPanel;
     public JTable orderPopTable;
-
-
+    private JScrollPane orderPopScroll;
 
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Fill Amt", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
@@ -108,7 +107,7 @@ public class Manager {
     //final private String[] DTOTrend = {"Item", "Name", "Trend (%)"};
     final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
     final private String[] DTOTrendCol = {"Item", "Quant. 1", "Quant. 2", "Price", "Rev. 1", "Rev. 2", "Trend %"};
-
+    final private String[] orderPopCol = {"Item ID", "Quantity"};
     public Manager() {
 
         // setup table models, most without directly editable cells -----------------------------------------------
@@ -142,7 +141,7 @@ public class Manager {
         };
         DTOEditTableModel = new DefaultTableModel(DTOCol, 1);
 
-        DTOTableModel2 = new DefaultTableModel(DTOCol, 0) {
+        orderPopTableModel = new DefaultTableModel(orderPopCol, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {return false;}
         };
@@ -162,6 +161,8 @@ public class Manager {
             DTO_R2From_MM_Box.addItem(month);
             DTO_R1To_MM_Box.addItem(month);
             DTO_R2To_MM_Box.addItem(month);
+            inv_From_MM_Box.addItem(month);
+            inv_To_MM_Box.addItem(month);
 
         }
         String[] days = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
@@ -170,6 +171,8 @@ public class Manager {
             DTO_R2From_DD_Box.addItem(day);
             DTO_R1To_DD_Box.addItem(day);
             DTO_R2To_DD_Box.addItem(day);
+            inv_From_DD_Box.addItem(day);
+            inv_To_DD_Box.addItem(day);
         }
         String[] years = {"2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"};
         for (String year : years) {
@@ -177,6 +180,8 @@ public class Manager {
             DTO_R2From_YYYY_Box.addItem(year);
             DTO_R1To_YYYY_Box.addItem(year);
             DTO_R2To_YYYY_Box.addItem(year);
+            inv_From_YYYY_Box.addItem(year);
+            inv_To_YYYY_Box.addItem(year);
         }
 
         // setup column identifiers ------------------------------------------
@@ -190,6 +195,7 @@ public class Manager {
 
         menuItemsTableModel.setColumnIdentifiers(menuItemsCol);
         menuItemsEditTableModel.setColumnIdentifiers(menuItemsCol);
+        orderPopTableModel.setColumnIdentifiers(orderPopCol);
         // --------------------------------------------------------------------
 
 
@@ -204,6 +210,8 @@ public class Manager {
 
         menuItemsScroll.setColumnHeaderView(menuItemsTable.getTableHeader());
         menuItemsEditScroll.setColumnHeaderView(menuItemsEditTable.getTableHeader());
+
+        orderPopScroll.setColumnHeaderView(orderPopTable.getTableHeader());
         // --------------------------------------------------------------------
 
 
@@ -218,6 +226,8 @@ public class Manager {
 
         menuItemsTable.setModel(menuItemsTableModel);
         menuItemsEditTable.setModel(menuItemsEditTableModel);
+
+        orderPopTable.setModel(orderPopTableModel);
         // --------------------------------------------------------------------
 
         // set table not editable so users dont mess up table -----------------
@@ -226,12 +236,14 @@ public class Manager {
         setNonFocusable(DTOTable2);
         setNonFocusable(DTOTable3);
         setNonFocusable(menuItemsTable);
+        setNonFocusable(orderPopTable);
         // ---------------------------------------------------------------------
 
         // setup auto sort -----------------------------------------------------
         invTable.getRowSorter().toggleSortOrder(1);
         menuItemsTable.getRowSorter().toggleSortOrder(0);
         DTOTable3.getRowSorter().toggleSortOrder(6);
+        orderPopTable.getRowSorter().toggleSortOrder(0);
         // ---------------------------------------------------------------------
 
         // setup tabbed pane font size -----------------------------------------
@@ -261,6 +273,7 @@ public class Manager {
         invTableModel.setRowCount(0);
         DTOTableModel1.setRowCount(0);
         menuItemsTableModel.setRowCount(0);
+        orderPopTableModel.setRowCount(0);
     }
 
     public void clearTable(DefaultTableModel tableModel) {
