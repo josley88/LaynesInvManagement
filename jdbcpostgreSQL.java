@@ -1137,14 +1137,42 @@ public class jdbcpostgreSQL {
       list.add(row);
     }
 
+    print(list);
 
     for(int i = 0; i < manager.DTOTable1.getRowCount(); i++) {
       int indexAfterUnderscore = manager.DTOTable1.getValueAt(i,0).toString().indexOf('_');
-      String itemID = manager.DTOTable1.getValueAt(i,0).toString().substring(indexAfterUnderscore);
-
+      String itemID = manager.DTOTable1.getValueAt(i,0).toString().substring(indexAfterUnderscore+1);
+      for(int j = 0; j < list.size(); j++) {
+        if(itemID.equals(list.get(j).get(0))) {
+          int currQuantity = Integer.parseInt(list.get(j).get(1).toString());
+          int addQuantity = Integer.parseInt(manager.DTOTable1.getValueAt(i,1).toString());
+          int newQuantity = currQuantity + addQuantity;
+          list.get(j).set(1,String.valueOf(newQuantity));
+        }
+      }
     }
 
-    ArrayList<ArrayList<Double>> sortedList = new ArrayList<ArrayList<Double>>();
+    print(list);
+
+    ArrayList<ArrayList<String>> sortedList = new ArrayList<ArrayList<String>>();
+
+    while(list.size() > 0) {
+      ArrayList<String> row = new ArrayList<String>();
+      int max = Integer.parseInt(list.get(0).get(1));
+      int maxIndex = 0;
+      for(int i = 0; i < list.size(); i++) {
+        if(Integer.parseInt(list.get(i).get(1)) > max) {
+          max = Integer.parseInt(list.get(i).get(1));
+          maxIndex = i;
+        }
+      }
+      row.add(list.get(maxIndex).get(0));
+      row.add(list.get(maxIndex).get(1));
+      list.remove(maxIndex);
+      sortedList.add(row);
+    }
+    print(sortedList);
+
   }
 
   // following functions set up the event listeners for buttons and tables in manager GUI
@@ -1379,7 +1407,7 @@ public class jdbcpostgreSQL {
           manager.DTOTableModel3.addRow(row.toArray());
         }
 
-
+        getOrderPopularity();
 
       }
 
