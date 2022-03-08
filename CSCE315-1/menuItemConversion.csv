@@ -1,21 +1,21 @@
 itemConversion,,
 ,item,description
-,501,Chicken breast=0.005;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
-,502,Chicken breast=0.004;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
-,503,Chicken breast=0.003;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
-,504,Chicken breast=0.0015;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
+,501,Chicken breast=0.05;Thick bread=0.006;Fries=0.002;Potato Salad=0.02;Laynes sauce=0.001
+,502,Chicken breast=0.04;Thick bread=0.006;Fries=0.002;Potato Salad=0.02;Laynes sauce=0.001
+,503,Chicken breast=0.03;Thick bread=0.006;Fries=0.002;Potato Salad=0.02;Laynes sauce=0.001
+,504,Chicken breast=0.015;Thick bread=0.006;Fries=0.002;Potato Salad=0.02;Laynes sauce=0.001
 ,505,Tea bags=0.041
-,506,Chicken breast=0.02;Thick bread=0.024;Fries=0.008;Potato Salad=0.8;Layne's sauce=0.008
-,507,Chicken breast=0.0015;Thick bread=0.012;Potato Salad=0.2;Layne's sauce=0.001
-,508,Chicken breast=0.0015;Thick bread=0.012;Potato Salad=0.2;Layne's sauce=0.001
-,509,Chicken breast=0.0015;Thick bread=0.012;Potato Salad=0.2;Layne's sauce=0.001
-,510,Sliced cheese=0.002;Thick bread=0.012;Chicken breast=0.0015
-,511,Sliced cheese=0.002;Chicken breast=0.003;Thick bread=0.006;Fries=0.002;Potato Salad=0.2;Layne's sauce=0.001
-,512,Chicken breast=0.001
-,513,Potato Salad=0.2
-,514,Chicken breast=0.001
-,515,Chicken breast=0.005
-,516,Potato Salad=0.2
+,506,Chicken breast=0.02;Thick bread=0.024;Fries=0.008;Potato Salad=0.08;Laynes sauce=0.008
+,507,Chicken breast=0.015;Thick bread=0.012;Potato Salad=0.02;Laynes sauce=0.001
+,508,Chicken breast=0.015;Thick bread=0.012;Potato Salad=0.02;Laynes sauce=0.001
+,509,Chicken breast=0.015;Thick bread=0.012;Potato Salad=0.02;Laynes sauce=0.001
+,510,Sliced cheese=0.002;Thick bread=0.012;Chicken breast=0.015
+,511,Sliced cheese=0.002;Chicken breast=0.03;Thick bread=0.006;Fries=0.002;Potato Salad=0.02;Laynes sauce=0.001
+,512,Chicken breast=0.01
+,513,Potato Salad=0.02
+,514,Chicken breast=0.01
+,515,Chicken breast=0.05
+,516,Potato Salad=0.02
 ,517,Fries=0.002
 ,518,Straw=0.00125;16 oz Cup=0.001;Drink lid=0.001
 ,519,Bottled Drink=0.04
