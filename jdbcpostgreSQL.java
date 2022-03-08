@@ -636,7 +636,7 @@ public class jdbcpostgreSQL {
     }
 
     //grab resultset for weeksales, grab total # of each item used in timeframe
-    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase > '" + dateA + "' AND dateofpurchase < '" + dateB + "';");
+    result = stmt.executeQuery("SELECT * FROM weeksales WHERE dateofpurchase >= '" + dateA + "' AND dateofpurchase <= '" + dateB + "';");
     // SELECT * FROM weeksales WHERE dateofpurchase > '2022-01-30' AND dateofpurchase < '2022-02-01';
     print("ParseArr: ");
     while(result.next()){
