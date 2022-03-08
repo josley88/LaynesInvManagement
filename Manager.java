@@ -100,10 +100,18 @@ public class Manager {
 
     public JPanel orderPopPanel;
     public JTable orderPopTable;
-    private JScrollPane orderPopScroll;
-    private JPanel invPopPanel;
-    private JScrollPane invPopScroll;
-    private JTable invPopTable;
+
+    public JScrollPane orderPopScroll;
+    public JPanel invPopPanel;
+    public JScrollPane invPopScroll;
+    public JTable invPopTable;
+
+    public JComboBox<String> invUpdate_From_YYYY_Box;
+    public JComboBox<String> invUpdate_From_MM_Box;
+    public JComboBox<String> invUpdate_From_DD_Box;
+    public JComboBox<String> invUpdate_To_YYYY_Box;
+    public JComboBox<String> invUpdate_To_MM_Box;
+    public JComboBox<String> invUpdate_To_DD_Box;
 
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Fill Amt", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
@@ -181,6 +189,8 @@ public class Manager {
             DTO_R2To_MM_Box.addItem(month);
             inv_From_MM_Box.addItem(month);
             inv_To_MM_Box.addItem(month);
+            invUpdate_From_MM_Box.addItem(month);
+            invUpdate_To_MM_Box.addItem(month);
 
         }
         String[] days = {"01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"};
@@ -191,6 +201,8 @@ public class Manager {
             DTO_R2To_DD_Box.addItem(day);
             inv_From_DD_Box.addItem(day);
             inv_To_DD_Box.addItem(day);
+            invUpdate_From_DD_Box.addItem(day);
+            invUpdate_To_DD_Box.addItem(day);
         }
         String[] years = {"2022", "2023", "2024", "2025", "2026", "2027", "2028", "2029", "2030"};
         for (String year : years) {
@@ -200,6 +212,8 @@ public class Manager {
             DTO_R2To_YYYY_Box.addItem(year);
             inv_From_YYYY_Box.addItem(year);
             inv_To_YYYY_Box.addItem(year);
+            invUpdate_From_YYYY_Box.addItem(year);
+            invUpdate_To_YYYY_Box.addItem(year);
         }
 
         // setup column identifiers ------------------------------------------

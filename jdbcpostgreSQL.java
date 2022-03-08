@@ -5,6 +5,7 @@ import java.sql.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class jdbcpostgreSQL {
@@ -30,7 +31,7 @@ public class jdbcpostgreSQL {
   public static String userName = "csce315" + sectionNumber + "_" + teamNumber + "user";
   public static String userPassword = "315gang";
   //current date: meant to aid in the prgram in updating the inventory 
-  public static String currentDate = "2022-01-30";
+//  public static String currentDate = "2022-01-30";
 
 
   public static Manager manager;
@@ -68,7 +69,6 @@ public class jdbcpostgreSQL {
     inputElementsIntoInventory("./CSCE315-1/First day order.csv");
     inputItemConversions("./CSCE315-1/menuItemConversion.csv");
     inputElementsIntoMenuTable("./CSCE315-1/MenuKey.csv");
-    ArrayList<ArrayList<String>> USED = getItemConversionsFromDateRange("2022-02-01", "2022-02-03");
     // -----------------------------------------------------------------------
 
     // fill tables and set up event listeners --------------------------------
@@ -226,7 +226,7 @@ public class jdbcpostgreSQL {
     try {
       Statement stmt = jdbcpostgreSQL.conn.createStatement();
       double newVal = oldTotal - amt;
-      int result = stmt.executeUpdate("UPDATE inventory SET quantity=" + Double.toString(newVal) + " WHERE description=\'" + item + "\';");
+      stmt.executeUpdate("UPDATE inventory SET quantity=" + newVal + " WHERE description='" + item + "';");
 
     } catch (SQLException e) {
       e.printStackTrace();
@@ -235,18 +235,18 @@ public class jdbcpostgreSQL {
   }
 
   public static void updateInventoryGivenRange(String dateA, String dateB) throws SQLException {
-    ArrayList<ArrayList<String>> invUpdates = new ArrayList<ArrayList<String>>();
+    ArrayList<ArrayList<String>> invUpdates;
     invUpdates = getItemConversionsFromDateRange(dateA, dateB);
     try{
       Statement stmt = jdbcpostgreSQL.conn.createStatement();
       ResultSet result = stmt.executeQuery("SELECT description,quantity FROM inventory");
       while(result.next()){
-        for(int i = 0; i < invUpdates.size(); i++){
-          if(invUpdates.get(i).get(0).equals(result.getString("description"))){
+        for (ArrayList<String> invUpdate : invUpdates) {
+          if (invUpdate.get(0).equals(result.getString("description"))) {
             double amt = Double.parseDouble(result.getString("quantity"));
-            amt = amt - Double.parseDouble(invUpdates.get(i).get(1));
-            int rs = stmt.executeUpdate("UPDATE inventory SET quantity='" + amt + "' WHERE item='" + result.getString("description") + "';");
-            if(rs == -123012) {
+            amt = amt - Double.parseDouble(invUpdate.get(1));
+            int rs = stmt.executeUpdate("UPDATE inventory SET quantity='" + amt + "' WHERE description='" + result.getString("description") + "';");
+            if (rs == -123012) {
               print(rs);
             }
           }
@@ -260,71 +260,67 @@ public class jdbcpostgreSQL {
   }
 
   // purpse of the func is to update inven database given global vars date.
-  public static void updateInventoryGivenDate(){
+  public static void updateInventoryGivenDate(String date){
     try{
-       ArrayList<ArrayList<String>> weeksales =  getweeksales();
-       ArrayList<ArrayList<String>> MenuItemConvert =  getItemConversion();
-       ArrayList<ArrayList<String>> menuKey =  getMenuKey();
-      ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<ArrayList<String>>();
+      ArrayList<ArrayList<String>> weeksales =  getweeksales();
+      ArrayList<ArrayList<String>> MenuItemConvert =  getItemConversion();
+      ArrayList<ArrayList<String>> menuKey =  getMenuKey();
+      ArrayList<ArrayList<String>> itemsToUpdate = new ArrayList<>();
       ArrayList<ArrayList<String>> inventory = getDBInventory();
-       if(weeksales == null){
+        if(weeksales == null){
          return;
-       }
-       //sets up function to fill with items to update
-       for(int i = 0; i < weeksales.size(); i++){
-         if(weeksales.get(i).get(3).trim().equals(currentDate.trim())){
-           itemsToUpdate.add(weeksales.get(i));
-         }
-       }
+        }
 
-       ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
-       for(int i = 0; i < itemsToUpdate.size(); i++){
-         ArrayList<String> tempLine = new ArrayList<String>();
-         //templine = food number, base ingredients, base additionals, quantity, oldAmt
+        //sets up function to fill with items to update
+      for (ArrayList<String> weeksale : weeksales) {
+        if (weeksale.get(3).trim().equals(date.trim())) {
+          itemsToUpdate.add(weeksale);
+        }
+      }
 
-         tempLine.add(itemsToUpdate.get(i).get(0).substring(itemsToUpdate.get(i).get(0).indexOf('_')+1));
-        
-         for(int menuNumber = 0; menuNumber < MenuItemConvert.size(); menuNumber++){
-           if(tempLine.get(0).trim().equals(MenuItemConvert.get(menuNumber).get(0).trim())){
-             tempLine.add(MenuItemConvert.get(menuNumber).get(1)); // adds base ingrediants
-           }
-          
-       }
-         //print("starting here\n" + itemsToUpdate + "\n\n");
+        ArrayList<ArrayList<String>> temp = new ArrayList<>();
+      for (ArrayList<String> items : itemsToUpdate) {
+        ArrayList<String> tempLine = new ArrayList<>();
+        //templine = food number, base ingredients, base additionals, quantity, oldAmt
 
-         for(int menuNumber = 0; menuNumber < menuKey.size(); menuNumber++){
-             if(tempLine.get(0).equals(menuKey.get(menuNumber).get(0))){
-               tempLine.add(menuKey.get(menuNumber).get(2)); // adds additionals
-             }
+        tempLine.add(items.get(0).substring(items.get(0).indexOf('_') + 1));
 
-         }
+        for (int menuNumber = 0; menuNumber < (MenuItemConvert != null ? MenuItemConvert.size() : 0); menuNumber++) {
+          if (tempLine.get(0).trim().equals(MenuItemConvert.get(menuNumber).get(0).trim())) {
+            tempLine.add(MenuItemConvert.get(menuNumber).get(1)); // adds base ingrediants
+          }
+        }
+        //print("starting here\n" + itemsToUpdate + "\n\n");
 
-         tempLine.add(itemsToUpdate.get(i).get(1)); // adds quantity
-        
-         for(int oldAmt = 0; oldAmt < inventory.size(); oldAmt++){
-           if(tempLine.get(1).split(";")[0].split("=")[0].trim().equals(inventory.get(oldAmt).get(0))){
-             tempLine.add(inventory.get(oldAmt).get(2)); // adds old total
-           }
+        for (int menuNumber = 0; menuNumber < Objects.requireNonNull(menuKey).size(); menuNumber++) {
+          if (tempLine.get(0).equals(menuKey.get(menuNumber).get(0))) {
+            tempLine.add(menuKey.get(menuNumber).get(2)); // adds additionals
+          }
+        }
 
-       }
-        
-         temp.add(tempLine);
-         tempLine = new ArrayList<String>();
-       }
-       itemsToUpdate = temp;
-       temp = new ArrayList<ArrayList<String>>();
+        tempLine.add(items.get(1)); // adds quantity
+
+        for (int oldAmt = 0; oldAmt < Objects.requireNonNull(inventory).size(); oldAmt++) {
+          if (tempLine.get(1).split(";")[0].split("=")[0].trim().equals(inventory.get(oldAmt).get(0))) {
+            tempLine.add(inventory.get(oldAmt).get(2)); // adds old total
+          }
+        }
+
+        temp.add(tempLine);
+      }
+        itemsToUpdate = temp;
 
 //       print("starting here\n" + itemsToUpdate + "\n\n");
 //        public static String currentDate = "2022-03-01";
 
-      //description how to much to change by
-      temp = getItemConversionsFromDateRange(currentDate, currentDate);
+      //description how much to change by
+      temp = getItemConversionsFromDateRange(date, date);
       print("starting here\n" + itemsToUpdate + "\n\n");
       for(int i = 0; i < temp.size(); i++){
        // print("starting here\n" + itemsToUpdate.get(i).get(4).split(";")[0] + "\n\n");
         double oldAmt = 0;
         String item = temp.get(i).get(0);
-        for(int oldAmtt = 0; oldAmtt < inventory.size(); oldAmtt++){
+        for(int oldAmtt = 0; oldAmtt < Objects.requireNonNull(inventory).size(); oldAmtt++){
           if(item.strip().equals(inventory.get(oldAmtt).get(0))){
             oldAmt = Double.parseDouble(inventory.get(oldAmtt).get(2)); // adds old total
           }
@@ -365,10 +361,9 @@ public class jdbcpostgreSQL {
       };
 
       sc = new Scanner(new File(fileName));
-      String filler = sc.nextLine().replace("\'", "\'\'");
       String[] parseArr;
     
-      String tableName = sc.nextLine().replace("\'", "\'\'");
+      String tableName = sc.nextLine().replace("'", "''");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       String day = parseArr[0].strip();
       tableName =  fileName.substring((fileName.length()-13), (fileName.length()-4));
@@ -387,7 +382,7 @@ public class jdbcpostgreSQL {
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
-        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        parseArr = sc.nextLine().replace("'", "''").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(!parseArr[1].equals("")) {
             sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() +  "\',\'" + parseArr[2].strip() + "\'" + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
@@ -656,7 +651,7 @@ public class jdbcpostgreSQL {
 
     // populate array of item conversions
     Statement stmt = jdbcpostgreSQL.conn.createStatement();
-    String[] converArr = new String[19];
+    String[] converArr = new String[20];
 
 
     ResultSet result = stmt.executeQuery("SELECT * FROM itemconversion;");
@@ -1375,7 +1370,8 @@ public class jdbcpostgreSQL {
       String dateB = manager.inv_To_YYYY_Box.getSelectedItem() + "-" + manager.inv_To_MM_Box.getSelectedItem() + "-" + manager.inv_To_DD_Box.getSelectedItem();
       log("Selecting date range from " + dateA + " to " + dateB);
       try {
-        refreshInvTableFromRange(dateA, dateB, manager.invPopTableModel);
+        updateInventoryGivenRange(dateA, dateB);
+        refreshTablesFromDB();
       } catch (SQLException ex) {
         ex.printStackTrace();
       }
@@ -1520,11 +1516,13 @@ public class jdbcpostgreSQL {
 
     });
 
-    manager.updateInventoryButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        updateInventoryGivenDate();
-      }
+    // UPDATE INVENTORY button from date range
+
+    manager.updateInventoryButton.addActionListener(e -> {
+      String dateA = manager.invUpdate_From_YYYY_Box.getSelectedItem() + "-" + manager.invUpdate_From_MM_Box.getSelectedItem() + "-" + manager.invUpdate_From_DD_Box.getSelectedItem();
+      String dateB = manager.invUpdate_To_YYYY_Box.getSelectedItem() + "-" + manager.invUpdate_To_MM_Box.getSelectedItem() + "-" + manager.invUpdate_To_DD_Box.getSelectedItem();
+      log("Updating inventory with orders from " + dateA + " to " + dateB);
+      // updateInventoryGivenDate(dateA);
     });
   }
   public static void setupMenuItemsListeners() {
