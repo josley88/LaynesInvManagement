@@ -327,8 +327,6 @@ public class jdbcpostgreSQL {
         }
         double changeBy = Double.parseDouble(temp.get(i).get(1));
 
-        //print( Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]));
-      //  print(Double.parseDouble(itemsToUpdate.get(i).get(3).split(";")[0].split("=")[1]));
         executeSingleInvUpdate(item,oldAmt,changeBy);
 
       }
@@ -385,7 +383,7 @@ public class jdbcpostgreSQL {
         parseArr = sc.nextLine().replace("'", "''").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0){
           if(!parseArr[1].equals("")) {
-            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + day + "_" + parseArr[1].strip() +  "\',\'" + parseArr[2].strip() + "\'" + "," + "\'" + parseArr[3].strip() + "\'" + "," + "\'" + startDate+ "\');";
+            sqlStatement = "INSERT INTO " + tableName + " VALUES ('" + day + "_" + parseArr[1].strip() +  "','" + parseArr[2].strip() + "'" + "," + "'" + parseArr[3].strip() + "'" + "," + "'" + startDate+ "');";
            print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
@@ -399,7 +397,7 @@ public class jdbcpostgreSQL {
             if(sc.hasNextLine()){ // checks if we are at end of file 
               //skips a line
               startDate = changeDate(startDate);
-              parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+              parseArr = sc.nextLine().replace("'", "''").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
               day = parseArr[0].strip();
               print("NEW DAY IS " + day);
             }
@@ -431,10 +429,9 @@ public class jdbcpostgreSQL {
 
 
       sc = new Scanner(new File(fileName));
-      String filler = sc.nextLine().replace("\'", "\'\'");
-      String[] parseArr = filler.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      String[] parseArr;
     
-      String tableName = sc.nextLine().replace("\'", "\'\'").replace(" ", "_").replace("_#", "");
+      String tableName = sc.nextLine().replace("'", "''").replace(" ", "_").replace("_#", "");
       parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       tableName = "INVENTORY";
       String sqlStatement = "CREATE TABLE " + "INVENTORY" + " ( ";
@@ -447,10 +444,10 @@ public class jdbcpostgreSQL {
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
-        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        parseArr = sc.nextLine().replace("'", "''").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if(parseArr.length>0 && sc.hasNextLine()){
-          if(parseArr[1].equals("")!=true) {
-            sqlStatement = "INSERT INTO " + tableName + " VALUES (\'" + parseArr[1].strip() + "\',\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + ","  + "\'" + parseArr[3].strip() + "\'" + ","+ "\'" + parseArr[4].strip() + "\'" + "," + "\'" + parseArr[5].strip() + "\'"+ "," + "\'" + parseArr[6].strip() + "\'" + "," + "\'" + parseArr[7].strip() + "\'" + "," + "\'" + parseArr[8].strip() + "\'" + "," + "\'" + parseArr[9].strip() + "\'" + "," + "\'" + parseArr[10].strip() + "\'" + "," + "\'" + parseArr[11].strip() + "\'" + "," + "\'" + parseArr[12].strip() + "\'" + ");";
+          if(!parseArr[1].equals("")) {
+            sqlStatement = "INSERT INTO " + tableName + " VALUES ('" + parseArr[1].strip() + "','" + parseArr[2].strip() + "'," + "'" + parseArr[3].strip() + "'" + ","  + "'" + parseArr[3].strip() + "'" + ","+ "'" + parseArr[4].strip() + "'" + "," + "'" + parseArr[5].strip() + "'"+ "," + "'" + parseArr[6].strip() + "'" + "," + "'" + parseArr[7].strip() + "'" + "," + "'" + parseArr[8].strip() + "'" + "," + "'" + parseArr[9].strip() + "'" + "," + "'" + parseArr[10].strip() + "'" + "," + "'" + parseArr[11].strip() + "'" + "," + "'" + parseArr[12].strip() + "'" + ");";
             print(sqlStatement);
             result = stmt.executeUpdate(sqlStatement);
             print(result);
@@ -485,13 +482,13 @@ public class jdbcpostgreSQL {
     
     try{
       sc = new Scanner(new File(fileName));
-      String tableName = sc.nextLine().replace("\'", "\'\'");
-      String[] parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      String tableName;
+      String[] parseArr;
       
       tableName = "Menu_Key";
       String sqlStatement = "CREATE TABLE " + "Menu_Key" + " ( ";
       // populates in the following order Item, name, Description, price 
-      String tableFormatting = sc.nextLine().replace("\'", "\'\'");
+      String tableFormatting = sc.nextLine().replace("'", "''");
       parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
       //sanitizes the parse Arr values for (" ")
       for (String string : parseArr) {
@@ -508,8 +505,8 @@ public class jdbcpostgreSQL {
       while(sc.hasNextLine()){
         
         //creates array of elements in a line
-        parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-        sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\'," + "\'" + parseArr[3].strip() + "\'" + ",\'" + parseArr[4].strip() + "\');";
+        parseArr = sc.nextLine().replace("'", "''").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+        sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",'" + parseArr[2].strip() + "'," + "'" + parseArr[3].strip() + "'" + ",'" + parseArr[4].strip() + "');";
         print(sqlStatement);
         result = stmt.executeUpdate(sqlStatement);
         print(result);
@@ -538,8 +535,7 @@ public class jdbcpostgreSQL {
     
     try{
       sc = new Scanner(new File(fileName));
-      String tableName = sc.nextLine().replace("\'", "\'\'");
-      parseArr = tableName.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+      String tableName;
       
       // only create table if it doesn't already exist
       if (!tableExist(conn, "itemconversion")) {
@@ -547,7 +543,7 @@ public class jdbcpostgreSQL {
         tableName = "itemConversion";
         String sqlStatement = "CREATE TABLE " + tableName + " ( ";
         // populates in the following order Item, Description 
-        String tableFormatting = sc.nextLine().replace("\'", "\'\'");
+        String tableFormatting = sc.nextLine().replace("'", "''");
         parseArr = tableFormatting.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         //sanitizes the parse Arr values for (" ")
         for (String string : parseArr) {
@@ -564,8 +560,8 @@ public class jdbcpostgreSQL {
         while (sc.hasNextLine()) {
 
           //creates array of elements in a line
-          parseArr = sc.nextLine().replace("\'", "\'\'").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-          sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",\'" + parseArr[2].strip() + "\');";
+          parseArr = sc.nextLine().replace("'", "''").split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+          sqlStatement = "INSERT INTO " + tableName + " VALUES (" + parseArr[1].strip() + ",'" + parseArr[2].strip() + "');";
           print(sqlStatement);
           result = stmt.executeUpdate(sqlStatement);
           print(result);
@@ -690,7 +686,7 @@ public class jdbcpostgreSQL {
     // now converArr has: AMOUNT;.....restofdescription..... on each index
     // final part
     print("Amount Used: ");
-    ArrayList<ArrayList<String>> finalArr = new ArrayList<ArrayList<String>>();
+    ArrayList<ArrayList<String>> finalArr = new ArrayList<>();
     for(String convItem : converArr){
       String[] parseArr = convItem.split(";");
       int multiplier = Integer.parseInt(parseArr[0]);
@@ -717,7 +713,7 @@ public class jdbcpostgreSQL {
           }
         }
         if(!added){
-          ArrayList<String> k = new ArrayList<String>();
+          ArrayList<String> k = new ArrayList<>();
           k.add(parseDesc[0]);
           k.add(Double.toString(invUsed));
           finalArr.add(k);
@@ -736,10 +732,10 @@ public class jdbcpostgreSQL {
   }
 
   public static ArrayList<ArrayList<String>> sortInventoryPopularity(ArrayList<ArrayList<String>> list) {
-    ArrayList<ArrayList<String>> sortedList = new ArrayList<ArrayList<String>>();
+    ArrayList<ArrayList<String>> sortedList = new ArrayList<>();
 
     while(list.size() > 0) {
-      ArrayList<String> row = new ArrayList<String>();
+      ArrayList<String> row = new ArrayList<>();
       double max = Double.parseDouble(list.get(0).get(1));
       int maxIndex = 0;
       for(int i = 0; i < list.size(); i++) {
@@ -965,19 +961,8 @@ public class jdbcpostgreSQL {
         double revenuePercent1 = revenue1 / totalRevenue1;
         double revenuePercent2 = revenue2 / totalRevenue2;
 
-//        print("");
-//        print(revenue1);
-//        print(revenue2);
-//        print(totalRevenue1);
-//        print(totalRevenue2);
-//        print(revenuePercent1);
-//        print(revenuePercent2);
-
         trendPercent = revenuePercent2 - revenuePercent1;
-
-//        print(trendPercent);
         trendPercent *= 100; // change from decimal to percentage
-//        print(trendPercent);
         ArrayList<Object> tempRow = trendTableList.get(i);
         Double trendPercentFormatted = trendPercent;
         tempRow.set(6, trendPercentFormatted);
@@ -1200,12 +1185,12 @@ public class jdbcpostgreSQL {
 
   public static ArrayList<ArrayList<String>> getIdWithPricesFromMenuKey() {
     ResultSet rs1;
-    ArrayList<ArrayList<String>> idWithPricesFromMenuKey = new ArrayList<ArrayList<String>>();
+    ArrayList<ArrayList<String>> idWithPricesFromMenuKey = new ArrayList<>();
     try {
       Statement stmt = conn.createStatement();
       rs1 = stmt.executeQuery("SELECT item,price,name FROM menu_key;");
       while(rs1.next()) {
-        ArrayList<String> row = new ArrayList<String>();
+        ArrayList<String> row = new ArrayList<>();
         row.add(rs1.getString("item"));
         row.add(rs1.getString("price").substring(1));
         row.add(rs1.getString("name"));
@@ -1241,27 +1226,6 @@ public class jdbcpostgreSQL {
         }
       }
     }
-
-
-
-//    ArrayList<ArrayList<String>> sortedList = new ArrayList<ArrayList<String>>();
-//
-//    while(list.size() > 0) {
-//      ArrayList<String> row = new ArrayList<String>();
-//      int max = Integer.parseInt(list.get(0).get(1));
-//      int maxIndex = 0;
-//      for(int i = 0; i < list.size(); i++) {
-//        if(Integer.parseInt(list.get(i).get(1)) > max) {
-//          max = Integer.parseInt(list.get(i).get(1));
-//          maxIndex = i;
-//        }
-//      }
-//      row.add(list.get(maxIndex).get(0));
-//      row.add(list.get(maxIndex).get(1));
-//      list.remove(maxIndex);
-//      sortedList.add(row);
-//    }
-    print(list);
     return list;
 
   }
