@@ -29,6 +29,7 @@ public class Manager {
 
     public DefaultTableModel orderPopTableModel;
     public DefaultTableModel invPopTableModel;
+    public DefaultTableModel restockTableModel;
 
     public JPanel rootPanel;
     public JPanel inventoryPanel;
@@ -100,8 +101,11 @@ public class Manager {
 
     public JPanel orderPopPanel;
     public JTable orderPopTable;
+    public JPanel restockPanel;
+    public JTable restockTable;
 
     public JScrollPane orderPopScroll;
+    public JScrollPane restockScroll;
     public JPanel invPopPanel;
     public JScrollPane invPopScroll;
     public JTable invPopTable;
@@ -112,6 +116,8 @@ public class Manager {
     public JComboBox<String> invUpdate_To_YYYY_Box;
     public JComboBox<String> invUpdate_To_MM_Box;
     public JComboBox<String> invUpdate_To_DD_Box;
+    public JButton refreshRestockButton;
+    //public JButton refreshButton;
 
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Fill Amt", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
@@ -120,6 +126,7 @@ public class Manager {
     final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
     final private String[] DTOTrendCol = {"Item", "Quant. 1", "Quant. 2", "Price", "Rev. 1", "Rev. 2", "Trend %"};
     final private String[] orderPopCol = {"Item ID", "Quantity"};
+    final private String[] restockCol = {"Item", "Fill Amount", "Restock Amount"};
     final private String[] invPopCol = {"Description", "Qty Used"};
     public Manager() {
 
@@ -166,6 +173,11 @@ public class Manager {
                     return String.class;
                 }
             }
+        };
+
+        restockTableModel = new DefaultTableModel(restockCol, 0){
+            @Override
+            public boolean isCellEditable(int row, int column) {return false;}
         };
 
         invPopTableModel = new DefaultTableModel(invPopCol, 0) {
@@ -228,6 +240,7 @@ public class Manager {
         menuItemsTableModel.setColumnIdentifiers(menuItemsCol);
         menuItemsEditTableModel.setColumnIdentifiers(menuItemsCol);
         orderPopTableModel.setColumnIdentifiers(orderPopCol);
+        restockTableModel.setColumnIdentifiers(restockCol);
         invPopTableModel.setColumnIdentifiers(invPopCol);
         // --------------------------------------------------------------------
 
@@ -245,6 +258,7 @@ public class Manager {
         menuItemsEditScroll.setColumnHeaderView(menuItemsEditTable.getTableHeader());
 
         orderPopScroll.setColumnHeaderView(orderPopTable.getTableHeader());
+        restockScroll.setColumnHeaderView(restockTable.getTableHeader());
         invPopScroll.setColumnHeaderView(invPopTable.getTableHeader());
         // --------------------------------------------------------------------
 
@@ -262,6 +276,7 @@ public class Manager {
         menuItemsEditTable.setModel(menuItemsEditTableModel);
 
         orderPopTable.setModel(orderPopTableModel);
+        restockTable.setModel(restockTableModel);
         invPopTable.setModel(invPopTableModel);
         // --------------------------------------------------------------------
 
@@ -272,6 +287,7 @@ public class Manager {
         setNonFocusable(DTOTable3);
         setNonFocusable(menuItemsTable);
         setNonFocusable(orderPopTable);
+        setNonFocusable(restockTable);
         setNonFocusable(invPopTable);
         // ---------------------------------------------------------------------
 
@@ -311,6 +327,7 @@ public class Manager {
         DTOTableModel1.setRowCount(0);
         menuItemsTableModel.setRowCount(0);
         orderPopTableModel.setRowCount(0);
+        restockTableModel.setRowCount(0);
     }
 
     public void clearTable(DefaultTableModel tableModel) {

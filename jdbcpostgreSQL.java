@@ -1239,6 +1239,21 @@ public class jdbcpostgreSQL {
 
   }
 
+  public static void refreshRestockTable() {
+    manager.clearTable(manager.restockTableModel);
+    for(int i = 0; i < manager.invTable.getRowCount(); i++) {
+      ArrayList<String> row = new ArrayList<String>();
+      String item = manager.invTable.getValueAt(i,0).toString();
+      double fillAmt = Double.parseDouble(manager.invTable.getValueAt(i,3).toString());
+      double quantity = Double.parseDouble(manager.invTable.getValueAt(i,2).toString());
+      String restockAmount = String.valueOf(fillAmt - quantity);
+      row.add(item);
+      row.add(String.valueOf(fillAmt));
+      row.add(restockAmount);
+      manager.restockTableModel.addRow(row.toArray());
+    }
+  }
+
   // following functions set up the event listeners for buttons and tables in manager GUI
   public static void setupManagerEventListeners() {
     setupInventoryEventListeners();
@@ -1579,6 +1594,10 @@ public class jdbcpostgreSQL {
       } catch (SQLException ex) {
         ex.printStackTrace();
       }
+    });
+
+    manager.refreshRestockButton.addActionListener(e -> {
+      refreshRestockTable();
     });
 
     // REFRESH button
