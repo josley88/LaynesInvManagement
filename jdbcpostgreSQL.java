@@ -232,8 +232,32 @@ public class jdbcpostgreSQL {
       e.printStackTrace();
     }
 
-    }
+  }
 
+  public static void updateInventoryGivenRange(String dateA, String dateB) throws SQLException {
+    ArrayList<ArrayList<String>> invUpdates = new ArrayList<ArrayList<String>>();
+    invUpdates = getItemConversionsFromDateRange(dateA, dateB);
+    try{
+      Statement stmt = jdbcpostgreSQL.conn.createStatement();
+      ResultSet result = stmt.executeQuery("SELECT description,quantity FROM inventory");
+      while(result.next()){
+        for(int i = 0; i < invUpdates.size(); i++){
+          if(invUpdates.get(i).get(0).equals(result.getString("description"))){
+            double amt = Double.parseDouble(result.getString("quantity"));
+            amt = amt - Double.parseDouble(invUpdates.get(i).get(1));
+            int rs = stmt.executeUpdate("UPDATE inventory SET quantity='" + amt + "' WHERE item='" + result.getString("description") + "';");
+            if(rs == -123012) {
+              print(rs);
+            }
+          }
+        }
+      }
+    }catch (Exception e){
+      e.printStackTrace();
+      System.err.println(e.getClass().getName()+": "+e.getMessage());
+      System.exit(0);
+    }
+  }
 
   // purpse of the func is to update inven database given global vars date.
   public static void updateInventoryGivenDate(){
