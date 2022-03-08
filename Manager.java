@@ -84,6 +84,10 @@ public class Manager {
     public JTextField revenue2TextBox;
     public JTextField revenue1TextBox;
     public JButton updateInventoryButton;
+    private JButton refreshButton;
+    private JComboBox comboBox1;
+    private JComboBox comboBox2;
+    private JComboBox comboBox3;
 
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Fill Amt", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
