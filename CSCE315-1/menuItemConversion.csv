@@ -1,21 +1,21 @@
 itemConversion,,
 ,item,description
-,501,Chicken breast=1
-,502,Chicken breast=0.8
-,503,Chicken breast=0.6
-,504,Chicken breast=0.3
-,505,Tea bags=1
-,506,Chicken breast=4
-,507,Chicken breast=0.3
-,508,Chicken breast=0.3
-,509,Chicken breast=0.3
-,510,Sliced cheese=2
-,511,Sliced cheese=2
-,512,Chicken breast=0.2
-,513,Potato Salad=1
-,514,Fries=0.5
-,515,Chicken breast = 1;
-,516,Potato Salad=1
-,517,Fries=0.5
-,518,Straw=1; 16 oz cup=1; drink lid=1;
-,519,Bottled drink=1
+,501,Chicken breast=0.5
+,502,Chicken breast=0.4
+,503,Chicken breast=0.3
+,504,Chicken breast=0.15
+,505,Tea bags=0.041
+,506,Chicken breast=2
+,507,Chicken breast=0.15
+,508,Chicken breast=0.15
+,509,Chicken breast=0.15
+,510,Sliced cheese=0.002
+,511,Sliced cheese=0.002
+,512,Chicken breast=0.1
+,513,Potato Salad=0.2
+,514,Fries=0.002
+,515,Chicken breast = 0.5
+,516,Potato Salad=0.2
+,517,Fries=0.002
+,518,Straw=0.00125; 16 oz Cup=0.001; Drink lid=0.001
+,519,Bottled Root Beer=0.04
