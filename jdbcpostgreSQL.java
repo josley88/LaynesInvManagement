@@ -290,14 +290,17 @@ public class jdbcpostgreSQL {
       itemsToUpdate = temp;
       temp = new ArrayList<ArrayList<String>>();
 
-     // print("starting here\n" + itemsToUpdate + "\n\n");
+      print("starting here\n" + itemsToUpdate + "\n\n");
       
       for(int i = 0; i < itemsToUpdate.size(); i++){
        // print("starting here\n" + itemsToUpdate.get(i).get(4).split(";")[0] + "\n\n");
-        double base = Double.parseDouble(itemsToUpdate.get(i).get(4));
+        double oldAmt = Double.parseDouble(itemsToUpdate.get(i).get(4));
+        double base = Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]);
+        double amt = Double.parseDouble(itemsToUpdate.get(i).get(3));
+        String item = itemsToUpdate.get(i).get(1).split(";")[0].split("=")[0];
         //print( Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]));
       //  print(Double.parseDouble(itemsToUpdate.get(i).get(3).split(";")[0].split("=")[1]));
-        executeSingleInvUpdate(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[0], base, Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]), Double.parseDouble(itemsToUpdate.get(i).get(3).split(";")[0].split("=")[1]));
+        executeSingleInvUpdate(item,oldAmt,base,amt);
 
       }
 
