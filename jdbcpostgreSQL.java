@@ -49,9 +49,9 @@ public class jdbcpostgreSQL {
     // -----------------------------------------------------------------------
 
     // setup manager and server GUI frame and attach Manager class -----------
-    JFrame managerGUI = new JFrame();
+    JFrame managerGUI = new JFrame("Layne's Manager");
     manager = new Manager();
-    JFrame serverGUI = new JFrame();
+    JFrame serverGUI = new JFrame("Layne's Server");
     Server server = new Server();
 
     serverGUI.setContentPane(server.getRootPanel());
@@ -1337,9 +1337,8 @@ public class jdbcpostgreSQL {
       String dateA = manager.invUpdate_From_YYYY_Box.getSelectedItem() + "-" + manager.invUpdate_From_MM_Box.getSelectedItem() + "-" + manager.invUpdate_From_DD_Box.getSelectedItem();
       String dateB = manager.invUpdate_To_YYYY_Box.getSelectedItem() + "-" + manager.invUpdate_To_MM_Box.getSelectedItem() + "-" + manager.invUpdate_To_DD_Box.getSelectedItem();
       log("Selecting date range from " + dateA + " to " + dateB);
-      print("Running!");
+      print("Selecting date range from " + dateA + " to " + dateB);
       try {
-
         updateInventoryGivenRange(dateA, dateB);
         refreshTablesFromDB();
       } catch (SQLException ex) {
