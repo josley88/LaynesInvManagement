@@ -30,7 +30,7 @@ public class jdbcpostgreSQL {
   public static String userName = "csce315" + sectionNumber + "_" + teamNumber + "user";
   public static String userPassword = "315gang";
   //current date: meant to aid in the prgram in updating the inventory 
-  public static String currentDate = "2022-02-26";
+  public static String currentDate = "2022-03-01";
 
 
   public static Manager manager;
@@ -40,7 +40,7 @@ public class jdbcpostgreSQL {
   // _______________________________________________ MAIN ____________________________________________________
   public static void main(String[] args) throws SQLException {
     
-    currentDate = "2022-02-26";
+    //currentDate = "2022-02-26";
 
 
     // create connection -----------------------------------------------------
@@ -170,7 +170,7 @@ public class jdbcpostgreSQL {
   public static ArrayList<ArrayList<String>> getItemConversion() {
     try {
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
+        ResultSet rs = statement.executeQuery("SELECT * FROM itemconversion;");
       ArrayList<ArrayList<String>> result = new ArrayList<>();
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<>();
@@ -197,7 +197,7 @@ public class jdbcpostgreSQL {
   public static ArrayList<ArrayList<String>> getMenuKey() {
     try {
         Statement statement = conn.createStatement();
-        ResultSet rs = statement.executeQuery("SELECT * FROM weeksales;");
+        ResultSet rs = statement.executeQuery("SELECT * FROM menu_key;");
       ArrayList<ArrayList<String>> result = new ArrayList<>();
       while (rs.next()) {
         ArrayList<String> row = new ArrayList<>();
@@ -252,6 +252,7 @@ public class jdbcpostgreSQL {
           itemsToUpdate.add(weeksales.get(i));
         }
       }
+
       ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
       for(int i = 0; i < itemsToUpdate.size(); i++){
         ArrayList<String> tempLine = new ArrayList<String>();
@@ -260,15 +261,16 @@ public class jdbcpostgreSQL {
         tempLine.add(itemsToUpdate.get(i).get(0).substring(itemsToUpdate.get(i).get(0).indexOf('_')+1));
         
         for(int menuNumber = 0; menuNumber < MenuItemConvert.size(); menuNumber++){
-          if(tempLine.get(0).trim().equals(MenuItemConvert.get(i).get(0).trim())){
-            tempLine.add(MenuItemConvert.get(i).get(1)); // adds base ingrediants
+          if(tempLine.get(0).trim().equals(MenuItemConvert.get(menuNumber).get(0).trim())){
+            tempLine.add(MenuItemConvert.get(menuNumber).get(1)); // adds base ingrediants
           }
           
       }
+        //print("starting here\n" + itemsToUpdate + "\n\n");
 
         for(int menuNumber = 0; menuNumber < menuKey.size(); menuNumber++){
-            if(tempLine.get(0).equals(menuKey.get(i).get(0))){
-              tempLine.add(menuKey.get(i).get(2)); // adds additionals 
+            if(tempLine.get(0).equals(menuKey.get(menuNumber).get(0))){
+              tempLine.add(menuKey.get(menuNumber).get(2)); // adds additionals
             }
 
         }
@@ -276,21 +278,26 @@ public class jdbcpostgreSQL {
         tempLine.add(itemsToUpdate.get(i).get(1)); // adds quantity
         
         for(int oldAmt = 0; oldAmt < inventory.size(); oldAmt++){
-          if(tempLine.get(1).split(";")[0].split("=")[0].trim().equals(inventory.get(i).get(0))){
-            tempLine.add(inventory.get(i).get(2)); // adds old total 
+          if(tempLine.get(1).split(";")[0].split("=")[0].trim().equals(inventory.get(oldAmt).get(0))){
+            tempLine.add(inventory.get(oldAmt).get(2)); // adds old total
           }
 
       }
         
         temp.add(tempLine);
+        tempLine = new ArrayList<String>();
       }
       itemsToUpdate = temp;
       temp = new ArrayList<ArrayList<String>>();
+
+     // print("starting here\n" + itemsToUpdate + "\n\n");
       
       for(int i = 0; i < itemsToUpdate.size(); i++){
+       // print("starting here\n" + itemsToUpdate.get(i).get(4).split(";")[0] + "\n\n");
         double base = Double.parseDouble(itemsToUpdate.get(i).get(4));
-
-        executeSingleInvUpdate(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[0], base, Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]), Double.parseDouble(itemsToUpdate.get(i).get(3)));
+        //print( Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]));
+      //  print(Double.parseDouble(itemsToUpdate.get(i).get(3).split(";")[0].split("=")[1]));
+        executeSingleInvUpdate(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[0], base, Double.parseDouble(itemsToUpdate.get(i).get(1).split(";")[0].split("=")[1]), Double.parseDouble(itemsToUpdate.get(i).get(3).split(";")[0].split("=")[1]));
 
       }
 
@@ -967,6 +974,8 @@ public class jdbcpostgreSQL {
     }
   }
 
+
+
    /*public static void updateTrends()
   {
     ArrayList<ArrayList<String>> idWithPricesFromMenuKey = getIdWithPricesFromMenuKey(); //gets item,price,name from db
@@ -1090,7 +1099,7 @@ public class jdbcpostgreSQL {
         }
       }
     }
-  }
+  }*/
 
   public static ArrayList<ArrayList<String>> getIdWithPricesFromMenuKey() {
     ResultSet rs1;
@@ -1109,7 +1118,29 @@ public class jdbcpostgreSQL {
       ex.printStackTrace();
     }
     return idWithPricesFromMenuKey;
-  }*/
+  }
+
+  public static void getOrderPopularity(){
+    ArrayList<ArrayList<String>> idWithPricesMenuKey = getIdWithPricesFromMenuKey();
+    System.out.println(idWithPricesMenuKey.size());
+
+    ArrayList<ArrayList<String>> list = new ArrayList<ArrayList<String>>();
+    for(int i = 0; i < idWithPricesMenuKey.size(); i++) {
+      ArrayList<String> row = new ArrayList<String>();
+      row.add(idWithPricesMenuKey.get(i).get(0));
+      row.add("0");
+      list.add(row);
+    }
+
+
+    for(int i = 0; i < manager.DTOTable1.getRowCount(); i++) {
+      int indexAfterUnderscore = manager.DTOTable1.getValueAt(i,0).toString().indexOf('_');
+      String itemID = manager.DTOTable1.getValueAt(i,0).toString().substring(indexAfterUnderscore);
+
+    }
+
+    ArrayList<ArrayList<Double>> sortedList = new ArrayList<ArrayList<Double>>();
+  }
 
   // following functions set up the event listeners for buttons and tables in manager GUI
   public static void setupManagerEventListeners() {
@@ -1254,9 +1285,9 @@ public class jdbcpostgreSQL {
         row.add((String) manager.DTOEditTableModel.getValueAt(0, j));
       }
 
-      String sqlStatement =
-              "INSERT INTO weeksales (item, quantity, total) " +
-                      "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0);";
+        String sqlStatement =
+                "INSERT INTO weeksales (item, quantity, total, dateofpurchase) " +
+                        "VALUES ('" + row.get(0) + "', " + row.get(1) + ", 0, '" + row.get(2) + "');";
 
 //        print(sqlStatement);
 
@@ -1347,6 +1378,13 @@ public class jdbcpostgreSQL {
 
       }
 
+    });
+
+    manager.updateInventoryButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        updateInventoryGivenDate();
+      }
     });
   }
   public static void setupMenuItemsListeners() {
