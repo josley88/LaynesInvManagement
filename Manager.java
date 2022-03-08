@@ -27,6 +27,8 @@ public class Manager {
     public DefaultTableModel menuItemsTableModel;
     public DefaultTableModel menuItemsEditTableModel;
 
+    public DefaultTableModel orderPopTableModel;
+
     public JPanel rootPanel;
     public JPanel inventoryPanel;
     public JPanel DTOPanel;
@@ -81,13 +83,24 @@ public class Manager {
     public JCheckBox enableTrendCheckBox;
 
     public JTextField logTextField;
+
     public JTextField revenue2TextBox;
     public JTextField revenue1TextBox;
+
     public JButton updateInventoryButton;
-    private JButton refreshButton;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
-    private JComboBox comboBox3;
+    public JButton refreshInventoryRangeButton;
+
+    public JComboBox inv_From_YYYY_Box;
+    public JComboBox inv_From_MM_Box;
+    public JComboBox inv_From_DD_Box;
+    public JComboBox inv_To_YYYY_Box;
+    public JComboBox inv_To_MM_Box;
+    public JComboBox inv_To_DD_Box;
+
+    public JPanel orderPopPanel;
+    public JTable orderPopTable;
+
+
 
 
     final private String[] invCol = {"Description", "SKU", "Quantity", "Fill Amt", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
@@ -128,6 +141,11 @@ public class Manager {
             }
         };
         DTOEditTableModel = new DefaultTableModel(DTOCol, 1);
+
+        DTOTableModel2 = new DefaultTableModel(DTOCol, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {return false;}
+        };
 
 
         menuItemsTableModel = new DefaultTableModel(menuItemsCol, 0) {

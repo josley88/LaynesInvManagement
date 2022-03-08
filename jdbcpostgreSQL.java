@@ -956,6 +956,7 @@ public class jdbcpostgreSQL {
     ArrayList<ArrayList<String>> inventoryDB = getDBInventory();
     ArrayList<ArrayList<String>> DTODB = getDBDTO();
     ArrayList<ArrayList<String>> menuItemsDB = getDBMenuItems();
+    ArrayList<ArrayList<String>> orderPopularityDB = getOrderPopularity();
     manager.clearTables();
 
     assert inventoryDB != null;
@@ -968,6 +969,10 @@ public class jdbcpostgreSQL {
     }
     assert menuItemsDB != null;
     for (ArrayList<String> row : menuItemsDB) {
+      manager.addRowTomMenuItemsTable(row.toArray());
+    }
+    assert orderPopularityDB != null;
+    for (ArrayList<String> row : orderPopularityDB) {
       manager.addRowTomMenuItemsTable(row.toArray());
     }
   }
@@ -1143,7 +1148,7 @@ public class jdbcpostgreSQL {
     return idWithPricesFromMenuKey;
   }
 
-  public static void getOrderPopularity(){
+  public static ArrayList<ArrayList<String>> getOrderPopularity(){
     ArrayList<ArrayList<String>> idWithPricesMenuKey = getIdWithPricesFromMenuKey();
     System.out.println(idWithPricesMenuKey.size());
 
@@ -1190,6 +1195,7 @@ public class jdbcpostgreSQL {
       sortedList.add(row);
     }
     print(sortedList);
+    return sortedList;
 
   }
 
