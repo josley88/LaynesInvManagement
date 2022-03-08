@@ -234,13 +234,42 @@ public class jdbcpostgreSQL {
       if(weeksales == null){
         return;
       }
-
+      //sets up function to fill with items to update
       for(int i = 0; i < weeksales.size(); i++){
         if(weeksales.get(i).get(3).trim().equals(currentDate.trim())){
           itemsToUpdate.add(weeksales.get(i));
         }
       }
-      
+      ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
+      for(int i = 0; i < itemsToUpdate.size(); i++){
+        ArrayList<String> tempLine = new ArrayList<String>();
+        //templine = food number, base ingredients, base additionals, quantity
+
+        tempLine.add(itemsToUpdate.get(i).get(0).substring(itemsToUpdate.get(i).get(0).indexOf('_')+1));
+        
+        for(int menuNumber = 0; menuNumber < MenuItemConvert.size(); menuNumber++){
+          if(tempLine.get(0).trim().equals(MenuItemConvert.get(i).get(0).trim())){
+            tempLine.add(MenuItemConvert.get(i).get(1)); // adds base ingrediants
+          }
+          
+      }
+
+        for(int menuNumber = 0; menuNumber < menuKey.size(); menuNumber++){
+            if(tempLine.get(0).equals(menuKey.get(i).get(0))){
+              tempLine.add(menuKey.get(i).get(2)); // adds additionals 
+            }
+
+        }
+
+        tempLine.add(itemsToUpdate.get(i).get(1)); // adds quantity
+        temp.add(tempLine);
+      }
+      itemsToUpdate = temp;
+      temp = new ArrayList<ArrayList<String>>();
+      for(int i = 0; i < itemsToUpdate.size(); i++){
+        
+      }
+
       
     
     } catch (Exception e){
