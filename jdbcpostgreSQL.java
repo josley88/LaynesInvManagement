@@ -699,10 +699,34 @@ public class jdbcpostgreSQL {
         // e.g. "UPDATE inventory SET 'blah=" + invUsed + "' WHERE description='" + parseDesc[0] + "';"
       }
     }
-    for(ArrayList<String> k : finalArr){
+
+    finalArr = sortInventoryPopularity(finalArr);
+    /*for(ArrayList<String> k : finalArr){
       print(k.toString());
-    }
+    }*/
     return finalArr;
+  }
+
+  public static ArrayList<ArrayList<String>> sortInventoryPopularity(ArrayList<ArrayList<String>> list) {
+    ArrayList<ArrayList<String>> sortedList = new ArrayList<ArrayList<String>>();
+
+    while(list.size() > 0) {
+      ArrayList<String> row = new ArrayList<String>();
+      double max = Double.parseDouble(list.get(0).get(1));
+      int maxIndex = 0;
+      for(int i = 0; i < list.size(); i++) {
+        if(Double.parseDouble(list.get(i).get(1)) > max) {
+          max = Double.parseDouble(list.get(i).get(1));
+          maxIndex = i;
+        }
+      }
+      row.add(list.get(maxIndex).get(0));
+      row.add(list.get(maxIndex).get(1));
+      list.remove(maxIndex);
+      sortedList.add(row);
+    }
+    print(sortedList);
+    return sortedList;
   }
 
   // gets Daily Total Orders from the database
