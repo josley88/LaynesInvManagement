@@ -1329,11 +1329,13 @@ public class jdbcpostgreSQL {
     });
 
     // DATE RANGE REFRESH -- This won't work until our inventory can track ingredient usage by date
-    manager.invRefreshRangeButton.addActionListener(e -> {
+    manager.updateInventoryButton.addActionListener(e -> {
       String dateA = manager.inv_From_YYYY_Box.getSelectedItem() + "-" + manager.inv_From_MM_Box.getSelectedItem() + "-" + manager.inv_From_DD_Box.getSelectedItem();
       String dateB = manager.inv_To_YYYY_Box.getSelectedItem() + "-" + manager.inv_To_MM_Box.getSelectedItem() + "-" + manager.inv_To_DD_Box.getSelectedItem();
       log("Selecting date range from " + dateA + " to " + dateB);
+      print("Running!");
       try {
+
         updateInventoryGivenRange(dateA, dateB);
         refreshTablesFromDB();
       } catch (SQLException ex) {
