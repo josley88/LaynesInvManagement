@@ -85,7 +85,7 @@ public class Manager {
     public JTextField revenue1TextBox;
 
 
-    final private String[] invCol = {"Description", "SKU", "Quantity", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
+    final private String[] invCol = {"Description", "SKU", "Quantity", "Fill Amt", "Delivered", "Sold By", "Delivered By", "Quantity Multiplier", "Price", "Extended", "Category", "Invoice Line", "Detailed Description"};
     final private String[] DTOCol = {"Item", "Quantity", "Date of Purchase"};
     //final private String[] DTOTrend = {"Item", "Name", "Trend (%)"};
     final private String[] menuItemsCol = {"Item", "Name", "Description", "Price"};
