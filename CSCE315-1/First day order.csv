@@ -2,7 +2,7 @@
 ,Description,SKU,Quantity,delivered,sold by,delivered by,quantity Multiplyer, price , Extended ,category,Invoice line #,Detailed description
 Food,,,,,,,,,,,,
 ,Chicken breast,c1001,80,80,lb,case,20,$3.90 ,"$1,638.00 ",Cold,1,"raw unbreaded chicken breast, fresh, 20 lb cases 6 oz breast, cut to 1.5 oz per strip"
-,Impossible Tenders,c1001,80,80,lb,case,20,$3.90 ,"$1,638.00 ",Cold,1,"fake unbreaded chicken breast, fresh, 20 lb cases 6 oz breast, cut to 1.5 oz per strip"
+,Impossible Tenders,e1001,80,80,lb,case,20,$3.90 ,"$1,638.00 ",Cold,1,"fake unbreaded chicken breast, fresh, 20 lb cases 6 oz breast, cut to 1.5 oz per strip"
 ,flour,d2001,5,5,each,bag,1,$19.50 ,$97.50 ,Dry,2,"AP flour, 50 lb sack"
 ,salt,d2002,1,1,each,bag,1,$25.95 ,$25.95 ,Dry,3,"bulk sea salt, 50 lb bag"
 ,black pepper,d2003,2,2,each,container,1,$30.00 ,$60.00 ,Dry,4,5 lb plastic jar

@@ -494,6 +494,7 @@ public class jdbcpostgreSQL {
       sc = new Scanner(new File(fileName));
       String tableName;
       String[] parseArr;
+      sc.nextLine();
       
       tableName = "Menu_Key";
       String sqlStatement = "CREATE TABLE " + "Menu_Key" + " ( ";
@@ -546,6 +547,7 @@ public class jdbcpostgreSQL {
     try{
       sc = new Scanner(new File(fileName));
       String tableName;
+      sc.nextLine();
       
       // only create table if it doesn't already exist
       if (!tableExist(conn, "itemconversion")) {
@@ -1412,9 +1414,6 @@ public class jdbcpostgreSQL {
             manager.DTOEditTable.setValueAt(manager.DTOTable1.getValueAt(row, i), 0, i);
           }
         }
-
-
-
       }
     });
 
