@@ -237,13 +237,24 @@ public class Server implements ActionListener{
                     int currQuant = 0;
                     ResultSet rs = stmt.executeQuery("SELECT quantity FROM weeksales WHERE dateofpurchase=\'" + currDate + "\' AND item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
 
-
+                    boolean added = false;
                     while(rs.next()){
+                        added = true;
                         currQuant = Integer.parseInt(rs.getString("quantity"));
                         currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
                     }
-                    int result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE dateofpurchase=\'" + currDate + "\' AND item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
-                    print("SERVER RESULTS: " + result);
+                    int result = 0;
+                    if(!added){
+                        currQuant += Integer.parseInt((String)serverTableModel.getDataVector().get(i).get(1));
+                        result = stmt.executeUpdate("INSERT INTO weeksales VALUES('" + currDay + "_" +(String)serverTableModel.getDataVector().get(i).get(3)+ "',"+ currQuant + ",'','" + currDate+"')"+";");
+
+
+                    }else{
+                        result = stmt.executeUpdate("UPDATE weeksales SET quantity=" + currQuant+ " WHERE dateofpurchase=\'" + currDate + "\' AND item=\'" + currDay + "_" + (String)serverTableModel.getDataVector().get(i).get(3) + "\';");
+
+                    }
+
+                     print("SERVER RESULTS: " + result);
                 }
             } catch (SQLException ex) {
                 ex.printStackTrace();
